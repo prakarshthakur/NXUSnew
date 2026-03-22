@@ -126,7 +126,7 @@
     
     <div class="feed-nav">
         <h2 class="logo-text" style="font-size: 2rem; text-shadow: none;">NXUS</h2>
-        <button class="btn-redacta" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;" id="logoutBtn">Sign Out</button>
+        <button class="btn-redacta" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;" onclick="window.location.href='settings.html'">⚙ Settings</button>
     </div>
 
     <div class="content-wrapper">
@@ -141,17 +141,6 @@
     </div>
 
     <script src="script.js"></script>
-    <script type="module">
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        
-        // Authorization & SignOut
-        const auth = getAuth();
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => console.error("Sign out error", error));
-        });
-    </script>
     <script>
         // Swiping Logic
         const container = document.getElementById('swipeContainer');

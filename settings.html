@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXUS | Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .settings-section {
+            text-align: left;
+            padding: 2rem;
+        }
+
+        .settings-section-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #93c5fd;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(147, 197, 253, 0.1);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-item-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: #e2e8f0;
+        }
+
+        .settings-item-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .btn-danger {
+            background: rgba(127, 29, 29, 0.4);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-bottom: 2px solid #ef4444;
+            color: #fca5a5;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-danger:hover {
+            background: rgba(127, 29, 29, 0.7);
+            border-color: rgba(239, 68, 68, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(127, 29, 29, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.25);
+            text-shadow: 0 0 8px rgba(252, 165, 165, 0.6);
+        }
+
+        .btn-danger:active {
+            transform: translateY(1px);
+        }
+
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(5, 10, 18, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .feed-nav * {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="feed-nav">
+        <h2 class="logo-text" style="font-size: 2rem; text-shadow: none; cursor: pointer;" onclick="window.location.href='feed.html'">NXUS</h2>
+        <button class="btn-redacta" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;" onclick="window.location.href='feed.html'">← Back</button>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="logo-text" style="font-size: clamp(2.5rem, 6vw, 3.5rem); margin-bottom: 0.5rem;">Settings</h1>
+                <p class="subtitle" style="font-size: 0.85rem;">ACCOUNT // PREFERENCES</p>
+            </div>
+
+            <div class="glass-panel settings-section">
+                <p class="settings-section-title">Account</p>
+                <div class="settings-item">
+                    <span class="settings-item-label">Email</span>
+                    <span class="settings-item-value" id="userEmail">Loading...</span>
+                </div>
+                <div class="settings-item">
+                    <span class="settings-item-label">Member Since</span>
+                    <span class="settings-item-value" id="memberSince">—</span>
+                </div>
+            </div>
+
+            <div class="glass-panel settings-section">
+                <p class="settings-section-title">App</p>
+                <div class="settings-item">
+                    <span class="settings-item-label">Version</span>
+                    <span class="settings-item-value">0.1.0 Alpha</span>
+                </div>
+                <div class="settings-item">
+                    <span class="settings-item-label">Platform</span>
+                    <span class="settings-item-value">NXUS Web</span>
+                </div>
+            </div>
+
+            <button class="btn-danger" id="logoutBtn">Sign Out</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
+            authDomain: "nxus-f0954.firebaseapp.com",
+            projectId: "nxus-f0954",
+            storageBucket: "nxus-f0954.firebasestorage.app",
+            messagingSenderId: "419494261103",
+            appId: "1:419494261103:web:6c90fc72db49c125ccb89a",
+            measurementId: "G-WSB27VYN43"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Display user info
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('userEmail').textContent = user.email || 'Social Login';
+                const created = user.metadata.creationTime;
+                if (created) {
+                    const d = new Date(created);
+                    document.getElementById('memberSince').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Sign Out
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Sign out error", error);
+                alert('Error signing out. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>
