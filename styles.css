@@ -314,6 +314,56 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Tooltip Styles */
+[data-tooltip] {
+    position: relative;
+    overflow: visible;
+}
+
+[data-tooltip]::before,
+[data-tooltip]::after {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    z-index: 100;
+}
+
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    bottom: -150%;
+    right: 0;
+    width: max-content;
+    padding: 0.6rem 1.2rem;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    border-radius: 6px;
+    color: #f8fafc;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    text-transform: lowercase;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    transform: translateY(-10px);
+}
+
+[data-tooltip]::after {
+    content: '';
+    bottom: -20%;
+    right: 25px;
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent rgba(15, 23, 42, 0.95) transparent;
+    transform: translateY(-10px);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 /* Vignette / Monitor Edge Blend */
 body::after {
     content: '';
