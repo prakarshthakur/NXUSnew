@@ -3,77 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NXUS - The world's most exclusive private parties and experiences.">
-    <title>NXUS | Exclusive Experiences</title>
+    <meta name="description" content="NXUS - Parties. For Everyone.">
+    <title>NXUS | Parties. For Everyone.</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            NXUS
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="content-wrapper">
+        <div class="glass-panel">
+            <h1 class="logo-text">NXUS</h1>
+            <p class="subtitle">Parties. For Everyone.</p>
+            <button class="btn-redacta" onclick="window.location.href='http://localhost:3000'">Redacta</button>
         </div>
-        <div class="nav-links">
-            <a href="#">Events</a>
-            <a href="#">About</a>
-            <button class="btn btn-outline">Sign In</button>
-        </div>
-    </nav>
+    </div>
 
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Bid on the <span class="accent-text">Unforgettable</span>.</h1>
-            <p>Access the world's most exclusive private parties, VIP tables, and underground experiences.</p>
-            <button class="btn btn-primary">Explore Auctions</button>
-        </div>
-    </header>
-
-    <main class="events-section">
-        <div class="section-header">
-            <h2>Live Auctions</h2>
-        </div>
-        
-        <div class="grid" id="eventsGrid">
-            <div class="event-card">
-                <div class="card-image-wrap">
-                    <img src="assets/rave.png" alt="Neon Cyber-Rave" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80'">
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">Neon Cyber-Rave: The 2049 Experience</h3>
-                    <div class="card-footer">
-                        <span class="bid-label">Current Bid</span>
-                        <span class="bid-amount">$3,200</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <div class="card-image-wrap">
-                    <img src="assets/yacht.png" alt="Celestial Superyacht Gala" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?auto=format&fit=crop&q=80'">
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">Celestial Superyacht Gala</h3>
-                    <div class="card-footer">
-                        <span class="bid-label">Current Bid</span>
-                        <span class="bid-amount">$15,500</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <div class="card-image-wrap">
-                    <img src="assets/warehouse.png" alt="Berghain Reborn" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1558317751-bc3ed6f85f72?auto=format&fit=crop&q=80'">
-                </div>
-                <div class="card-body">
-                    <h3 class="card-title">Berghain Reborn: Industrial Warehouse</h3>
-                    <div class="card-footer">
-                        <span class="bid-label">Current Bid</span>
-                        <span class="bid-amount">$850</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <footer class="footer">
+        <p>By Prakarsh Thakur 2026</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>

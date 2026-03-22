@@ -1,64 +1,134 @@
-// script.js
-// Simple fade-in animation for elements on scroll to make it look premium
-const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+
+let width, height;
+let particles = [];
+
+// Mouse interaction
+const mouse = {
+    x: null,
+    y: null,
+    radius: 100 // Smaller interaction radius for tighter sand flow
 };
 
-const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = 1;
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Start with things hidden
-    const elementsToAnimate = document.querySelectorAll('.event-card, .section-header');
-    
-    elementsToAnimate.forEach((el, index) => {
-        el.style.opacity = 0;
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = `opacity 0.8s ease, transform 0.8s ease`;
-        el.style.transitionDelay = `${index * 0.1}s`;
-        observer.observe(el);
-    });
-
-    // Hero animation sequence on load
-    const heroTitle = document.querySelector('.hero h1');
-    const heroDesc = document.querySelector('.hero p');
-    const heroBtn = document.querySelector('.hero .btn-primary');
-
-    [heroTitle, heroDesc, heroBtn].forEach(el => {
-        if (el) {
-            el.style.opacity = 0;
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 1s ease, transform 1s ease';
-        }
-    });
-
-    setTimeout(() => {
-        if (heroTitle) {
-            heroTitle.style.opacity = 1;
-            heroTitle.style.transform = 'translateY(0)';
-        }
-    }, 100);
-
-    setTimeout(() => {
-        if (heroDesc) {
-            heroDesc.style.opacity = 1;
-            heroDesc.style.transform = 'translateY(0)';
-        }
-    }, 400);
-
-    setTimeout(() => {
-        if (heroBtn) {
-            heroBtn.style.opacity = 1;
-            heroBtn.style.transform = 'translateY(0)';
-        }
-    }, 700);
+window.addEventListener('mousemove', function(event) {
+    mouse.x = event.x;
+    mouse.y = event.y;
 });
+
+// Clear mouse out of window
+window.addEventListener('mouseout', function() {
+    mouse.x = null;
+    mouse.y = null;
+});
+
+function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    initParticles();
+}
+
+class DustParticle {
+    constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        // Make them tiny like sand but slightly larger for visibility
+        this.size = Math.random() * 1.5 + 1.2;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.density = (Math.random() * 30) + 1;
+        
+        // Colors: mixture of Dark Blue and Corroded Orange
+        if (Math.random() > 0.4) {
+            this.color = '30, 64, 175'; // Darker/mid blue
+        } else {
+            this.color = '217, 119, 6'; // Corroded Orange
+        }
+        
+        // Base drift speeds
+        this.baseSpeedX = (Math.random() - 0.5) * 1.0;
+        this.baseSpeedY = (Math.random() - 0.5) * 1.0;
+        
+        // Current velocity
+        this.vx = this.baseSpeedX;
+        this.vy = this.baseSpeedY;
+        
+        // Higher base opacity for better visibility
+        this.opacity = Math.random() * 0.5 + 0.5;
+    }
+
+    update() {
+        // Friction: softly ease velocity back to the base drift
+        this.vx += (this.baseSpeedX - this.vx) * 0.05;
+        this.vy += (this.baseSpeedY - this.vy) * 0.05;
+
+        // Mouse interaction (Fluid displacement with inertia)
+        if (mouse.x != null && mouse.y != null) {
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < mouse.radius) {
+                // Determine push angle
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                
+                // Softer exponential curve for force provides a smooth liquid-like edge
+                let force = Math.pow((mouse.radius - distance) / mouse.radius, 2);
+                
+                // Add to velocity instead of directly moving position
+                let directionX = forceDirectionX * force * this.density * -0.25;
+                let directionY = forceDirectionY * force * this.density * -0.25;
+
+                this.vx += directionX;
+                this.vy += directionY;
+            }
+        }
+        
+        // Update position smoothly
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap around smoothly
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+    }
+
+    draw() {
+        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+        ctx.fillRect(this.x, this.y, this.size, this.size); // Rectangles are drastically faster to render for 7000+ particles
+    }
+}
+
+function initParticles() {
+    particles = [];
+    // Massively increased particle count for dense sand
+    const particleCount = Math.floor(Math.min((width * height) / 200, 7000));
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new DustParticle());
+    }
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    // Clear canvas entirely
+    ctx.clearRect(0, 0, width, height);
+    
+    // Optional: add extremely subtle motion blur
+    ctx.fillStyle = 'rgba(5, 10, 18, 0.4)'; 
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+    }
+}
+
+window.addEventListener('resize', resize);
+resize();
+animate();
