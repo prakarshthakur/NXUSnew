@@ -374,3 +374,103 @@ body::after {
     z-index: 1;
     pointer-events: none;
 }
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .glass-panel {
+        padding: 3rem 2rem;
+        gap: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .login-panel {
+        padding: 2.5rem 1.5rem;
+        max-width: 95%;
+    }
+
+    .logo-text {
+        font-size: clamp(3.5rem, 14vw, 5rem);
+    }
+
+    .login-logo {
+        font-size: clamp(2.5rem, 10vw, 4rem);
+    }
+
+    .subtitle {
+        font-size: clamp(0.75rem, 2.5vw, 1rem);
+        margin-bottom: 1rem;
+    }
+
+    .subtitle::before, .subtitle::after {
+        margin: 0 8px;
+    }
+
+    .btn-redacta {
+        font-size: 1rem;
+        padding: 0.8rem 2rem;
+        letter-spacing: 0.15em;
+    }
+
+    .btn-submit {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+
+    .tactical-input {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .input-label {
+        font-size: 0.8rem;
+    }
+
+    .tab-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .btn-social {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+        gap: 8px;
+    }
+
+    .footer {
+        padding: 1.5rem;
+        font-size: 0.7rem;
+    }
+
+    .content-wrapper {
+        padding: 1rem 0.75rem;
+    }
+
+    /* Hide tooltip on mobile (no hover) */
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+        display: none;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-panel {
+        padding: 2rem 1.2rem;
+    }
+
+    .logo-text {
+        font-size: clamp(3rem, 16vw, 4rem);
+    }
+
+    .login-logo {
+        font-size: clamp(2rem, 12vw, 3rem);
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
+    }
+
+    .btn-redacta {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.5rem;
+    }
+}
