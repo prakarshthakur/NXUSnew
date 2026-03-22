@@ -42,8 +42,6 @@ function isSignupMode() {
 
 function handleSuccess(userCredential) {
     console.log("Authentication successful! User:", userCredential.user);
-    alert('Authentication successful!');
-    // Redirect to the feed page
     window.location.href = 'feed.html';
 }
 
