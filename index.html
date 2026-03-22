@@ -10,11 +10,53 @@
 <body>
     <canvas id="particleCanvas"></canvas>
     
+    <div class="top-nav" style="position: fixed; top: 2rem; right: 2rem; z-index: 10;">
+        <button class="btn-redacta" style="padding: 0.6rem 1.8rem; font-size: 1rem; border-bottom: 2px solid var(--accent); background: rgba(30, 58, 138, 0.4);" onclick="window.location.href='https://redacta.nxus.fun'">Redacta</button>
+    </div>
+
     <div class="content-wrapper">
-        <div class="glass-panel">
-            <h1 class="logo-text">NXUS</h1>
-            <p class="subtitle">Parties. For Everyone.</p>
-            <button class="btn-redacta" onclick="window.location.href='https://redacta.nxus.fun'">Redacta</button>
+        <div class="glass-panel login-panel">
+            <h1 class="logo-text login-logo">NXUS</h1>
+            <p class="subtitle" id="subtitleText">Welcome Back</p>
+            
+            <div class="auth-tabs" style="display: flex; gap: 1rem; margin-top: -0.5rem; z-index: 10;">
+                <button type="button" class="tab-btn active" onclick="switchAuthMode('login')">LOG IN</button>
+                <button type="button" class="tab-btn" onclick="switchAuthMode('register')">SIGN UP</button>
+            </div>
+            
+            <form class="login-form" id="authForm">
+                <div class="input-group" id="nameGroup" style="display: none;">
+                    <label for="name" class="input-label">Full Name</label>
+                    <input type="text" id="name" class="tactical-input" placeholder="John Doe">
+                </div>
+
+                <div class="input-group">
+                    <label for="email" class="input-label">Email Address</label>
+                    <input type="email" id="email" class="tactical-input" placeholder="name@example.com" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password" class="input-label">Password</label>
+                    <input type="password" id="password" class="tactical-input" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn-redacta btn-submit" id="submitBtn">Log In</button>
+                
+                <div class="social-login-divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="social-buttons">
+                    <button type="button" class="btn-social" id="googleSignInBtn">
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20">
+                        Continue with Google
+                    </button>
+                    <button type="button" class="btn-social" id="appleSignInBtn">
+                        <img src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" style="filter: invert(1);" width="20">
+                        Continue with Apple
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -23,5 +65,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module" src="firebase-auth.js"></script>
 </body>
 </html>

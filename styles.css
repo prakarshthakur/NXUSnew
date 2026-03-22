@@ -19,8 +19,8 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Space Mono', monospace;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -37,11 +37,12 @@ body {
 .content-wrapper {
     position: relative;
     z-index: 2;
-    flex: 1;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    padding: 2rem 1rem;
 }
 
 /* Tactical IO Liquid Glass Effect */
@@ -145,6 +146,7 @@ body {
 
 .footer {
     position: relative;
+    width: 100%;
     z-index: 2;
     text-align: center;
     padding: 2.5rem;
@@ -153,6 +155,163 @@ body {
     color: #64748b;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+}
+
+/* Form Elements for Login */
+.login-panel {
+    padding: 3.5rem 4rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.login-logo {
+    font-size: clamp(3rem, 8vw, 5rem);
+    margin-bottom: -1rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.5rem;
+}
+
+.input-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+}
+
+.tactical-input {
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 4px;
+    color: #ffffff;
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.tactical-input:focus {
+    border-color: var(--accent);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(234, 88, 12, 0.2);
+    background: rgba(15, 25, 45, 0.8);
+}
+
+.tactical-input::placeholder {
+    color: #475569;
+}
+
+.btn-submit {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Auth Tabs */
+.auth-tabs {
+    margin-bottom: 0.5rem;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tab-btn:hover {
+    color: #94a3b8;
+}
+
+.tab-btn.active {
+    color: #93c5fd;
+    font-weight: bold;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 10%; right: 10%;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* Social Login Elements */
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0.5rem 0;
+    color: #475569;
+    font-size: 0.8rem;
+}
+
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(147, 197, 253, 0.2);
+}
+
+.social-login-divider span {
+    padding: 0 10px;
+    font-family: 'Space Mono', monospace;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    color: #f8fafc;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    padding: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-social:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(147, 197, 253, 0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Vignette / Monitor Edge Blend */

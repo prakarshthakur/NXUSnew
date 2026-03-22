@@ -132,3 +132,28 @@ function animate() {
 window.addEventListener('resize', resize);
 resize();
 animate();
+
+// Authentication Handling
+function switchAuthMode(mode) {
+    const subtitle = document.getElementById('subtitleText');
+    const nameGroup = document.getElementById('nameGroup');
+    const submitBtn = document.getElementById('submitBtn');
+    const nameInput = document.getElementById('name');
+    const tabs = document.querySelectorAll('.tab-btn');
+    
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    if (mode === 'login') {
+        subtitle.innerHTML = 'Welcome Back';
+        nameGroup.style.display = 'none';
+        nameInput.removeAttribute('required');
+        submitBtn.innerText = 'Log In';
+        tabs[0].classList.add('active');
+    } else {
+        subtitle.innerHTML = 'Create Account';
+        nameGroup.style.display = 'flex';
+        nameInput.setAttribute('required', 'true');
+        submitBtn.innerText = 'Sign Up';
+        tabs[1].classList.add('active');
+    }
+}

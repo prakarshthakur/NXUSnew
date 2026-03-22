@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXUS | Feed</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-top: 4rem;
+        }
+        
+        /* Swipe UI Setup */
+        .swipe-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 600px;
+            margin: 2rem auto;
+            perspective: 1000px;
+        }
+
+        .party-card {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 2.5rem;
+            cursor: grab;
+            touch-action: none;
+            transform-origin: 50% 100%;
+            user-select: none;
+            -webkit-user-select: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            text-align: left;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Ensure pointer events are allowed naturally, JS controls them */
+        }
+        
+        .party-card:active {
+            cursor: grabbing;
+        }
+
+        .card-title {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            line-height: 1.1;
+        }
+
+        .card-time {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+        }
+
+        .card-desc {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .hint {
+            position: absolute;
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            letter-spacing: 0.2em;
+        }
+
+        .hint-like {
+            top: 2rem; right: 1rem;
+            color: #4ade80;
+            border: 4px solid #4ade80;
+            transform: rotate(15deg);
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
+        }
+
+        .hint-dislike {
+            top: 2rem; left: 1rem;
+            color: #ef4444;
+            border: 4px solid #ef4444;
+            transform: rotate(-15deg);
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Nav override */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(5, 10, 18, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        
+        .feed-nav * {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    
+    <div class="feed-nav">
+        <h2 class="logo-text" style="font-size: 2rem; text-shadow: none;">NXUS</h2>
+        <button class="btn-redacta" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;" id="logoutBtn">Sign Out</button>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="feed-container">
+            <h1 class="logo-text" style="font-size: 1.8rem; margin: 0; opacity: 0.5;">RADAR</h1>
+            <p class="subtitle" style="font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 0;">SWIPE LEFT TO LIKE // RIGHT TO DISMISS</p>
+            
+            <div class="swipe-container" id="swipeContainer">
+                <!-- Cards injected here via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script type="module">
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        
+        // Authorization & SignOut
+        const auth = getAuth();
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => console.error("Sign out error", error));
+        });
+    </script>
+    <script>
+        // Swiping Logic
+        const container = document.getElementById('swipeContainer');
+        const cardsData = [
+            { title: "Quantum Lounge", time: "SUNDAY @ 9PM", desc: "A chill, neon-lit speakeasy focusing on lo-fi beats and crafted cocktails." },
+            { title: "Rooftop Ascent", time: "FRIDAY @ 8PM", desc: "City views, deep house, and open bar until midnight." },
+            { title: "Warehouse 42", time: "TOMORROW @ 11PM", desc: "Industrial techno in an abandoned factory. Strictly invite only." },
+            { title: "Neon Nights", time: "TONIGHT @ 10PM", desc: "Underground synthwave party with live DJs and laser displays." }
+        ];
+
+        // Render stacked cards (Reverse rendering so index 0 is at bottom of DOM, length-1 is top)
+        cardsData.reverse().forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'party-card';
+            card.innerHTML = `
+                <span class="hint hint-like">LIKE</span>
+                <span class="hint hint-dislike">NOPE</span>
+                <div class="card-content">
+                    <h2 class="logo-text card-title">${data.title}</h2>
+                    <p class="subtitle card-time">${data.time}</p>
+                    <p class="card-desc">${data.desc}</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        let cards = Array.from(document.querySelectorAll('.party-card'));
+
+        function initTopCard() {
+            if (cards.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-panel" style="padding: 3rem; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <h2 class="logo-text" style="font-size: 2.5rem; color: #fff;">RADAR EMPTY</h2>
+                        <p style="color: #93c5fd; letter-spacing: 0.1em; margin-top: 1rem;">No more parties. Check back later.</p>
+                    </div>`;
+                return;
+            }
+
+            cards.forEach((card, i) => {
+                const isTopCard = (i === cards.length - 1);
+                // Reverse index: distances from top (0 = top, 1 = second, etc)
+                const depth = cards.length - 1 - i;
+                
+                card.style.zIndex = i;
+                if (isTopCard) {
+                    card.style.transform = `scale(1) translateY(0px)`;
+                    card.style.opacity = 1;
+                    setupDrag(card);
+                } else {
+                    // Depths logic
+                    card.style.transform = `scale(${1 - depth * 0.04}) translateY(${depth * 15}px)`;
+                    card.style.opacity = depth > 3 ? 0 : 1 - depth * 0.15; // fade out deep cards
+                    card.style.pointerEvents = 'none'; // Only interact with top card
+                }
+            });
+        }
+
+        function setupDrag(card) {
+            let startX = 0, startY = 0;
+            let currentX = 0, currentY = 0;
+            let isDragging = false;
+            
+            card.style.pointerEvents = 'auto';
+
+            card.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                card.style.transition = 'none';
+                card.setPointerCapture(e.pointerId);
+            });
+            
+            card.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX - startX;
+                currentY = e.clientY - startY;
+                const rotate = currentX * 0.04;
+                card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+                
+                const likeHint = card.querySelector('.hint-like');
+                const dislikeHint = card.querySelector('.hint-dislike');
+                
+                // Left means Like, Right means Dislike
+                if (currentX < 0) {
+                    likeHint.style.opacity = Math.min(Math.abs(currentX) / 80, 1);
+                    dislikeHint.style.opacity = 0;
+                } else {
+                    dislikeHint.style.opacity = Math.min(currentX / 80, 1);
+                    likeHint.style.opacity = 0;
+                }
+            });
+            
+            const resetCard = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const throwOutThreshold = window.innerWidth * 0.20; // 20% of screen
+                
+                if (currentX < -throwOutThreshold) {
+                    // Swiped Left = LIKE
+                    flyOut(card, -window.innerWidth - 200, currentY, -30);
+                } else if (currentX > throwOutThreshold) {
+                    // Swiped Right = DISLIKE
+                    flyOut(card, window.innerWidth + 200, currentY, 30);
+                } else {
+                    // Snap back
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'scale(1) translateY(0px)';
+                    card.querySelector('.hint-like').style.opacity = 0;
+                    card.querySelector('.hint-dislike').style.opacity = 0;
+                    currentX = 0; currentY = 0;
+                }
+            };
+
+            card.addEventListener('pointerup', resetCard);
+            card.addEventListener('pointercancel', resetCard);
+        }
+
+        function flyOut(card, destX, destY, destRot) {
+            card.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease';
+            card.style.transform = `translate(${destX}px, ${destY}px) rotate(${destRot}deg)`;
+            card.style.opacity = 0;
+            
+            setTimeout(() => {
+                card.remove();
+                cards.pop();
+                initTopCard(); // Reinitialize next card
+            }, 300);
+        }
+
+        window.addEventListener('load', initTopCard);
+    </script>
+</body>
+</html>
