@@ -6,6 +6,81 @@
     <title>NXUS | Feed</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        body { background: #0a0e1a; overflow-x: hidden; }
+
+        .river-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(30, 58, 138, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(234, 88, 12, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(30, 64, 175, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(217, 119, 6, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #0a0e1a 0%, #0f172a 30%, #1a0f0a 60%, #0d1321 100%);
+        }
+
+        .river-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(30, 64, 175, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(234, 88, 12, 0.2) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        .river-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(5, 8, 15, 0.7) 100%);
+        }
+
+        /* Nav */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(10, 14, 26, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .feed-nav * { pointer-events: auto; }
+
+        .nav-logo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.6rem;
+            color: #fff;
+            letter-spacing: 0.1em;
+            cursor: default;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        /* Feed layout */
         .feed-container {
             display: flex;
             flex-direction: column;
@@ -14,8 +89,23 @@
             width: 100%;
             padding-top: 4rem;
         }
-        
-        /* Swipe UI Setup */
+
+        .feed-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 0.15em;
+        }
+
+        .feed-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.08em;
+            margin-top: 0.4rem;
+        }
+
+        /* Swipe cards — liquid glass */
         .swipe-container {
             position: relative;
             width: 100%;
@@ -31,54 +121,112 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2rem;
             cursor: grab;
             touch-action: none;
             transform-origin: 50% 100%;
             user-select: none;
             -webkit-user-select: none;
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 0 0 0.5px rgba(255, 255, 255, 0.08) inset,
+                0 8px 32px rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
             text-align: left;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            /* Ensure pointer events are allowed naturally, JS controls them */
-        }
-        
-        .party-card:active {
-            cursor: grabbing;
+            overflow: hidden;
         }
 
+        /* Card refraction edge */
+        .party-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            pointer-events: none;
+        }
+
+        .party-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 0;
+            border-radius: 24px;
+            background:
+                linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 12%),
+                linear-gradient(to top, rgba(59,130,246,0.04) 0%, transparent 12%);
+            pointer-events: none;
+        }
+
+        .party-card:active { cursor: grabbing; }
+
         .card-title {
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: #fff;
+            margin-bottom: 0.3rem;
             line-height: 1.1;
+            position: relative;
+            z-index: 1;
         }
 
         .card-time {
+            font-family: 'Space Mono', monospace;
             color: var(--accent);
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-time::before, .card-time::after { content: none; }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-meta span {
+            font-size: 0.78rem;
+            font-family: 'Space Mono', monospace;
         }
 
         .card-desc {
-            font-size: 1.15rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
             line-height: 1.6;
-            color: #e2e8f0;
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            z-index: 1;
         }
+
+        .card-host {
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.05em;
+            font-family: 'Space Mono', monospace;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-host span { color: #fdba74; }
 
         .hint {
             position: absolute;
             font-family: 'Space Mono', monospace;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             padding: 0.5rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 12px;
             opacity: 0;
             z-index: 100;
             pointer-events: none;
@@ -86,121 +234,77 @@
         }
 
         .hint-like {
-            top: 2rem; right: 1rem;
+            top: 2rem; right: 1.5rem;
             color: #4ade80;
-            border: 4px solid #4ade80;
-            transform: rotate(15deg);
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-            box-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
+            border: 3px solid #4ade80;
+            transform: rotate(12deg);
         }
 
         .hint-dislike {
-            top: 2rem; left: 1rem;
+            top: 2rem; left: 1.5rem;
             color: #ef4444;
-            border: 4px solid #ef4444;
-            transform: rotate(-15deg);
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+            border: 3px solid #ef4444;
+            transform: rotate(-12deg);
         }
 
-        /* Nav override */
-        .feed-nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            padding: 1.5rem 2rem;
+        /* Empty state */
+        .empty-state {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            height: 100%;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to bottom, rgba(5, 10, 18, 0.9), transparent);
-            z-index: 20;
-            pointer-events: none;
-        }
-        
-        .feed-nav * {
-            pointer-events: auto;
+            flex-direction: column;
+            justify-content: center;
         }
 
         @media (max-width: 768px) {
-            .feed-nav {
-                padding: 1rem 1rem;
-            }
-
-            .feed-container {
-                padding-top: 2rem;
-            }
-
-            .swipe-container {
-                max-width: 90vw;
-                height: 480px;
-                margin: 1.5rem auto;
-            }
-
-            .party-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .card-title {
-                font-size: clamp(1.6rem, 6vw, 2.2rem);
-            }
-
-            .card-time {
-                font-size: 0.8rem;
-                margin-bottom: 1rem;
-            }
-
-            .card-desc {
-                font-size: 1rem;
-                line-height: 1.5;
-            }
-
-            .hint {
-                font-size: 1.5rem;
-                padding: 0.4rem 1rem;
-            }
+            .feed-nav { padding: 1rem; }
+            .feed-container { padding-top: 2rem; }
+            .swipe-container { max-width: 90vw; height: 480px; margin: 1.5rem auto; }
+            .party-card { padding: 2rem 1.5rem; }
+            .card-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+            .card-time { font-size: 0.75rem; }
+            .card-desc { font-size: 0.9rem; }
+            .hint { font-size: 1.4rem; padding: 0.4rem 1rem; }
         }
 
         @media (max-width: 400px) {
-            .swipe-container {
-                height: 420px;
-            }
-
-            .party-card {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .card-desc {
-                font-size: 0.9rem;
-            }
+            .swipe-container { height: 420px; }
+            .party-card { padding: 1.5rem 1.2rem; border-radius: 20px; }
         }
     </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
+    <div class="river-bg"></div>
     
     <div class="feed-nav">
-        <h2 class="logo-text" style="font-size: 2rem; text-shadow: none;">NXUS</h2>
-        <button class="btn-redacta" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;" onclick="window.location.href='settings.html'">⚙ Settings</button>
+        <span class="nav-logo">NXUS</span>
+        <button class="nav-btn" onclick="window.location.href='settings.html'">⚙ settings</button>
     </div>
 
     <div class="content-wrapper">
         <div class="feed-container">
-            <h1 class="logo-text" style="font-size: 1.8rem; margin: 0; opacity: 0.5;">RADAR</h1>
-            <p class="subtitle" style="font-size: 0.8rem; margin-top: 0.5rem; margin-bottom: 0;">SWIPE LEFT TO LIKE // RIGHT TO DISMISS</p>
+            <span class="feed-title">radar</span>
+            <p class="feed-subtitle">swipe left to like · right to dismiss</p>
             
             <div class="swipe-container" id="swipeContainer">
-                <!-- Cards injected here via JS -->
+                <!-- Cards injected via JS -->
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script>
         // Swiping Logic
         const container = document.getElementById('swipeContainer');
         const cardsData = [
             { 
                 title: "Freshers Bash", 
-                time: "FRI MAR 28 @ 9PM", 
+                time: "fri mar 28 @ 9pm", 
                 host: "Delta Kappa",
                 location: "South Campus Block C Terrace",
                 people: "127 going",
@@ -208,7 +312,7 @@
             },
             { 
                 title: "Sunburn Pregame", 
-                time: "SAT MAR 29 @ 7PM",
+                time: "sat mar 29 @ 7pm",
                 host: "Rahul & Sneha",
                 location: "Rahul's Flat, Hauz Khas",
                 people: "43 going",
@@ -216,7 +320,7 @@
             },
             { 
                 title: "Acoustic Night", 
-                time: "THU MAR 27 @ 8PM",
+                time: "thu mar 27 @ 8pm",
                 host: "Music Society",
                 location: "Open Air Theatre",
                 people: "89 going",
@@ -224,7 +328,7 @@
             },
             { 
                 title: "Holi Rave", 
-                time: "SAT APR 5 @ 11AM",
+                time: "sat apr 5 @ 11am",
                 host: "Cultural Committee",
                 location: "Sports Ground",
                 people: "312 going",
@@ -232,7 +336,7 @@
             },
             { 
                 title: "Rooftop Kickback", 
-                time: "TONIGHT @ 10PM",
+                time: "tonight @ 10pm",
                 host: "Aman's Circle",
                 location: "PG Rooftop, Vijay Nagar",
                 people: "18 going",
@@ -240,7 +344,7 @@
             },
             { 
                 title: "FIFA Tournament", 
-                time: "SUN MAR 30 @ 3PM",
+                time: "sun mar 30 @ 3pm",
                 host: "Gaming Club",
                 location: "Common Room, Hostel 4",
                 people: "32 going",
@@ -248,23 +352,20 @@
             }
         ];
 
-        // Render stacked cards
         cardsData.reverse().forEach((data, index) => {
             const card = document.createElement('div');
             card.className = 'party-card';
             card.innerHTML = `
                 <span class="hint hint-like">LIKE</span>
                 <span class="hint hint-dislike">NOPE</span>
-                <div class="card-content">
-                    <h2 class="logo-text card-title">${data.title}</h2>
-                    <p class="subtitle card-time">${data.time}</p>
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
-                        <span style="font-size: 0.8rem; color: #93c5fd; opacity: 0.9;">📍 ${data.location}</span>
-                        <span style="font-size: 0.8rem; color: #4ade80;">👥 ${data.people}</span>
-                    </div>
-                    <p class="card-desc">${data.desc}</p>
-                    <p style="margin-top: 1rem; font-size: 0.8rem; color: #64748b; letter-spacing: 0.05em;">Hosted by <span style="color: #fdba74;">${data.host}</span></p>
+                <div class="card-title">${data.title}</div>
+                <div class="card-time">${data.time}</div>
+                <div class="card-meta">
+                    <span style="color: rgba(255,255,255,0.5);">📍 ${data.location}</span>
+                    <span style="color: #4ade80;">👥 ${data.people}</span>
                 </div>
+                <p class="card-desc">${data.desc}</p>
+                <p class="card-host">hosted by <span>${data.host}</span></p>
             `;
             container.appendChild(card);
         });
@@ -274,16 +375,16 @@
         function initTopCard() {
             if (cards.length === 0) {
                 container.innerHTML = `
-                    <div class="glass-panel" style="padding: 3rem; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                        <h2 class="logo-text" style="font-size: 2.5rem; color: #fff;">RADAR EMPTY</h2>
-                        <p style="color: #93c5fd; letter-spacing: 0.1em; margin-top: 1rem;">No more parties. Check back later.</p>
+                    <div class="empty-state">
+                        <p style="font-size: 2rem;">🫠</p>
+                        <h2 style="font-family: 'Share Tech Mono', monospace; font-size: 1.6rem; color: #fff; margin-top: 0.5rem;">that's all for now</h2>
+                        <p style="color: rgba(255,255,255,0.4); font-family: 'Space Mono', monospace; font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
                     </div>`;
                 return;
             }
 
             cards.forEach((card, i) => {
                 const isTopCard = (i === cards.length - 1);
-                // Reverse index: distances from top (0 = top, 1 = second, etc)
                 const depth = cards.length - 1 - i;
                 
                 card.style.zIndex = i;
@@ -292,10 +393,9 @@
                     card.style.opacity = 1;
                     setupDrag(card);
                 } else {
-                    // Depths logic
                     card.style.transform = `scale(${1 - depth * 0.04}) translateY(${depth * 15}px)`;
-                    card.style.opacity = depth > 3 ? 0 : 1 - depth * 0.15; // fade out deep cards
-                    card.style.pointerEvents = 'none'; // Only interact with top card
+                    card.style.opacity = depth > 3 ? 0 : 1 - depth * 0.15;
+                    card.style.pointerEvents = 'none';
                 }
             });
         }
@@ -325,7 +425,6 @@
                 const likeHint = card.querySelector('.hint-like');
                 const dislikeHint = card.querySelector('.hint-dislike');
                 
-                // Left means Like, Right means Dislike
                 if (currentX < 0) {
                     likeHint.style.opacity = Math.min(Math.abs(currentX) / 80, 1);
                     dislikeHint.style.opacity = 0;
@@ -339,16 +438,13 @@
                 if (!isDragging) return;
                 isDragging = false;
                 
-                const throwOutThreshold = window.innerWidth * 0.20; // 20% of screen
+                const throwOutThreshold = window.innerWidth * 0.20;
                 
                 if (currentX < -throwOutThreshold) {
-                    // Swiped Left = LIKE
                     flyOut(card, -window.innerWidth - 200, currentY, -30);
                 } else if (currentX > throwOutThreshold) {
-                    // Swiped Right = DISLIKE
                     flyOut(card, window.innerWidth + 200, currentY, 30);
                 } else {
-                    // Snap back
                     card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                     card.style.transform = 'scale(1) translateY(0px)';
                     card.querySelector('.hint-like').style.opacity = 0;
@@ -369,7 +465,7 @@
             setTimeout(() => {
                 card.remove();
                 cards.pop();
-                initTopCard(); // Reinitialize next card
+                initTopCard();
             }, 300);
         }
 
