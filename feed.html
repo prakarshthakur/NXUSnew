@@ -494,7 +494,10 @@
     
     <div class="feed-nav">
         <span class="nav-logo">NXUS</span>
-        <button class="nav-btn" onclick="window.location.href='settings.html'">⚙ settings</button>
+        <div style="display: flex; gap: 0.6rem;">
+            <button class="nav-btn" onclick="window.location.href='likes.html'">❤ my parties</button>
+            <button class="nav-btn" onclick="window.location.href='settings.html'">⚙</button>
+        </div>
     </div>
 
     <div class="content-wrapper">
@@ -674,7 +677,10 @@
         document.getElementById('detailLike').addEventListener('click', () => {
             closeDetail();
             const topCard = cards[cards.length - 1];
-            if (topCard) flyOut(topCard, -window.innerWidth - 200, 0, -30);
+            if (topCard) {
+                saveLike(parseInt(topCard.dataset.partyIndex));
+                flyOut(topCard, -window.innerWidth - 200, 0, -30);
+            }
         });
 
         document.getElementById('detailDislike').addEventListener('click', () => {
@@ -755,7 +761,33 @@
             card.addEventListener('pointercancel', resetCard);
         }
 
+        function saveLike(dataIndex) {
+            const data = originalCardsData[dataIndex];
+            if (!data) return;
+            const liked = JSON.parse(localStorage.getItem('nxus_liked') || '[]');
+            // Don't add duplicates
+            if (liked.some(p => p.title === data.title)) return;
+            // Simulate host acceptance (random for demo)
+            const statuses = ['pending', 'pending', 'pending', 'accepted', 'declined'];
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
+            liked.push({
+                title: data.title,
+                time: data.time,
+                host: data.host,
+                location: data.location,
+                people: data.people,
+                status: status
+            });
+            localStorage.setItem('nxus_liked', JSON.stringify(liked));
+        }
+
         function flyOut(card, destX, destY, destRot) {
+            // If swiped left (like), save it
+            if (destX < 0) {
+                const idx = parseInt(card.dataset.partyIndex);
+                saveLike(idx);
+            }
+
             card.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease';
             card.style.transform = `translate(${destX}px, ${destY}px) rotate(${destRot}deg)`;
             card.style.opacity = 0;
