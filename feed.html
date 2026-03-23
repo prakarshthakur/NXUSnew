@@ -262,6 +262,211 @@
             justify-content: center;
         }
 
+        /* Detail overlay */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(5, 8, 15, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .detail-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 0;
+            max-width: 440px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: modalSlideUp 0.35s ease;
+        }
+
+        .detail-card::-webkit-scrollbar { width: 0; }
+
+        .detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            z-index: 2;
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .detail-header {
+            padding: 2rem 2rem 1.5rem;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            color: rgba(255,255,255,0.6);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        .detail-close:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        .detail-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 0.4rem;
+        }
+
+        .detail-time {
+            font-family: 'Space Mono', monospace;
+            color: var(--accent);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+        }
+
+        .detail-body {
+            padding: 0 2rem;
+        }
+
+        .detail-desc {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.2rem;
+        }
+
+        .detail-host {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 1.5rem;
+        }
+        .detail-host span { color: #fdba74; }
+
+        /* Map */
+        .detail-map {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            filter: invert(0.92) hue-rotate(180deg) brightness(0.9) contrast(1.1);
+        }
+
+        /* Action buttons */
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.9rem;
+            border-radius: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .btn-like {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            color: #4ade80;
+        }
+        .btn-like:hover {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: rgba(74, 222, 128, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.1);
+        }
+
+        .btn-dislike {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+        .btn-dislike:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
+        }
+
+        .action-btn:active { transform: translateY(1px); }
+
+        /* Tap hint on cards */
+        .tap-hint {
+            position: absolute;
+            bottom: 1.2rem; right: 1.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+
         @media (max-width: 768px) {
             .feed-nav { padding: 1rem; }
             .feed-container { padding-top: 2rem; }
@@ -271,11 +476,16 @@
             .card-time { font-size: 0.75rem; }
             .card-desc { font-size: 0.9rem; }
             .hint { font-size: 1.4rem; padding: 0.4rem 1rem; }
+            .detail-header { padding: 1.5rem 1.5rem 1rem; }
+            .detail-body { padding: 0 1.5rem; }
+            .detail-actions { padding: 1.2rem 1.5rem 1.5rem; }
+            .detail-map { height: 170px; }
         }
 
         @media (max-width: 400px) {
             .swipe-container { height: 420px; }
             .party-card { padding: 1.5rem 1.2rem; border-radius: 20px; }
+            .detail-card { border-radius: 20px; }
         }
     </style>
 </head>
@@ -298,6 +508,30 @@
         </div>
     </div>
 
+    <!-- Detail Modal -->
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-card" id="detailCard">
+            <button class="detail-close" id="detailClose">✕</button>
+            <div class="detail-header">
+                <div class="detail-title" id="detailTitle"></div>
+                <div class="detail-time" id="detailTime"></div>
+                <div class="detail-meta">
+                    <span style="color: rgba(255,255,255,0.5);" id="detailLocation"></span>
+                    <span style="color: #4ade80;" id="detailPeople"></span>
+                </div>
+            </div>
+            <div class="detail-body">
+                <p class="detail-desc" id="detailDesc"></p>
+                <p class="detail-host">hosted by <span id="detailHost"></span></p>
+                <div class="detail-map" id="detailMap"></div>
+            </div>
+            <div class="detail-actions">
+                <button class="action-btn btn-like" id="detailLike">👍 like</button>
+                <button class="action-btn btn-dislike" id="detailDislike">👎 pass</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Swiping Logic
         const container = document.getElementById('swipeContainer');
@@ -308,7 +542,8 @@
                 host: "Delta Kappa",
                 location: "South Campus Block C Terrace",
                 people: "127 going",
-                desc: "The official welcome party for the new batch. Free entry for first-years, DJ Arjun spinning Bollywood x EDM all night. BYOB after 11." 
+                desc: "The official welcome party for the new batch. Free entry for first-years, DJ Arjun spinning Bollywood x EDM all night. BYOB after 11.",
+                lat: 28.5648, lng: 77.2100
             },
             { 
                 title: "Sunburn Pregame", 
@@ -316,7 +551,8 @@
                 host: "Rahul & Sneha",
                 location: "Rahul's Flat, Hauz Khas",
                 people: "43 going",
-                desc: "Chill pregame before everyone heads to Sunburn afterparty at Kitty Su. Drinks sorted, just bring good vibes. Uber pool from here at 11." 
+                desc: "Chill pregame before everyone heads to Sunburn afterparty at Kitty Su. Drinks sorted, just bring good vibes. Uber pool from here at 11.",
+                lat: 28.5494, lng: 77.2001
             },
             { 
                 title: "Acoustic Night", 
@@ -324,7 +560,8 @@
                 host: "Music Society",
                 location: "Open Air Theatre",
                 people: "89 going",
-                desc: "Unplugged performances by campus bands, chai and maggi stalls, fairy lights on the lawn. Chill one before end-sems hit." 
+                desc: "Unplugged performances by campus bands, chai and maggi stalls, fairy lights on the lawn. Chill one before end-sems hit.",
+                lat: 28.5459, lng: 77.1926
             },
             { 
                 title: "Holi Rave", 
@@ -332,7 +569,8 @@
                 host: "Cultural Committee",
                 location: "Sports Ground",
                 people: "312 going",
-                desc: "Organic colours, rain dance, live dhol, and thandai bar. Wear whites. After-party at someone's farmhouse TBD." 
+                desc: "Organic colours, rain dance, live dhol, and thandai bar. Wear whites. After-party at someone's farmhouse TBD.",
+                lat: 28.5421, lng: 77.1843
             },
             { 
                 title: "Rooftop Kickback", 
@@ -340,7 +578,8 @@
                 host: "Aman's Circle",
                 location: "PG Rooftop, Vijay Nagar",
                 people: "18 going",
-                desc: "Small gathering, good music, cold ones on the roof. Keep it lowkey — no stories. DM for address." 
+                desc: "Small gathering, good music, cold ones on the roof. Keep it lowkey — no stories. DM for address.",
+                lat: 28.7041, lng: 77.1025
             },
             { 
                 title: "FIFA Tournament", 
@@ -348,13 +587,18 @@
                 host: "Gaming Club",
                 location: "Common Room, Hostel 4",
                 people: "32 going",
-                desc: "₹100 entry, winner takes the pool. PS5 on the projector, snacks provided. Losing team buys chai for everyone." 
+                desc: "₹100 entry, winner takes the pool. PS5 on the projector, snacks provided. Losing team buys chai for everyone.",
+                lat: 28.5460, lng: 77.1930
             }
         ];
+
+        // Store original order for detail lookup
+        const originalCardsData = [...cardsData];
 
         cardsData.reverse().forEach((data, index) => {
             const card = document.createElement('div');
             card.className = 'party-card';
+            card.dataset.partyIndex = originalCardsData.indexOf(data);
             card.innerHTML = `
                 <span class="hint hint-like">LIKE</span>
                 <span class="hint hint-dislike">NOPE</span>
@@ -366,6 +610,7 @@
                 </div>
                 <p class="card-desc">${data.desc}</p>
                 <p class="card-host">hosted by <span>${data.host}</span></p>
+                <span class="tap-hint">tap for details</span>
             `;
             container.appendChild(card);
         });
@@ -400,15 +645,55 @@
             });
         }
 
+        // Detail modal logic
+        const overlay = document.getElementById('detailOverlay');
+        let activeDetailIndex = null;
+
+        function openDetail(dataIndex) {
+            const data = originalCardsData[dataIndex];
+            if (!data) return;
+            activeDetailIndex = dataIndex;
+            document.getElementById('detailTitle').textContent = data.title;
+            document.getElementById('detailTime').textContent = data.time;
+            document.getElementById('detailLocation').textContent = '📍 ' + data.location;
+            document.getElementById('detailPeople').textContent = '👥 ' + data.people;
+            document.getElementById('detailDesc').textContent = data.desc;
+            document.getElementById('detailHost').textContent = data.host;
+            document.getElementById('detailMap').innerHTML = `<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${data.lng-0.008}%2C${data.lat-0.005}%2C${data.lng+0.008}%2C${data.lat+0.005}&layer=mapnik&marker=${data.lat}%2C${data.lng}" loading="lazy"></iframe>`;
+            overlay.style.display = 'flex';
+        }
+
+        function closeDetail() {
+            overlay.style.display = 'none';
+            activeDetailIndex = null;
+        }
+
+        document.getElementById('detailClose').addEventListener('click', closeDetail);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDetail(); });
+
+        document.getElementById('detailLike').addEventListener('click', () => {
+            closeDetail();
+            const topCard = cards[cards.length - 1];
+            if (topCard) flyOut(topCard, -window.innerWidth - 200, 0, -30);
+        });
+
+        document.getElementById('detailDislike').addEventListener('click', () => {
+            closeDetail();
+            const topCard = cards[cards.length - 1];
+            if (topCard) flyOut(topCard, window.innerWidth + 200, 0, 30);
+        });
+
         function setupDrag(card) {
             let startX = 0, startY = 0;
             let currentX = 0, currentY = 0;
             let isDragging = false;
+            let hasMoved = false;
             
             card.style.pointerEvents = 'auto';
 
             card.addEventListener('pointerdown', (e) => {
                 isDragging = true;
+                hasMoved = false;
                 startX = e.clientX;
                 startY = e.clientY;
                 card.style.transition = 'none';
@@ -419,6 +704,9 @@
                 if (!isDragging) return;
                 currentX = e.clientX - startX;
                 currentY = e.clientY - startY;
+
+                if (Math.abs(currentX) > 8 || Math.abs(currentY) > 8) hasMoved = true;
+
                 const rotate = currentX * 0.04;
                 card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
                 
@@ -437,6 +725,16 @@
             const resetCard = () => {
                 if (!isDragging) return;
                 isDragging = false;
+
+                // Tap detection — if barely moved, it's a click
+                if (!hasMoved) {
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'scale(1) translateY(0px)';
+                    currentX = 0; currentY = 0;
+                    const idx = parseInt(card.dataset.partyIndex);
+                    openDetail(idx);
+                    return;
+                }
                 
                 const throwOutThreshold = window.innerWidth * 0.20;
                 
