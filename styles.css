@@ -377,6 +377,14 @@ body::after {
 
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
+    .redacta-desktop {
+        display: none !important;
+    }
+
+    .redacta-mobile {
+        display: flex !important;
+    }
+
     .glass-panel {
         padding: 3rem 2rem;
         gap: 1.5rem;

@@ -10,12 +10,13 @@
 <body>
     <canvas id="particleCanvas"></canvas>
     
-    <div class="top-nav" style="position: fixed; top: 2rem; right: 2rem; z-index: 10;">
+    <div class="top-nav redacta-desktop" style="position: fixed; top: 2rem; right: 2rem; z-index: 10;">
         <button class="btn-redacta" style="padding: 0.6rem 1.8rem; font-size: 1rem; border-bottom: 2px solid var(--accent); background: rgba(30, 58, 138, 0.4);" onclick="window.location.href='https://redacta.nxus.fun'" data-tooltip="the easiest redaction tool ever">Try Redacta</button>
     </div>
 
     <div class="content-wrapper">
         <div class="glass-panel login-panel" style="position: relative;">
+            <button type="button" class="redacta-mobile" onclick="window.location.href='https://redacta.nxus.fun'" style="position: absolute; top: 1rem; left: 1rem; display: none; background: rgba(30, 58, 138, 0.4); border: 1.5px solid rgba(147, 197, 253, 0.4); color: var(--accent); font-family: 'Share Tech Mono', monospace; font-size: 1rem; font-weight: bold; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; z-index: 10; align-items: center; justify-content: center;">R</button>
             <button type="button" id="infoBtn" style="position: absolute; top: 1rem; right: 1rem; background: transparent; border: 1.5px solid rgba(147, 197, 253, 0.4); color: #93c5fd; font-family: 'Space Mono', monospace; font-size: 1rem; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; z-index: 10; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(30,58,138,0.4)'; this.style.borderColor='rgba(147,197,253,0.7)';" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(147,197,253,0.4)';">i</button>
             <h1 class="logo-text login-logo">NXUS</h1>
             <p class="subtitle" id="subtitleText">Welcome Back</p>
