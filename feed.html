@@ -198,13 +198,57 @@
         // Swiping Logic
         const container = document.getElementById('swipeContainer');
         const cardsData = [
-            { title: "Quantum Lounge", time: "SUNDAY @ 9PM", desc: "A chill, neon-lit speakeasy focusing on lo-fi beats and crafted cocktails." },
-            { title: "Rooftop Ascent", time: "FRIDAY @ 8PM", desc: "City views, deep house, and open bar until midnight." },
-            { title: "Warehouse 42", time: "TOMORROW @ 11PM", desc: "Industrial techno in an abandoned factory. Strictly invite only." },
-            { title: "Neon Nights", time: "TONIGHT @ 10PM", desc: "Underground synthwave party with live DJs and laser displays." }
+            { 
+                title: "Freshers Bash", 
+                time: "FRI MAR 28 @ 9PM", 
+                host: "Delta Kappa",
+                location: "South Campus Block C Terrace",
+                people: "127 going",
+                desc: "The official welcome party for the new batch. Free entry for first-years, DJ Arjun spinning Bollywood x EDM all night. BYOB after 11." 
+            },
+            { 
+                title: "Sunburn Pregame", 
+                time: "SAT MAR 29 @ 7PM",
+                host: "Rahul & Sneha",
+                location: "Rahul's Flat, Hauz Khas",
+                people: "43 going",
+                desc: "Chill pregame before everyone heads to Sunburn afterparty at Kitty Su. Drinks sorted, just bring good vibes. Uber pool from here at 11." 
+            },
+            { 
+                title: "Acoustic Night", 
+                time: "THU MAR 27 @ 8PM",
+                host: "Music Society",
+                location: "Open Air Theatre",
+                people: "89 going",
+                desc: "Unplugged performances by campus bands, chai and maggi stalls, fairy lights on the lawn. Chill one before end-sems hit." 
+            },
+            { 
+                title: "Holi Rave", 
+                time: "SAT APR 5 @ 11AM",
+                host: "Cultural Committee",
+                location: "Sports Ground",
+                people: "312 going",
+                desc: "Organic colours, rain dance, live dhol, and thandai bar. Wear whites. After-party at someone's farmhouse TBD." 
+            },
+            { 
+                title: "Rooftop Kickback", 
+                time: "TONIGHT @ 10PM",
+                host: "Aman's Circle",
+                location: "PG Rooftop, Vijay Nagar",
+                people: "18 going",
+                desc: "Small gathering, good music, cold ones on the roof. Keep it lowkey — no stories. DM for address." 
+            },
+            { 
+                title: "FIFA Tournament", 
+                time: "SUN MAR 30 @ 3PM",
+                host: "Gaming Club",
+                location: "Common Room, Hostel 4",
+                people: "32 going",
+                desc: "₹100 entry, winner takes the pool. PS5 on the projector, snacks provided. Losing team buys chai for everyone." 
+            }
         ];
 
-        // Render stacked cards (Reverse rendering so index 0 is at bottom of DOM, length-1 is top)
+        // Render stacked cards
         cardsData.reverse().forEach((data, index) => {
             const card = document.createElement('div');
             card.className = 'party-card';
@@ -214,7 +258,12 @@
                 <div class="card-content">
                     <h2 class="logo-text card-title">${data.title}</h2>
                     <p class="subtitle card-time">${data.time}</p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                        <span style="font-size: 0.8rem; color: #93c5fd; opacity: 0.9;">📍 ${data.location}</span>
+                        <span style="font-size: 0.8rem; color: #4ade80;">👥 ${data.people}</span>
+                    </div>
                     <p class="card-desc">${data.desc}</p>
+                    <p style="margin-top: 1rem; font-size: 0.8rem; color: #64748b; letter-spacing: 0.05em;">Hosted by <span style="color: #fdba74;">${data.host}</span></p>
                 </div>
             `;
             container.appendChild(card);
