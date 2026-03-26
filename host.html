@@ -519,36 +519,118 @@
             const parties = getHostedParties();
 
             if (parties.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-hosted">
-                        <p>🎉</p>
-                        <h3>no parties yet</h3>
-                        <p>create one above and it'll show up on people's feeds</p>
-                    </div>`;
+                list.textContent = '';
+
+                const empty = document.createElement('div');
+                empty.className = 'empty-hosted';
+
+                const p1 = document.createElement('p');
+                p1.textContent = '🎉';
+
+                const h = document.createElement('h3');
+                h.textContent = 'no parties yet';
+
+                const p2 = document.createElement('p');
+                p2.textContent = "create one above and it'll show up on people's feeds";
+
+                empty.appendChild(p1);
+                empty.appendChild(h);
+                empty.appendChild(p2);
+                list.appendChild(empty);
                 return;
             }
 
-            list.innerHTML = parties.map((p, i) => `
-                <div class="hosted-card">
-                    <div class="hosted-top">
-                        <span class="hosted-title">${p.name}</span>
-                        <span class="hosted-live">live</span>
-                    </div>
-                    <div class="hosted-time">${p.displayTime}</div>
-                    <div class="hosted-meta">
-                        <span style="color: rgba(255,255,255,0.4);">📍 ${p.location}</span>
-                        <span style="color: rgba(255,255,255,0.4);">${p.vibe}</span>
-                        ${p.capacity ? `<span style="color: rgba(255,255,255,0.4);">👥 max ${p.capacity}</span>` : ''}
-                    </div>
-                    <p class="hosted-desc">${p.desc}</p>
-                    <div class="hosted-stats">
-                        <div class="stat"><strong>${Math.floor(Math.random() * 40) + 5}</strong>views</div>
-                        <div class="stat"><strong>${Math.floor(Math.random() * 15) + 1}</strong>interested</div>
-                        <div class="stat"><strong>${Math.floor(Math.random() * 8)}</strong>accepted</div>
-                    </div>
-                    <button class="delete-btn" onclick="deleteParty(${i})">remove listing</button>
-                </div>
-            `).join('');
+            list.textContent = '';
+
+            parties.forEach((p, i) => {
+                const card = document.createElement('div');
+                card.className = 'hosted-card';
+
+                const top = document.createElement('div');
+                top.className = 'hosted-top';
+
+                const title = document.createElement('span');
+                title.className = 'hosted-title';
+                title.textContent = p.name || '';
+
+                const live = document.createElement('span');
+                live.className = 'hosted-live';
+                live.textContent = 'live';
+
+                top.appendChild(title);
+                top.appendChild(live);
+
+                const time = document.createElement('div');
+                time.className = 'hosted-time';
+                time.textContent = p.displayTime || '';
+
+                const meta = document.createElement('div');
+                meta.className = 'hosted-meta';
+
+                const location = document.createElement('span');
+                location.style.color = 'rgba(255,255,255,0.4)';
+                location.textContent = `📍 ${p.location || ''}`;
+                meta.appendChild(location);
+
+                const vibe = document.createElement('span');
+                vibe.style.color = 'rgba(255,255,255,0.4)';
+                vibe.textContent = p.vibe || '';
+                meta.appendChild(vibe);
+
+                if (p.capacity) {
+                    const cap = document.createElement('span');
+                    cap.style.color = 'rgba(255,255,255,0.4)';
+                    cap.textContent = `👥 max ${p.capacity}`;
+                    meta.appendChild(cap);
+                }
+
+                const desc = document.createElement('p');
+                desc.className = 'hosted-desc';
+                desc.textContent = p.desc || '';
+
+                const stats = document.createElement('div');
+                stats.className = 'hosted-stats';
+
+                const views = document.createElement('div');
+                views.className = 'stat';
+                const viewsStrong = document.createElement('strong');
+                viewsStrong.textContent = String(Math.floor(Math.random() * 40) + 5);
+                views.appendChild(viewsStrong);
+                views.appendChild(document.createTextNode('views'));
+
+                const interested = document.createElement('div');
+                interested.className = 'stat';
+                const interestedStrong = document.createElement('strong');
+                interestedStrong.textContent = String(Math.floor(Math.random() * 15) + 1);
+                interested.appendChild(interestedStrong);
+                interested.appendChild(document.createTextNode('interested'));
+
+                const accepted = document.createElement('div');
+                accepted.className = 'stat';
+                const acceptedStrong = document.createElement('strong');
+                acceptedStrong.textContent = String(Math.floor(Math.random() * 8));
+                accepted.appendChild(acceptedStrong);
+                accepted.appendChild(document.createTextNode('accepted'));
+
+                stats.appendChild(views);
+                stats.appendChild(interested);
+                stats.appendChild(accepted);
+
+                const btn = document.createElement('button');
+                btn.className = 'delete-btn';
+                btn.type = 'button';
+                btn.textContent = 'remove listing';
+                btn.addEventListener('click', () => deleteParty(i));
+
+                card.appendChild(top);
+                card.appendChild(time);
+                card.appendChild(meta);
+                card.appendChild(desc);
+                card.appendChild(stats);
+                card.appendChild(btn);
+
+                list.appendChild(card);
+            });
         }
 
         function deleteParty(index) {

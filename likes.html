@@ -374,6 +374,17 @@
             declined: "host couldn't fit more people this time. maybe next one!"
         };
 
+        const allowedStatuses = new Set(['pending', 'accepted', 'declined']);
+        function normalizeStatus(status) {
+            return allowedStatuses.has(status) ? status : 'pending';
+        }
+
+        const statusEmoji = {
+            pending: '⏳',
+            accepted: '🫣',
+            declined: '😮‍💨'
+        };
+
         function getLikedParties() {
             return JSON.parse(localStorage.getItem('nxus_liked') || '[]');
         }
@@ -382,34 +393,104 @@
             const list = document.getElementById('partyList');
             const parties = getLikedParties();
 
-            const filtered = filter === 'all' ? parties : parties.filter(p => p.status === filter);
+            const safeFilter = filter === 'all' ? 'all' : normalizeStatus(filter);
+            const filtered = safeFilter === 'all'
+                ? parties
+                : parties.filter(p => normalizeStatus(p.status) === safeFilter);
 
             if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-likes">
-                        <p>${filter === 'all' ? '💤' : filter === 'accepted' ? '🫣' : filter === 'declined' ? '😮‍💨' : '⏳'}</p>
-                        <h3>${filter === 'all' ? 'no liked parties yet' : 'nothing here'}</h3>
-                        <p>${filter === 'all' ? 'head to the feed and swipe left on something fire' : 'no parties with this status right now'}</p>
-                        ${filter === 'all' ? '<a href="feed.html" class="explore-btn">explore parties →</a>' : ''}
-                    </div>`;
+                list.textContent = '';
+
+                const empty = document.createElement('div');
+                empty.className = 'empty-likes';
+
+                const pEmoji = document.createElement('p');
+                pEmoji.textContent = safeFilter === 'all' ? '💤' : statusEmoji[safeFilter];
+
+                const h = document.createElement('h3');
+                h.textContent = safeFilter === 'all' ? 'no liked parties yet' : 'nothing here';
+
+                const pMsg = document.createElement('p');
+                pMsg.textContent = safeFilter === 'all'
+                    ? 'head to the feed and swipe left on something fire'
+                    : 'no parties with this status right now';
+
+                empty.appendChild(pEmoji);
+                empty.appendChild(h);
+                empty.appendChild(pMsg);
+
+                if (safeFilter === 'all') {
+                    const a = document.createElement('a');
+                    a.href = 'feed.html';
+                    a.className = 'explore-btn';
+                    a.textContent = 'explore parties →';
+                    empty.appendChild(a);
+                }
+
+                list.appendChild(empty);
                 return;
             }
 
-            list.innerHTML = filtered.map(party => `
-                <div class="liked-card">
-                    <div class="liked-card-top">
-                        <span class="liked-card-title">${party.title}</span>
-                        <span class="status-badge badge-${party.status}">${party.status}</span>
-                    </div>
-                    <div class="liked-card-time">${party.time}</div>
-                    <div class="liked-card-meta">
-                        <span style="color: rgba(255,255,255,0.4);">📍 ${party.location}</span>
-                        <span style="color: #4ade80;">👥 ${party.people}</span>
-                    </div>
-                    <div class="liked-card-host">hosted by <span>${party.host}</span></div>
-                    <div class="status-msg msg-${party.status}">${statusMessages[party.status]}</div>
-                </div>
-            `).join('');
+            list.textContent = '';
+
+            filtered.forEach((party) => {
+                const status = normalizeStatus(party.status);
+
+                const card = document.createElement('div');
+                card.className = 'liked-card';
+
+                const top = document.createElement('div');
+                top.className = 'liked-card-top';
+
+                const title = document.createElement('span');
+                title.className = 'liked-card-title';
+                title.textContent = party.title || '';
+
+                const badge = document.createElement('span');
+                badge.className = `status-badge badge-${status}`;
+                badge.textContent = status;
+
+                top.appendChild(title);
+                top.appendChild(badge);
+
+                const time = document.createElement('div');
+                time.className = 'liked-card-time';
+                time.textContent = party.time || '';
+
+                const meta = document.createElement('div');
+                meta.className = 'liked-card-meta';
+
+                const location = document.createElement('span');
+                location.style.color = 'rgba(255,255,255,0.4)';
+                location.textContent = `📍 ${party.location || ''}`;
+
+                const people = document.createElement('span');
+                people.style.color = '#4ade80';
+                people.textContent = `👥 ${party.people || ''}`;
+
+                meta.appendChild(location);
+                meta.appendChild(people);
+
+                const hosted = document.createElement('div');
+                hosted.className = 'liked-card-host';
+                hosted.appendChild(document.createTextNode('hosted by '));
+
+                const hostName = document.createElement('span');
+                hostName.textContent = party.host || '';
+                hosted.appendChild(hostName);
+
+                const statusMsg = document.createElement('div');
+                statusMsg.className = `status-msg msg-${status}`;
+                statusMsg.textContent = statusMessages[status];
+
+                card.appendChild(top);
+                card.appendChild(time);
+                card.appendChild(meta);
+                card.appendChild(hosted);
+                card.appendChild(statusMsg);
+
+                list.appendChild(card);
+            });
         }
 
         // Tab switching
