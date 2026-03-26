@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "- In Google Analytics, create a **GA4 property**. - Add a **Web** data stream for your `nxus` domain. - Copy the **Measurement ID** (looks like `G-30KZZMNYKN`).",
+  "main": "analytics.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://x-access-token:ghs_AlhKNMD8jv6AtD8eksp98aTiJT5URH1UDcbQ@github.com/deusabove/NXUSnew.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deusabove/NXUSnew/issues"
+  },
+  "homepage": "https://github.com/deusabove/NXUSnew#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
