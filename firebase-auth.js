@@ -11,7 +11,7 @@ import {
 // Your Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
-  authDomain: "nxus.fun",
+    authDomain: "nxus-f0954.firebaseapp.com",
   projectId: "nxus-f0954",
   storageBucket: "nxus-f0954.firebasestorage.app",
   messagingSenderId: "419494261103",
