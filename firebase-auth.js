@@ -11,7 +11,7 @@ import {
 // Your Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
-  authDomain: "nxus-f0954.firebaseapp.com",
+  authDomain: "nxus.fun",
   projectId: "nxus-f0954",
   storageBucket: "nxus-f0954.firebasestorage.app",
   messagingSenderId: "419494261103",
@@ -24,6 +24,10 @@ const auth = getAuth(app);
 
 // Providers
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+  display: 'popup'
+});
 const appleProvider = new OAuthProvider('apple.com');
 
 // Elements
