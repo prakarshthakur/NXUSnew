@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
     <script src="analytics.js" defer></script>
-    <meta name="description" content="NXUS - Parties. For Everyone.">
-    <title>NXUS | Parties. For Everyone.</title>
+    <meta name="description" content="NXUS - Fun. For Everyone.">
+    <title>NXUS | Fun. For Everyone.</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         /* ===== Login Page Overrides ===== */
@@ -452,7 +452,7 @@
             <button type="button" class="glass-icon-btn" id="infoBtn" style="top: 1rem; right: 1rem;">i</button>
 
             <h1 class="login-hero">NXUS</h1>
-            <p class="login-tagline">find your next party ✨</p>
+            <p class="login-tagline">ebay for fun.</p>
 
             <div class="glass-tabs" id="authTabs">
                 <button type="button" class="glass-tab active" onclick="switchAuthMode('login')">log in</button>
@@ -522,13 +522,13 @@
             tabs.forEach(tab => tab.classList.remove('active'));
             
             if (mode === 'login') {
-                subtitle.innerHTML = 'find your next party ✨';
+                subtitle.innerHTML = 'ebay for fun.';
                 nameGroup.style.display = 'none';
                 nameInput.removeAttribute('required');
                 submitBtn.innerText = "let's go →";
                 tabs[0].classList.add('active');
             } else {
-                subtitle.innerHTML = 'join the movement 🚀';
+                subtitle.innerHTML = 'ebay for fun.';
                 nameGroup.style.display = 'flex';
                 nameInput.setAttribute('required', 'true');
                 submitBtn.innerText = "create account →";

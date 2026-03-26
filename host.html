@@ -418,14 +418,14 @@
     <div class="content-wrapper">
         <div class="host-page">
             <div class="host-header">
-                <h1 class="host-title">host a party</h1>
-                <p class="host-subtitle">list your event for people to discover</p>
+                <h1 class="host-title">host fun</h1>
+                <p class="host-subtitle">list your fun for people to discover</p>
             </div>
 
             <div class="glass-form">
                 <form class="form-grid" id="hostForm">
                     <div class="form-group">
-                        <label class="form-label">party name</label>
+                        <label class="form-label">fun name</label>
                         <input type="text" class="glass-input" id="partyName" placeholder="e.g. Rooftop Rave" required>
                     </div>
 
@@ -467,12 +467,12 @@
                         <textarea class="glass-input glass-textarea" id="partyDesc" placeholder="what should people know? dress code, what to bring, vibe check..." required></textarea>
                     </div>
 
-                    <button type="submit" class="submit-btn">publish party 🚀</button>
+                    <button type="submit" class="submit-btn">publish fun 🚀</button>
                 </form>
             </div>
 
             <div class="section-divider">
-                <span>your parties</span>
+                <span>your fun</span>
             </div>
 
             <div class="hosted-list" id="hostedList">
@@ -528,7 +528,7 @@
                 p1.textContent = '🎉';
 
                 const h = document.createElement('h3');
-                h.textContent = 'no parties yet';
+                h.textContent = 'no fun yet';
 
                 const p2 = document.createElement('p');
                 p2.textContent = "create one above and it'll show up on people's feeds";
@@ -638,7 +638,7 @@
             parties.splice(index, 1);
             saveHostedParties(parties);
             renderHosted();
-            showToast('party removed 👋');
+            showToast('fun removed 👋');
         }
 
         // Form submit
@@ -681,7 +681,7 @@
 
             e.target.reset();
             renderHosted();
-            showToast('party published! 🎉');
+            showToast('fun published! 🎉');
 
             // Scroll to the list
             document.querySelector('.section-divider').scrollIntoView({ behavior: 'smooth' });

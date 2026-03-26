@@ -350,8 +350,8 @@
     <div class="content-wrapper">
         <div class="likes-page">
             <div class="likes-header">
-                <h1 class="likes-title">my parties</h1>
-                <p class="likes-subtitle">parties you've liked</p>
+                <h1 class="likes-title">my fun</h1>
+                <p class="likes-subtitle">fun you've liked</p>
             </div>
 
             <div class="status-tabs" id="statusTabs">
@@ -408,12 +408,12 @@
                 pEmoji.textContent = safeFilter === 'all' ? '💤' : statusEmoji[safeFilter];
 
                 const h = document.createElement('h3');
-                h.textContent = safeFilter === 'all' ? 'no liked parties yet' : 'nothing here';
+                h.textContent = safeFilter === 'all' ? 'no liked fun yet' : 'nothing here';
 
                 const pMsg = document.createElement('p');
                 pMsg.textContent = safeFilter === 'all'
                     ? 'head to the feed and swipe left on something fire'
-                    : 'no parties with this status right now';
+                    : 'no fun with this status right now';
 
                 empty.appendChild(pEmoji);
                 empty.appendChild(h);
@@ -423,7 +423,7 @@
                     const a = document.createElement('a');
                     a.href = 'feed.html';
                     a.className = 'explore-btn';
-                    a.textContent = 'explore parties →';
+                    a.textContent = 'explore fun →';
                     empty.appendChild(a);
                 }
 
