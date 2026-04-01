@@ -435,6 +435,16 @@
             }
         }
     </style>
+    <style>
+        body { background: #000000 !important; }
+        .river-bg, .river-bg::before, .river-bg::after, .old-river-bg-before { display: none !important; }
+        .party-card, .detail-card, .glass-form, .liquid-glass, .hosted-card, .modal-glass, .empty-state, .glass-panel, .login-panel {
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(40px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        }
+    </style>
 </head>
 <body class="login-page">
     <!-- COMING SOON SCREEN -->
