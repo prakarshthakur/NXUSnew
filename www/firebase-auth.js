@@ -11,7 +11,7 @@ import {
 // Your Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
-  authDomain: "nxus-f0954.firebaseapp.com",
+    authDomain: "nxus-f0954.firebaseapp.com",
   projectId: "nxus-f0954",
   storageBucket: "nxus-f0954.firebasestorage.app",
   messagingSenderId: "419494261103",
@@ -24,20 +24,20 @@ const auth = getAuth(app);
 
 // Providers
 const googleProvider = new GoogleAuthProvider();
-const appleProvider = new OAuthProvider('apple.com');
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+  display: 'popup'
+});
 
 // Elements
 const authForm = document.getElementById('authForm');
 const googleSignInBtn = document.getElementById('googleSignInBtn');
-const appleSignInBtn = document.getElementById('appleSignInBtn');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const nameInput = document.getElementById('name');
-const subtitleText = document.getElementById('subtitleText');
-
 // Determine if we are logging in or signing up based on the active tab UI state
 function isSignupMode() {
-    return subtitleText.innerHTML === 'Create Account';
+    return document.getElementById('nameGroup').style.display !== 'none';
 }
 
 function handleSuccess(userCredential) {
@@ -82,16 +82,6 @@ authForm.addEventListener('submit', async (e) => {
 googleSignInBtn.addEventListener('click', async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
-        handleSuccess(result);
-    } catch (error) {
-        handleError(error);
-    }
-});
-
-// Apple Login
-appleSignInBtn.addEventListener('click', async () => {
-    try {
-        const result = await signInWithPopup(auth, appleProvider);
         handleSuccess(result);
     } catch (error) {
         handleError(error);
