@@ -161,9 +161,14 @@
             align-items: center;
             padding: 0.9rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-decoration: none;
         }
 
         .settings-item:last-child { border-bottom: none; }
+
+        a.settings-item { cursor: pointer; }
+        a.settings-item:hover .settings-item-label, 
+        a.settings-item:hover .settings-item-value { color: #fff; transition: color 0.3s ease; }
 
         .settings-item-label {
             font-family: 'Space Mono', monospace;
@@ -263,6 +268,18 @@
                     <span class="settings-item-label">platform</span>
                     <span class="settings-item-value">nxus web</span>
                 </div>
+            </div>
+
+            <div class="glass-section">
+                <p class="section-label">legal</p>
+                <a href="privacy-policy.html" class="settings-item">
+                    <span class="settings-item-label">privacy policy</span>
+                    <span class="settings-item-value">view ↗</span>
+                </a>
+                <a href="terms-of-service.html" class="settings-item">
+                    <span class="settings-item-label">terms of service</span>
+                    <span class="settings-item-value">view ↗</span>
+                </a>
             </div>
 
             <button class="btn-signout" id="logoutBtn">sign out</button>

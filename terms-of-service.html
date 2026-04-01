@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
+    <script src="analytics.js" defer></script>
+    <title>NXUS | Terms of Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: #000000; overflow-x: hidden; }
+
+        .river-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(255, 0, 0, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(255, 0, 0, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(255, 0, 0, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(255, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(255, 0, 0, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #000000 0%, #000000 30%, #000000 60%, #000000 100%);
+        }
+
+        .river-bg::before, .river-bg::after { display: none; }
+        .old-river-bg-before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(255, 0, 0, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        /* Nav */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .feed-nav * { pointer-events: auto; }
+
+        .nav-btn {
+            background: rgba(255, 0, 0, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 0, 0, 0.7);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff0000;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            padding-top: 6rem;
+            padding-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Settings container */
+        .settings-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2.2rem, 6vw, 3rem);
+            color: #ff0000;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        .settings-subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255, 0, 0, 0.3);
+            letter-spacing: 0.08em;
+        }
+
+        /* Glass section */
+        .glass-section {
+            position: relative;
+            background: rgba(255, 0, 0, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 0, 0, 0.12);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .glass-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .glass-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 20px;
+            background:
+                linear-gradient(to bottom, rgba(255, 0, 0, 0.06) 0%, transparent 12%),
+                linear-gradient(to top, rgba(255, 0, 0, 0.04) 0%, transparent 12%);
+            pointer-events: none;
+        }
+
+        .glass-section > * { position: relative; z-index: 1; }
+
+        .document-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            color: #ff0000;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        
+        .document-title:first-child {
+            margin-top: 0;
+        }
+
+        .document-text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .document-text strong {
+            color: #ff0000;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .feed-nav { padding: 1rem; }
+            .settings-container { max-width: 92%; gap: 1rem; }
+            .glass-section { padding: 1.4rem; border-radius: 18px; }
+        }
+    </style>
+    <style>
+        body { background: #000000 !important; }
+        .river-bg, .river-bg::before, .river-bg::after, .old-river-bg-before { display: none !important; }
+        .glass-section {
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(40px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="river-bg"></div>
+    
+    <div class="feed-nav">
+        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;cursor:pointer;" onclick="window.location.href='settings.html'">
+        <button class="nav-btn" onclick="window.location.href='settings.html'">← back</button>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="settings-title">terms of service</h1>
+                <p class="settings-subtitle">usage · legal</p>
+            </div>
+
+            <div class="glass-section">
+                <h2 class="document-title">1. Agreement to Terms</h2>
+                <p class="document-text">
+                    By viewing or using this website, you are agreeing to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
+                </p>
+
+                <h2 class="document-title">2. Use License</h2>
+                <p class="document-text">
+                    Permission is granted to temporarily view the materials on NXUS's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not modify or copy the materials.
+                </p>
+
+                <h2 class="document-title">3. User Conduct</h2>
+                <p class="document-text">
+                    As a user of the Services, you agree not to use the Services in a way that violates any applicable national or international law, regulation, or guideline. You agree to be completely accountable for your hosted events and your interactions with other platform users.
+                </p>
+
+                <h2 class="document-title">4. Termination</h2>
+                <p class="document-text">
+                    We may terminate or suspend your access immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach these Terms of Service.
+                </p>
+
+                <h2 class="document-title">5. Disclaimer</h2>
+                <p class="document-text">
+                    The materials on NXUS's website are provided on an 'as is' basis. NXUS makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
