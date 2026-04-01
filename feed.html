@@ -57,7 +57,7 @@
         .feed-nav * { pointer-events: auto; }
 
         .nav-logo {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 1.6rem;
             color: #ff0000;
             letter-spacing: 0.1em;
@@ -71,7 +71,7 @@
             border: 1px solid rgba(255, 0, 0, 0.1);
             border-radius: 50px;
             color: rgba(255, 0, 0, 0.7);
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.8rem;
             padding: 0.5rem 1.2rem;
             cursor: pointer;
@@ -94,14 +94,14 @@
         }
 
         .feed-title {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 1.4rem;
             color: rgba(255, 0, 0, 0.35);
             letter-spacing: 0.15em;
         }
 
         .feed-subtitle {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.75rem;
             color: rgba(255, 0, 0, 0.25);
             letter-spacing: 0.08em;
@@ -167,7 +167,7 @@
         .party-card:active { cursor: grabbing; }
 
         .card-title {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: clamp(1.8rem, 5vw, 2.5rem);
             color: #ff0000;
             margin-bottom: 0.3rem;
@@ -177,7 +177,7 @@
         }
 
         .card-time {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             color: var(--accent);
             margin-bottom: 1rem;
             font-size: 0.8rem;
@@ -199,11 +199,11 @@
 
         .card-meta span {
             font-size: 0.78rem;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
         }
 
         .card-desc {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 1rem;
             line-height: 1.6;
             color: rgba(255, 0, 0, 0.7);
@@ -216,7 +216,7 @@
             font-size: 0.78rem;
             color: rgba(255,0,0,0.3);
             letter-spacing: 0.05em;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             position: relative;
             z-index: 1;
         }
@@ -225,7 +225,7 @@
 
         .hint {
             position: absolute;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 1.8rem;
             font-weight: bold;
             padding: 0.5rem 1.5rem;
@@ -338,7 +338,7 @@
         }
 
         .detail-title {
-            font-family: 'Share Tech Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: clamp(1.8rem, 5vw, 2.4rem);
             color: #ff0000;
             line-height: 1.1;
@@ -346,7 +346,7 @@
         }
 
         .detail-time {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             color: var(--accent);
             font-size: 0.8rem;
             letter-spacing: 0.1em;
@@ -357,7 +357,7 @@
             gap: 1rem;
             flex-wrap: wrap;
             margin-top: 1rem;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.78rem;
         }
 
@@ -366,7 +366,7 @@
         }
 
         .detail-desc {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.95rem;
             line-height: 1.7;
             color: rgba(255,0,0,0.7);
@@ -374,7 +374,7 @@
         }
 
         .detail-host {
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.8rem;
             color: rgba(255,0,0,0.3);
             margin-bottom: 1.5rem;
@@ -413,7 +413,7 @@
             gap: 8px;
             padding: 0.9rem;
             border-radius: 14px;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.9rem;
             font-weight: 700;
             letter-spacing: 0.05em;
@@ -463,7 +463,7 @@
         .tap-hint {
             position: absolute;
             bottom: 1.2rem; right: 1.5rem;
-            font-family: 'Space Mono', monospace;
+            font-family: 'Oswald', sans-serif;
             font-size: 0.7rem;
             color: rgba(255,0,0,0.2);
             letter-spacing: 0.05em;
@@ -506,7 +506,7 @@
     <div class="river-bg"></div>
     
     <div class="feed-nav">
-        <span class="nav-logo">NXUS</span>
+        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;" onclick="window.location.href='feed.html'" style="cursor:pointer;">
         <div style="display: flex; gap: 0.6rem;">
             <button class="nav-btn" onclick="window.location.href='likes.html'">❤ my fun</button>
             <button class="nav-btn" onclick="window.location.href='settings.html'">⚙</button>
@@ -638,8 +638,8 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <p style="font-size: 2rem;">🫠</p>
-                        <h2 style="font-family: 'Share Tech Mono', monospace; font-size: 1.6rem; color: #ff0000; margin-top: 0.5rem;">that's all for now</h2>
-                        <p style="color: rgba(255,0,0,0.4); font-family: 'Space Mono', monospace; font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
+                        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: #ff0000; margin-top: 0.5rem;">that's all for now</h2>
+                        <p style="color: rgba(255,0,0,0.4); font-family: 'Oswald', sans-serif; font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
                     </div>`;
                 return;
             }

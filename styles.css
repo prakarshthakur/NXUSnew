@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap');
 
 :root {
     --bg-color: #000000;
@@ -18,7 +18,7 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
     display: flex;
@@ -68,7 +68,7 @@ body {
 
 /* Forensic Interface Logo */
 .logo-text {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: clamp(5rem, 12vw, 9rem);
     font-weight: 400;
     letter-spacing: 0.15em;
@@ -79,7 +79,7 @@ body {
 }
 
 .subtitle {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: clamp(1rem, 2.5vw, 1.3rem);
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -101,7 +101,7 @@ body {
     border: 1px solid #ff0000;
     border-bottom: 2px solid var(--accent);
     color: #ff0000;
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 1.3rem;
     font-weight: 400;
     letter-spacing: 0.2em;
@@ -166,7 +166,7 @@ body {
 }
 
 .input-label {
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.85rem;
     color: #ff0000;
     text-transform: uppercase;
@@ -178,7 +178,7 @@ body {
     border: 1px solid #ff0000;
     border-radius: 0;
     color: #ff0000;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 1rem;
     padding: 0.8rem 1rem;
     outline: none;
@@ -211,7 +211,7 @@ body {
     background: transparent;
     border: none;
     color: rgba(255, 0, 0, 0.5);
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.95rem;
     letter-spacing: 0.1em;
     cursor: pointer;
@@ -259,7 +259,7 @@ body {
 
 .social-login-divider span {
     padding: 0 10px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
 }
 
 .social-buttons {
@@ -276,7 +276,7 @@ body {
     background: #000000;
     border: 1px solid #ff0000;
     color: #ff0000;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.95rem;
     padding: 0.8rem;
     border-radius: 0;
@@ -317,7 +317,7 @@ body {
     border: 1px solid #ff0000;
     border-radius: 0;
     color: #ff0000;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Oswald', sans-serif;
     font-size: 0.85rem;
     text-transform: lowercase;
     box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
