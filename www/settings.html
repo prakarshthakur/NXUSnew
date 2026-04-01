@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
+    <script src="analytics.js" defer></script>
+    <title>NXUS | Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: #0a0e1a; overflow-x: hidden; }
+
+        .river-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(30, 58, 138, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(234, 88, 12, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(30, 64, 175, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(217, 119, 6, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #0a0e1a 0%, #0f172a 30%, #1a0f0a 60%, #0d1321 100%);
+        }
+
+        .river-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(30, 64, 175, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(234, 88, 12, 0.2) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        .river-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(5, 8, 15, 0.7) 100%);
+        }
+
+        /* Nav */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(10, 14, 26, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .feed-nav * { pointer-events: auto; }
+
+        .nav-logo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.6rem;
+            color: #fff;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        /* Settings container */
+        .settings-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(2.2rem, 6vw, 3rem);
+            color: #fff;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+
+        .settings-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.08em;
+        }
+
+        /* Glass section */
+        .glass-section {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1.8rem;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .glass-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .glass-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 20px;
+            background:
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 0%, transparent 12%),
+                linear-gradient(to top, rgba(59, 130, 246, 0.04) 0%, transparent 12%);
+            pointer-events: none;
+        }
+
+        .glass-section > * { position: relative; z-index: 1; }
+
+        .section-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.35);
+            text-transform: lowercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 1.2rem;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .settings-item:last-child { border-bottom: none; }
+
+        .settings-item-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .settings-item-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Danger button */
+        .btn-signout {
+            position: relative;
+            background: rgba(239, 68, 68, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 14px;
+            color: #fca5a5;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            padding: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .btn-signout::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
+        }
+
+        .btn-signout:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-signout:active { transform: translateY(1px); }
+
+        @media (max-width: 768px) {
+            .feed-nav { padding: 1rem; }
+            .settings-container { max-width: 92%; gap: 1rem; }
+            .glass-section { padding: 1.4rem; border-radius: 18px; }
+            .settings-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+                padding: 0.7rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="river-bg"></div>
+    
+    <div class="feed-nav">
+        <span class="nav-logo" onclick="window.location.href='feed.html'">NXUS</span>
+        <button class="nav-btn" onclick="window.location.href='feed.html'">← back</button>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="settings-title">settings</h1>
+                <p class="settings-subtitle">account · preferences</p>
+            </div>
+
+            <div class="glass-section">
+                <p class="section-label">account</p>
+                <div class="settings-item">
+                    <span class="settings-item-label">email</span>
+                    <span class="settings-item-value" id="userEmail">loading...</span>
+                </div>
+                <div class="settings-item">
+                    <span class="settings-item-label">member since</span>
+                    <span class="settings-item-value" id="memberSince">—</span>
+                </div>
+            </div>
+
+            <div class="glass-section">
+                <p class="section-label">app</p>
+                <div class="settings-item">
+                    <span class="settings-item-label">version</span>
+                    <span class="settings-item-value">0.1.0 alpha</span>
+                </div>
+                <div class="settings-item">
+                    <span class="settings-item-label">platform</span>
+                    <span class="settings-item-value">nxus web</span>
+                </div>
+            </div>
+
+            <button class="btn-signout" id="logoutBtn">sign out</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
+            authDomain: "nxus-f0954.firebaseapp.com",
+            projectId: "nxus-f0954",
+            storageBucket: "nxus-f0954.firebasestorage.app",
+            messagingSenderId: "419494261103",
+            appId: "1:419494261103:web:6c90fc72db49c125ccb89a",
+            measurementId: "G-WSB27VYN43"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('userEmail').textContent = user.email || 'social login';
+                const created = user.metadata.creationTime;
+                if (created) {
+                    const d = new Date(created);
+                    document.getElementById('memberSince').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Sign out error", error);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #050a12; /* Brighter, very dark navy blue */
+    --text-color: #d1d5db; /* Softer white for tech vibe */
+    --glass-bg: rgba(20, 30, 50, 0.4); /* Tactical glass */
+    --glass-border: rgba(100, 150, 255, 0.2); 
+    --glass-shadow: 0 15px 35px 0 rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(59, 130, 246, 0.15); /* Subtly blue inner glow */
+    --accent: #ea580c; /* Corroded orange */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 1rem;
+}
+
+/* Tactical IO Liquid Glass Effect */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 12px; /* Less rounded for a tactical interface */
+    padding: 5rem 6rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glass reflective highlight - looks like scanner light */
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transform: skewX(-20deg);
+    animation: glassGlint 6s infinite;
+}
+
+@keyframes glassGlint {
+    0% { left: -100%; }
+    50% { left: 200%; }
+    100% { left: 200%; }
+}
+
+/* Forensic Interface Logo */
+.logo-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(5rem, 12vw, 9rem);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    line-height: 1;
+    margin-right: -0.15em; 
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.2);
+}
+
+.subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: #93c5fd; /* Soft blue */
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+
+.subtitle::before, .subtitle::after {
+    content: '//';
+    margin: 0 15px;
+    color: var(--accent); /* Corroded orange */
+    opacity: 0.7;
+}
+
+/* Redacta Tactical Button */
+.btn-redacta {
+    background: rgba(30, 58, 138, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    border-bottom: 2px solid var(--accent); /* Tactical underline */
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 4rem;
+    border-radius: 4px; /* Hard edges */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+.btn-redacta:hover {
+    background: rgba(30, 58, 138, 0.6);
+    border-color: rgba(147, 197, 253, 0.7);
+    border-bottom: 2px solid #fdba74;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(30,58,138,0.4), inset 0 0 15px rgba(147, 197, 253, 0.3);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.btn-redacta:active {
+    transform: translateY(1px);
+}
+
+.footer {
+    position: relative;
+    width: 100%;
+    z-index: 2;
+    text-align: center;
+    padding: 2.5rem;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #64748b;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+/* Form Elements for Login */
+.login-panel {
+    padding: 3.5rem 4rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.login-logo {
+    font-size: clamp(3rem, 8vw, 5rem);
+    margin-bottom: -1rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.5rem;
+}
+
+.input-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+}
+
+.tactical-input {
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 4px;
+    color: #ffffff;
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.tactical-input:focus {
+    border-color: var(--accent);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(234, 88, 12, 0.2);
+    background: rgba(15, 25, 45, 0.8);
+}
+
+.tactical-input::placeholder {
+    color: #475569;
+}
+
+.btn-submit {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Auth Tabs */
+.auth-tabs {
+    margin-bottom: 0.5rem;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tab-btn:hover {
+    color: #94a3b8;
+}
+
+.tab-btn.active {
+    color: #93c5fd;
+    font-weight: bold;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 10%; right: 10%;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* Social Login Elements */
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0.5rem 0;
+    color: #475569;
+    font-size: 0.8rem;
+}
+
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(147, 197, 253, 0.2);
+}
+
+.social-login-divider span {
+    padding: 0 10px;
+    font-family: 'Space Mono', monospace;
+}
+
+.social-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    color: #f8fafc;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    padding: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-social:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(147, 197, 253, 0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Tooltip Styles */
+[data-tooltip] {
+    position: relative;
+    overflow: visible;
+}
+
+[data-tooltip]::before,
+[data-tooltip]::after {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    z-index: 100;
+}
+
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    bottom: -150%;
+    right: 0;
+    width: max-content;
+    padding: 0.6rem 1.2rem;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    border-radius: 6px;
+    color: #f8fafc;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    text-transform: lowercase;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    transform: translateY(-10px);
+}
+
+[data-tooltip]::after {
+    content: '';
+    bottom: -20%;
+    right: 25px;
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent rgba(15, 23, 42, 0.95) transparent;
+    transform: translateY(-10px);
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Vignette / Monitor Edge Blend */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: radial-gradient(circle at center, transparent 40%, #03060c 120%);
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .redacta-desktop {
+        display: none !important;
+    }
+
+    .redacta-mobile {
+        display: flex !important;
+    }
+
+    .glass-panel {
+        padding: 3rem 2rem;
+        gap: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .login-panel {
+        padding: 2.5rem 1.5rem;
+        max-width: 95%;
+    }
+
+    .logo-text {
+        font-size: clamp(3.5rem, 14vw, 5rem);
+    }
+
+    .login-logo {
+        font-size: clamp(2.5rem, 10vw, 4rem);
+    }
+
+    .subtitle {
+        font-size: clamp(0.75rem, 2.5vw, 1rem);
+        margin-bottom: 1rem;
+    }
+
+    .subtitle::before, .subtitle::after {
+        margin: 0 8px;
+    }
+
+    .btn-redacta {
+        font-size: 1rem;
+        padding: 0.8rem 2rem;
+        letter-spacing: 0.15em;
+    }
+
+    .btn-submit {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+
+    .tactical-input {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.9rem;
+    }
+
+    .input-label {
+        font-size: 0.8rem;
+    }
+
+    .tab-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .btn-social {
+        font-size: 0.85rem;
+        padding: 0.7rem;
+        gap: 8px;
+    }
+
+    .footer {
+        padding: 1.5rem;
+        font-size: 0.7rem;
+    }
+
+    .content-wrapper {
+        padding: 1rem 0.75rem;
+    }
+
+    /* Hide tooltip on mobile (no hover) */
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+        display: none;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-panel {
+        padding: 2rem 1.2rem;
+    }
+
+    .logo-text {
+        font-size: clamp(3rem, 16vw, 4rem);
+    }
+
+    .login-logo {
+        font-size: clamp(2rem, 12vw, 3rem);
+    }
+
+    .subtitle {
+        font-size: 0.7rem;
+    }
+
+    .btn-redacta {
+        font-size: 0.9rem;
+        padding: 0.7rem 1.5rem;
+    }
+}

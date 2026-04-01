@@ -6,13 +6,16 @@
     <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
     <script src="analytics.js" defer></script>
     <meta name="description" content="NXUS - Fun. For Everyone.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <title>NXUS | Fun. For Everyone.</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         /* ===== Login Page Overrides ===== */
         body.login-page {
-            background: #0a0e1a;
+            background: #000000;
             overflow-x: hidden;
+            color: #ff0000;
         }
 
         /* Static river background */
@@ -21,49 +24,21 @@
             top: 0; left: 0;
             width: 100vw; height: 100vh;
             z-index: 0;
-            background: 
-                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(30, 58, 138, 0.5) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(234, 88, 12, 0.3) 0%, transparent 60%),
-                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 80%),
-                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(30, 64, 175, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(217, 119, 6, 0.25) 0%, transparent 55%),
-                radial-gradient(ellipse 100% 100% at 50% 100%, rgba(30, 58, 138, 0.3) 0%, transparent 60%),
-                linear-gradient(160deg, #0a0e1a 0%, #0f172a 30%, #1a0f0a 60%, #0d1321 100%);
+            background: #000000;
         }
 
-        /* Flowing river veins */
-        .river-bg::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(30, 64, 175, 0.35) 0%, transparent 70%),
-                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(234, 88, 12, 0.2) 0%, transparent 60%),
-                radial-gradient(ellipse 80% 10% at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
-            filter: blur(30px);
+        .river-bg::before, .river-bg::after {
+            display: none;
         }
 
-        .river-bg::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, transparent 30%, rgba(5, 8, 15, 0.7) 100%);
-        }
-
-        /* ===== iOS Liquid Glass ===== */
+        /* ===== Red Glass ===== */
         .liquid-glass {
             position: relative;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 28px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
             padding: 3rem 2.5rem;
-            box-shadow:
-                0 0 0 0.5px rgba(255, 255, 255, 0.1) inset,
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                0 2px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
             width: 100%;
             max-width: 440px;
             text-align: center;
@@ -73,30 +48,8 @@
             gap: 1.2rem;
         }
 
-        /* Refraction highlight — top edge bulge */
-        .liquid-glass::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 5%; right: 5%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4), transparent);
-            border-radius: 50%;
-            filter: blur(0.5px);
-        }
-
-        /* Edge refraction glow — bottom and sides */
-        .liquid-glass::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0; top: 0;
-            border-radius: 28px;
-            background: 
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 0%, transparent 15%),
-                linear-gradient(to top, rgba(59, 130, 246, 0.06) 0%, transparent 15%),
-                linear-gradient(to right, rgba(234, 88, 12, 0.04) 0%, transparent 10%),
-                linear-gradient(to left, rgba(59, 130, 246, 0.04) 0%, transparent 10%);
-            pointer-events: none;
-            z-index: 0;
+        .liquid-glass::before, .liquid-glass::after {
+            display: none;
         }
 
         .liquid-glass > * {
@@ -106,39 +59,33 @@
 
         /* Glass input */
         .glass-input {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            color: #ffffff;
+            background: #000000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
+            color: #ff0000;
             font-family: 'Space Mono', monospace;
             font-size: 0.95rem;
             padding: 0.85rem 1.1rem;
             outline: none;
             transition: all 0.3s ease;
             width: 100%;
-            box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.05) inset;
         }
 
         .glass-input:focus {
-            border-color: rgba(234, 88, 12, 0.5);
-            background: rgba(255, 255, 255, 0.09);
-            box-shadow: 0 0 20px rgba(234, 88, 12, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
+            background: rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 10px #ff0000;
         }
 
         .glass-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 0, 0, 0.5);
         }
 
         /* Glass button */
         .glass-btn {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 14px;
-            color: #fff;
+            background: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
+            color: #000000;
             font-family: 'Space Mono', monospace;
             font-size: 1rem;
             font-weight: 700;
@@ -149,24 +96,13 @@
             width: 100%;
             position: relative;
             overflow: hidden;
-        }
-
-        .glass-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 5%; right: 5%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            text-transform: uppercase;
         }
 
         .glass-btn:hover {
-            background: rgba(255, 255, 255, 0.16);
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-
-        .glass-btn:active {
-            transform: translateY(1px);
+            background: #cc0000;
+            box-shadow: 0 0 20px #ff0000;
+            color: #000000;
         }
 
         /* Glass social button */
@@ -175,34 +111,31 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            color: rgba(255, 255, 255, 0.8);
+            background: #000000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
+            color: #ff0000;
             font-family: 'Space Mono', monospace;
             font-size: 0.9rem;
             padding: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            text-transform: uppercase;
         }
 
         .glass-social:hover {
-            background: rgba(255, 255, 255, 0.09);
-            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 10px #ff0000;
         }
 
         /* Glass icon button */
         .glass-icon-btn {
             position: absolute;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000000;
+            border: 1px solid #ff0000;
             width: 34px; height: 34px;
-            border-radius: 50%;
+            border-radius: 0;
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 10;
@@ -211,22 +144,22 @@
             justify-content: center;
             font-family: 'Space Mono', monospace;
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: #ff0000;
         }
 
         .glass-icon-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: #ff0000;
+            color: #000000;
+            box-shadow: 0 0 10px #ff0000;
         }
 
         /* Tabs */
         .glass-tabs {
             display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 4px;
-            gap: 4px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            padding: 0;
+            gap: 0;
             width: 100%;
         }
 
@@ -234,21 +167,27 @@
             flex: 1;
             background: transparent;
             border: none;
-            color: rgba(255, 255, 255, 0.4);
+            border-right: 1px solid #ff0000;
+            color: rgba(255, 0, 0, 0.5);
             font-family: 'Space Mono', monospace;
             font-size: 0.85rem;
             letter-spacing: 0.08em;
             padding: 0.6rem;
             cursor: pointer;
-            border-radius: 10px;
             transition: all 0.3s ease;
             outline: none;
+            border-radius: 0;
+            text-transform: uppercase;
+        }
+
+        .glass-tab:last-child {
+            border-right: none;
         }
 
         .glass-tab.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            background: #ff0000;
+            color: #000000;
+            font-weight: bold;
         }
 
         /* Divider */
@@ -256,7 +195,7 @@
             display: flex;
             align-items: center;
             width: 100%;
-            color: rgba(255, 255, 255, 0.2);
+            color: #ff0000;
             font-size: 0.75rem;
             letter-spacing: 0.1em;
         }
@@ -265,7 +204,7 @@
         .glass-divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid #ff0000;
         }
 
         .glass-divider span {
@@ -277,10 +216,11 @@
         .glass-label {
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.4);
+            color: #ff0000;
             text-align: left;
             width: 100%;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         /* Logo on login */
@@ -289,17 +229,19 @@
             font-size: clamp(3.5rem, 10vw, 5rem);
             font-weight: 400;
             letter-spacing: 0.15em;
-            color: #ffffff;
+            color: #ff0000;
             line-height: 1;
             margin-right: -0.15em;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
         }
 
         .login-tagline {
             font-family: 'Space Mono', monospace;
             font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.4);
+            color: #ff0000;
             letter-spacing: 0.08em;
             margin-top: -0.5rem;
+            text-transform: uppercase;
         }
 
         /* Form wrapper */
@@ -326,23 +268,23 @@
         }
 
         .nav-pill button {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            color: rgba(255, 255, 255, 0.7);
+            background: #000000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
+            color: #ff0000;
             font-family: 'Space Mono', monospace;
             font-size: 0.85rem;
             padding: 0.5rem 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         .nav-pill button:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            background: #ff0000;
+            color: #000000;
+            box-shadow: 0 0 10px #ff0000;
         }
 
         /* Footer override */
@@ -352,9 +294,10 @@
             text-align: center;
             padding: 2rem;
             font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 0, 0, 0.6);
             letter-spacing: 0.15em;
             font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
         }
 
         /* Modal override */
@@ -363,20 +306,16 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: rgba(5, 8, 15, 0.8);
+            background: #000000;
             z-index: 100;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
         }
 
         .modal-glass {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
             padding: 2.5rem;
             max-width: 380px;
             text-align: center;
@@ -386,20 +325,74 @@
             gap: 1rem;
             animation: modalIn 0.3s ease;
             position: relative;
-            overflow: hidden;
-        }
-
-        .modal-glass::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 10%; right: 10%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            box-shadow: 0 0 20px #ff0000;
         }
 
         @keyframes modalIn {
             from { transform: scale(0.92) translateY(10px); opacity: 0; }
             to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* Coming Soon Screen */
+        #comingSoonScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coming-soon-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: #ff0000;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 15px #ff0000;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+            100% { text-shadow: 0 0 35px rgba(255, 0, 0, 1); }
+        }
+
+        .coming-soon-form {
+            position: absolute;
+            bottom: 3rem;
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 20px;
+        }
+
+        .coming-soon-form input {
+            background: #000000;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            padding: 0.8rem;
+            text-align: center;
+            outline: none;
+            border-radius: 0;
+        }
+
+        .coming-soon-form input:focus {
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        .coming-soon-form input::placeholder {
+            color: rgba(255, 0, 0, 0.3);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
         }
 
         /* Mobile */
@@ -410,7 +403,7 @@
             .liquid-glass {
                 max-width: 92%;
                 padding: 2.5rem 1.5rem;
-                border-radius: 24px;
+                border-radius: 0;
             }
 
             .login-hero {
@@ -429,17 +422,29 @@
                 max-width: 85%;
                 padding: 2rem 1.5rem;
             }
+
+            .coming-soon-title {
+                font-size: clamp(2.5rem, 12vw, 4rem);
+            }
         }
 
         @media (max-width: 400px) {
             .liquid-glass {
                 padding: 2rem 1.2rem;
-                border-radius: 20px;
+                border-radius: 0;
             }
         }
     </style>
 </head>
 <body class="login-page">
+    <!-- COMING SOON SCREEN -->
+    <div id="comingSoonScreen">
+        <h1 class="coming-soon-title">Coming Soon</h1>
+        <form id="unlockForm" class="coming-soon-form">
+            <input type="password" id="unlockCode" placeholder="Enter Access Code">
+        </form>
+    </div>
+
     <div class="river-bg"></div>
     
     <div class="nav-pill redacta-desktop">
@@ -483,12 +488,10 @@
 
                 <div style="display: flex; flex-direction: column; gap: 0.6rem; width: 100%;">
                     <button type="button" class="glass-social" id="googleSignInBtn">
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="18">
-                        continue with google
+                        [ Google ]
                     </button>
                     <button type="button" class="glass-social" id="appleSignInBtn">
-                        <img src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" style="filter: invert(1);" width="18">
-                        continue with apple
+                        [ Apple ]
                     </button>
                 </div>
             </form>
@@ -545,6 +548,27 @@
                 document.getElementById('infoModal').style.display = 'none';
             }
         });
+    </script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").catch(function(err){ console.log("SW registration failed", err); });
+      }
+
+      // Coming Soon Logic
+      document.getElementById('unlockForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const codeInput = document.getElementById('unlockCode');
+          if (codeInput.value === 'MAKEDUBAIGREATAGAIN') {
+              document.getElementById('comingSoonScreen').style.display = 'none';
+          } else {
+              codeInput.value = '';
+              codeInput.placeholder = 'ACCESS DENIED';
+              setTimeout(() => {
+                  codeInput.placeholder = 'Enter Access Code';
+              }, 2000);
+          }
+      });
     </script>
 </body>
 </html>

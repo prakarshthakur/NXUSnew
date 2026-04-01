@@ -8,7 +8,7 @@
     <title>NXUS | Settings</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { background: #0a0e1a; overflow-x: hidden; }
+        body { background: #000000; overflow-x: hidden; }
 
         .river-bg {
             position: fixed;
@@ -16,21 +16,22 @@
             width: 100vw; height: 100vh;
             z-index: 0;
             background:
-                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(30, 58, 138, 0.5) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(234, 88, 12, 0.3) 0%, transparent 60%),
-                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 80%),
-                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(30, 64, 175, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(217, 119, 6, 0.25) 0%, transparent 55%),
-                linear-gradient(160deg, #0a0e1a 0%, #0f172a 30%, #1a0f0a 60%, #0d1321 100%);
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(255, 0, 0, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(255, 0, 0, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(255, 0, 0, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(255, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(255, 0, 0, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #000000 0%, #000000 30%, #000000 60%, #000000 100%);
         }
 
-        .river-bg::before {
+        .river-bg::before, .river-bg::after { display: none; }
+        .old-river-bg-before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background:
-                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(30, 64, 175, 0.35) 0%, transparent 70%),
-                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(234, 88, 12, 0.2) 0%, transparent 60%);
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(255, 0, 0, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
             filter: blur(30px);
         }
 
@@ -38,7 +39,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, transparent 30%, rgba(5, 8, 15, 0.7) 100%);
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
         }
 
         /* Nav */
@@ -49,7 +50,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(10, 14, 26, 0.9), transparent);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
             z-index: 20;
             pointer-events: none;
         }
@@ -58,18 +59,18 @@
         .nav-logo {
             font-family: 'Share Tech Mono', monospace;
             font-size: 1.6rem;
-            color: #fff;
+            color: #ff0000;
             letter-spacing: 0.1em;
             cursor: pointer;
         }
 
         .nav-btn {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 0, 0, 0.06);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.1);
             border-radius: 50px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 0, 0, 0.7);
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
             padding: 0.5rem 1.2rem;
@@ -78,8 +79,8 @@
             letter-spacing: 0.05em;
         }
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff0000;
         }
 
         /* Settings container */
@@ -99,7 +100,7 @@
         .settings-title {
             font-family: 'Share Tech Mono', monospace;
             font-size: clamp(2.2rem, 6vw, 3rem);
-            color: #fff;
+            color: #ff0000;
             letter-spacing: 0.1em;
             margin-bottom: 0.3rem;
         }
@@ -107,17 +108,17 @@
         .settings-subtitle {
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 0, 0, 0.3);
             letter-spacing: 0.08em;
         }
 
         /* Glass section */
         .glass-section {
             position: relative;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 0, 0, 0.05);
             backdrop-filter: blur(40px) saturate(180%);
             -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 0, 0, 0.12);
             border-radius: 20px;
             padding: 1.8rem;
             text-align: left;
@@ -129,7 +130,7 @@
             position: absolute;
             top: 0; left: 8%; right: 8%;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.3), transparent);
             pointer-events: none;
         }
 
@@ -139,8 +140,8 @@
             top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 20px;
             background:
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 0%, transparent 12%),
-                linear-gradient(to top, rgba(59, 130, 246, 0.04) 0%, transparent 12%);
+                linear-gradient(to bottom, rgba(255, 0, 0, 0.06) 0%, transparent 12%),
+                linear-gradient(to top, rgba(255, 0, 0, 0.04) 0%, transparent 12%);
             pointer-events: none;
         }
 
@@ -149,7 +150,7 @@
         .section-label {
             font-family: 'Space Mono', monospace;
             font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.35);
+            color: rgba(255, 0, 0, 0.35);
             text-transform: lowercase;
             letter-spacing: 0.12em;
             margin-bottom: 1.2rem;
@@ -160,7 +161,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.9rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.06);
         }
 
         .settings-item:last-child { border-bottom: none; }
@@ -168,13 +169,13 @@
         .settings-item-label {
             font-family: 'Space Mono', monospace;
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 0, 0, 0.8);
         }
 
         .settings-item-value {
             font-family: 'Space Mono', monospace;
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 0, 0, 0.3);
         }
 
         /* Danger button */
