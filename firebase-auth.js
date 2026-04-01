@@ -5,7 +5,8 @@ import {
     signInWithEmailAndPassword,
     GoogleAuthProvider,
     OAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // Your Firebase project configuration
@@ -21,6 +22,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+// Check if user is already logged in and auto-redirect
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        window.location.href = 'feed.html';
+    }
+});
 
 // Providers
 const googleProvider = new GoogleAuthProvider();
