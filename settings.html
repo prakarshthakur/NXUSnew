@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,17 @@
     <link rel="icon" type="image/png" href="assets/nxus_logo.png">
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { background: #000000; overflow-x: hidden; }
+        body {
+            background: #000000;
+            overflow-x: hidden;
+        }
 
         .river-bg {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
             background:
                 radial-gradient(ellipse 80% 50% at 20% 80%, rgba(255, 0, 0, 0.5) 0%, transparent 70%),
@@ -25,11 +31,18 @@
                 linear-gradient(160deg, #000000 0%, #000000 30%, #000000 60%, #000000 100%);
         }
 
-        .river-bg::before, .river-bg::after { display: none; }
+        .river-bg::before,
+        .river-bg::after {
+            display: none;
+        }
+
         .old-river-bg-before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background:
                 radial-gradient(ellipse 120% 15% at 30% 85%, rgba(255, 0, 0, 0.35) 0%, transparent 70%),
                 radial-gradient(ellipse 100% 12% at 70% 15%, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
@@ -39,14 +52,19 @@
         .river-bg::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
         }
 
         /* Nav */
         .feed-nav {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             padding: 1.2rem 1.5rem;
             display: flex;
             justify-content: space-between;
@@ -55,7 +73,10 @@
             z-index: 20;
             pointer-events: none;
         }
-        .feed-nav * { pointer-events: auto; }
+
+        .feed-nav * {
+            pointer-events: auto;
+        }
 
         .nav-logo {
             font-family: 'Oswald', sans-serif;
@@ -79,6 +100,7 @@
             transition: all 0.3s ease;
             letter-spacing: 0.05em;
         }
+
         .nav-btn:hover {
             background: rgba(255, 0, 0, 0.12);
             color: #ff0000;
@@ -108,8 +130,8 @@
 
         .settings-subtitle {
             font-family: 'Oswald', sans-serif;
-            font-size: 0.8rem;
-            color: rgba(255, 0, 0, 0.3);
+            font-size: 0.85rem;
+            color: rgba(255, 0, 0, 0.6);
             letter-spacing: 0.08em;
         }
 
@@ -129,7 +151,9 @@
         .glass-section::before {
             content: '';
             position: absolute;
-            top: 0; left: 8%; right: 8%;
+            top: 0;
+            left: 8%;
+            right: 8%;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.3), transparent);
             pointer-events: none;
@@ -138,7 +162,10 @@
         .glass-section::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             border-radius: 20px;
             background:
                 linear-gradient(to bottom, rgba(255, 0, 0, 0.06) 0%, transparent 12%),
@@ -146,12 +173,15 @@
             pointer-events: none;
         }
 
-        .glass-section > * { position: relative; z-index: 1; }
+        .glass-section>* {
+            position: relative;
+            z-index: 1;
+        }
 
         .section-label {
             font-family: 'Oswald', sans-serif;
-            font-size: 0.75rem;
-            color: rgba(255, 0, 0, 0.35);
+            font-size: 0.8rem;
+            color: rgba(255, 0, 0, 0.58);
             text-transform: lowercase;
             letter-spacing: 0.12em;
             margin-bottom: 1.2rem;
@@ -166,11 +196,19 @@
             text-decoration: none;
         }
 
-        .settings-item:last-child { border-bottom: none; }
-        
-        a.settings-item { cursor: pointer; }
-        a.settings-item:hover .settings-item-label, 
-        a.settings-item:hover .settings-item-value { color: #ff0000; transition: color 0.3s ease; }
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        a.settings-item {
+            cursor: pointer;
+        }
+
+        a.settings-item:hover .settings-item-label,
+        a.settings-item:hover .settings-item-value {
+            color: #ff0000;
+            transition: color 0.3s ease;
+        }
 
         .settings-item-label {
             font-family: 'Oswald', sans-serif;
@@ -180,8 +218,8 @@
 
         .settings-item-value {
             font-family: 'Oswald', sans-serif;
-            font-size: 0.8rem;
-            color: rgba(255, 0, 0, 0.3);
+            font-size: 0.85rem;
+            color: rgba(255, 0, 0, 0.58);
         }
 
         /* Danger button */
@@ -206,7 +244,9 @@
         .btn-signout::before {
             content: '';
             position: absolute;
-            top: 0; left: 10%; right: 10%;
+            top: 0;
+            left: 10%;
+            right: 10%;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
         }
@@ -218,12 +258,25 @@
             box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
         }
 
-        .btn-signout:active { transform: translateY(1px); }
+        .btn-signout:active {
+            transform: translateY(1px);
+        }
 
         @media (max-width: 768px) {
-            .feed-nav { padding: 1rem; }
-            .settings-container { max-width: 92%; gap: 1rem; }
-            .glass-section { padding: 1.4rem; border-radius: 18px; }
+            .feed-nav {
+                padding: 1rem;
+            }
+
+            .settings-container {
+                max-width: 92%;
+                gap: 1rem;
+            }
+
+            .glass-section {
+                padding: 1.4rem;
+                border-radius: 18px;
+            }
+
             .settings-item {
                 flex-direction: column;
                 align-items: flex-start;
@@ -233,9 +286,26 @@
         }
     </style>
     <style>
-        body { background: #000000 !important; }
-        .river-bg, .river-bg::before, .river-bg::after, .old-river-bg-before { display: none !important; }
-        .party-card, .detail-card, .glass-form, .liquid-glass, .hosted-card, .modal-glass, .empty-state, .glass-panel, .login-panel {
+        body {
+            background: #000000 !important;
+        }
+
+        .river-bg,
+        .river-bg::before,
+        .river-bg::after,
+        .old-river-bg-before {
+            display: none !important;
+        }
+
+        .party-card,
+        .detail-card,
+        .glass-form,
+        .liquid-glass,
+        .hosted-card,
+        .modal-glass,
+        .empty-state,
+        .glass-panel,
+        .login-panel {
             background: rgba(0, 0, 0, 0.4) !important;
             backdrop-filter: blur(40px) saturate(180%) !important;
             -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
@@ -243,11 +313,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="river-bg"></div>
-    
+
     <div class="feed-nav">
-        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;cursor:pointer;" onclick="window.location.href='feed.html'">
+        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;cursor:pointer;"
+            onclick="window.location.href='feed.html'">
         <button class="nav-btn" onclick="window.location.href='feed.html'">← back</button>
     </div>
 
@@ -324,4 +396,5 @@
         });
     </script>
 </body>
+
 </html>
