@@ -567,7 +567,7 @@
       document.getElementById('unlockForm').addEventListener('submit', function(e) {
           e.preventDefault();
           const codeInput = document.getElementById('unlockCode');
-          if (codeInput.value === 'MAKEDUBAIGREATAGAIN') {
+          if (btoa(codeInput.value) === 'TUFLRURVQkFJR1JFQVRBR0FJTg==') {
               document.getElementById('comingSoonScreen').style.display = 'none';
           } else {
               codeInput.value = '';
