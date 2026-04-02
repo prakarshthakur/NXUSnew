@@ -11,13 +11,13 @@ import {
 
 // Your Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDAWn-vrFZcNQSl0icAp12IOsBxjOxESJw",
-    authDomain: "nxus-f0954.firebaseapp.com",
-  projectId: "nxus-f0954",
-  storageBucket: "nxus-f0954.firebasestorage.app",
-  messagingSenderId: "419494261103",
-  appId: "1:419494261103:web:6c90fc72db49c125ccb89a",
-  measurementId: "G-WSB27VYN43"
+  apiKey: "AIzaSyC7UHaQ9ndrf58hQVr8LRpPGkQiYwUdUcU",
+  authDomain: "nxusdxb.firebaseapp.com",
+  projectId: "nxusdxb",
+  storageBucket: "nxusdxb.firebasestorage.app",
+  messagingSenderId: "518385929367",
+  appId: "1:518385929367:web:c3bf8f1937b9e23443add2",
+  measurementId: "G-22P27KCMNZ"
 };
 
 const app = initializeApp(firebaseConfig);
