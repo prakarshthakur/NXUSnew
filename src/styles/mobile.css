@@ -1,0 +1,78 @@
+/* ─── Mobile overrides (≤640px) ─────────────────────────────────────────────
+   Desktop styles are all inline — this file only adds/overrides for mobile.
+   Never change styles here for screens wider than 640px.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+
+  /* Page-level headings */
+  .page-title {
+    font-size: 1.75rem !important;
+  }
+
+  /* ── Login ── */
+  .login-card {
+    padding: 1.75rem 1.25rem !important;
+  }
+  .login-logo {
+    height: 56px !important;
+  }
+
+  /* ── Host form ── */
+  /* Stack date + time inputs vertically */
+  .host-datetime-row {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  /* Shrink the preview card padding */
+  .host-preview-card {
+    padding: 1.25rem !important;
+    border-radius: 14px !important;
+  }
+  .host-preview-title {
+    font-size: 1.5rem !important;
+  }
+
+  /* ── Feed ── */
+  /* Give the card stack a bit more vertical room on phones */
+  .feed-card-stack {
+    height: 520px !important;
+  }
+  /* Detail modal — reduce padding so content breathes */
+  .detail-modal-inner {
+    padding: 1.25rem !important;
+    max-height: 88vh !important;
+    border-radius: 8px !important;
+  }
+
+  /* ── My Events ── */
+  /* Tighten the 3-button group so it doesn't overflow */
+  .event-card-actions {
+    gap: 0.3rem !important;
+  }
+
+  /* ── My Fun ── */
+  /* Horizontally scrollable filter tab row */
+  .filter-tabs {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── Profile ── */
+  .profile-stats-row {
+    gap: 1.25rem !important;
+  }
+
+  /* ── Event page ── */
+  .event-page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+}

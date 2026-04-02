@@ -1,21 +1,8 @@
 {
   "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "NXUS_Presentation_Deck.html",
-      "NXUS_Project_Overview.md",
-      "README.md",
-      "package.json",
-      "package-lock.json",
-      "capacitor.config.json",
-      "android/**",
-      "ios/**",
-      "redacta/**",
-      "firestore.rules"
-    ]
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
   },
   "firestore": {
     "rules": "firestore.rules"
