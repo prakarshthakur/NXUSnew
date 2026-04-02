@@ -417,7 +417,12 @@
             -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
             border: 1px solid rgba(255, 0, 0, 0.3) !important;
         }
+        .request-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,45,45,0.1);
+        }
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8&libraries=places" async defer></script>
 </head>
 <body>
     <div class="river-bg"></div>
@@ -430,8 +435,8 @@
     <div class="content-wrapper">
         <div class="host-page">
             <div class="host-header">
-                <h1 class="host-title">host fun</h1>
-                <p class="host-subtitle">list your fun for people to discover</p>
+                <h1 class="host-title" style="font-family: var(--font-heading); font-weight:800; color:#ff2d2d;">host fun</h1>
+                <p class="host-subtitle" style="font-family: var(--font-mono); opacity:0.8;">list your fun for people to discover</p>
             </div>
 
             <div class="glass-form">
@@ -454,7 +459,10 @@
 
                     <div class="form-group">
                         <label class="form-label">location</label>
-                        <input type="text" class="glass-input" id="partyLocation" placeholder="e.g. Terrace, North Campus Hostel" required>
+                        <input type="text" class="glass-input" id="partyLocation" placeholder="Search for a location..." required>
+                        <div id="mapPicker" style="width:100%; height:200px; border-radius:12px; margin-top:0.5rem; border:1px solid rgba(255,45,45,0.4);"></div>
+                        <input type="hidden" id="partyLat" required>
+                        <input type="hidden" id="partyLng" required>
                     </div>
 
                     <div class="form-row">
@@ -479,7 +487,7 @@
                         <textarea class="glass-input glass-textarea" id="partyDesc" placeholder="what should people know? dress code, what to bring, vibe check..." required></textarea>
                     </div>
 
-                    <button type="submit" class="submit-btn">publish fun 🚀</button>
+                    <button type="submit" class="submit-btn" style="background:#ff2d2d; color:#000; text-transform:lowercase; border-radius:50px;">publish fun 🚀</button>
                 </form>
             </div>
 
@@ -495,13 +503,72 @@
 
     <div class="toast" id="toast"></div>
 
-    <script>
-        function getHostedParties() {
-            return JSON.parse(localStorage.getItem('nxus_hosted') || '[]');
-        }
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { collection, query, getDocs, doc, addDoc, updateDoc, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        function saveHostedParties(parties) {
-            localStorage.setItem('nxus_hosted', JSON.stringify(parties));
+        let currentUser = null;
+        let currentUserProfileName = "NXUS Host";
+        let map, marker, autocomplete;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                currentUserProfileName = user.displayName || user.email.split('@')[0];
+                await renderHosted();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Initialize Map
+        window.onload = function() {
+            map = new google.maps.Map(document.getElementById("mapPicker"), {
+                center: { lat: 25.2048, lng: 55.2708 }, // Dubai Default
+                zoom: 12,
+                disableDefaultUI: true,
+                styles: [
+                    { elementType: "geometry", stylers: [{ color: "#111111" }] },
+                    { elementType: "labels.text.stroke", stylers: [{ color: "#111111" }] },
+                    { elementType: "labels.text.fill", stylers: [{ color: "#ff2d2d" }] },
+                    { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#ff2d2d" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#222222" }] },
+                    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#333333" }] },
+                ]
+            });
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true
+            });
+
+            const input = document.getElementById("partyLocation");
+            autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo("bounds", map);
+
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+
+                if (place.geometry.viewport) map.fitBounds(place.geometry.viewport);
+                else { map.setCenter(place.geometry.location); map.setZoom(17); }
+
+                marker.setPosition(place.geometry.location);
+                updateLatLngFields(place.geometry.location);
+            });
+
+            map.addListener("click", (e) => {
+                marker.setPosition(e.latLng);
+                updateLatLngFields(e.latLng);
+            });
+
+            marker.addListener("dragend", () => updateLatLngFields(marker.getPosition()));
+        };
+
+        function updateLatLngFields(latlng) {
+            document.getElementById('partyLat').value = latlng.lat();
+            document.getElementById('partyLng').value = latlng.lng();
         }
 
         function showToast(msg) {
@@ -526,135 +593,164 @@
             return `${day} ${month} ${dateNum} @ ${timeStr}`;
         }
 
-        function renderHosted() {
+        async function renderHosted() {
             const list = document.getElementById('hostedList');
-            const parties = getHostedParties();
+            list.innerHTML = '<div class="empty-hosted"><p style="font-family:var(--font-mono); opacity:0.5;">loading your events...</p></div>';
 
-            if (parties.length === 0) {
-                list.textContent = '';
+            try {
+                // Query events hosted by currentUser
+                const eventsSnap = await getDocs(query(collection(db, "events"), where("hostUid", "==", currentUser.uid)));
+                const parties = [];
+                eventsSnap.forEach(doc => parties.push({ id: doc.id, ...doc.data() }));
 
-                const empty = document.createElement('div');
-                empty.className = 'empty-hosted';
-
-                const p1 = document.createElement('p');
-                p1.textContent = '🎉';
-
-                const h = document.createElement('h3');
-                h.textContent = 'no fun yet';
-
-                const p2 = document.createElement('p');
-                p2.textContent = "create one above and it'll show up on people's feeds";
-
-                empty.appendChild(p1);
-                empty.appendChild(h);
-                empty.appendChild(p2);
-                list.appendChild(empty);
-                return;
-            }
-
-            list.textContent = '';
-
-            parties.forEach((p, i) => {
-                const card = document.createElement('div');
-                card.className = 'hosted-card';
-
-                const top = document.createElement('div');
-                top.className = 'hosted-top';
-
-                const title = document.createElement('span');
-                title.className = 'hosted-title';
-                title.textContent = p.name || '';
-
-                const live = document.createElement('span');
-                live.className = 'hosted-live';
-                live.textContent = 'live';
-
-                top.appendChild(title);
-                top.appendChild(live);
-
-                const time = document.createElement('div');
-                time.className = 'hosted-time';
-                time.textContent = p.displayTime || '';
-
-                const meta = document.createElement('div');
-                meta.className = 'hosted-meta';
-
-                const location = document.createElement('span');
-                location.style.color = 'rgba(255,0,0,0.4)';
-                location.textContent = `📍 ${p.location || ''}`;
-                meta.appendChild(location);
-
-                const vibe = document.createElement('span');
-                vibe.style.color = 'rgba(255,0,0,0.4)';
-                vibe.textContent = p.vibe || '';
-                meta.appendChild(vibe);
-
-                if (p.capacity) {
-                    const cap = document.createElement('span');
-                    cap.style.color = 'rgba(255,0,0,0.4)';
-                    cap.textContent = `👥 max ${p.capacity}`;
-                    meta.appendChild(cap);
+                if (parties.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-hosted">
+                            <p>🎉</p>
+                            <h3 style="font-family: var(--font-heading); color:#ff2d2d;">no fun yet</h3>
+                            <p style="font-family: var(--font-mono); opacity:0.6;">create one above and it'll show up on people's feeds</p>
+                        </div>`;
+                    return;
                 }
 
-                const desc = document.createElement('p');
-                desc.className = 'hosted-desc';
-                desc.textContent = p.desc || '';
+                list.textContent = '';
+                parties.reverse(); // Newest locally if sorted by addition implicitly
 
-                const stats = document.createElement('div');
-                stats.className = 'hosted-stats';
+                for (const p of parties) {
+                    // Fetch join requests for this event
+                    const reqSnap = await getDocs(query(collection(db, "joinRequests"), where("eventId", "==", p.id)));
+                    const requests = [];
+                    reqSnap.forEach(r => requests.push({ id: r.id, ...r.data() }));
 
-                const views = document.createElement('div');
-                views.className = 'stat';
-                const viewsStrong = document.createElement('strong');
-                viewsStrong.textContent = String(Math.floor(Math.random() * 40) + 5);
-                views.appendChild(viewsStrong);
-                views.appendChild(document.createTextNode('views'));
+                    const pendingReqs = requests.filter(r => r.status === 'pending');
+                    const acceptedReqs = requests.filter(r => r.status === 'accepted');
 
-                const interested = document.createElement('div');
-                interested.className = 'stat';
-                const interestedStrong = document.createElement('strong');
-                interestedStrong.textContent = String(Math.floor(Math.random() * 15) + 1);
-                interested.appendChild(interestedStrong);
-                interested.appendChild(document.createTextNode('interested'));
+                    const card = document.createElement('div');
+                    card.className = 'hosted-card';
 
-                const accepted = document.createElement('div');
-                accepted.className = 'stat';
-                const acceptedStrong = document.createElement('strong');
-                acceptedStrong.textContent = String(Math.floor(Math.random() * 8));
-                accepted.appendChild(acceptedStrong);
-                accepted.appendChild(document.createTextNode('accepted'));
+                    const top = document.createElement('div');
+                    top.className = 'hosted-top';
 
-                stats.appendChild(views);
-                stats.appendChild(interested);
-                stats.appendChild(accepted);
+                    const title = document.createElement('span');
+                    title.className = 'hosted-title';
+                    title.style.fontFamily = 'var(--font-heading)';
+                    title.textContent = p.name || '';
 
-                const btn = document.createElement('button');
-                btn.className = 'delete-btn';
-                btn.type = 'button';
-                btn.textContent = 'remove listing';
-                btn.addEventListener('click', () => deleteParty(i));
+                    const live = document.createElement('span');
+                    live.className = 'hosted-live';
+                    live.style.background = 'rgba(255,45,45,0.1)';
+                    live.style.borderColor = 'rgba(255,45,45,0.3)';
+                    live.textContent = 'live';
 
-                card.appendChild(top);
-                card.appendChild(time);
-                card.appendChild(meta);
-                card.appendChild(desc);
-                card.appendChild(stats);
-                card.appendChild(btn);
+                    top.appendChild(title);
+                    top.appendChild(live);
 
-                list.appendChild(card);
-            });
+                    const time = document.createElement('div');
+                    time.className = 'hosted-time';
+                    time.style.fontFamily = 'var(--font-mono)';
+                    time.textContent = p.displayTime || '';
+
+                    const meta = document.createElement('div');
+                    meta.className = 'hosted-meta';
+                    meta.style.fontFamily = 'var(--font-mono)';
+
+                    const location = document.createElement('span');
+                    location.style.color = 'rgba(255,255,255,0.5)';
+                    location.textContent = `📍 ${p.location || ''}`;
+                    meta.appendChild(location);
+
+                    const vibe = document.createElement('span');
+                    vibe.style.color = 'rgba(255,255,255,0.5)';
+                    vibe.textContent = p.vibe || '';
+                    meta.appendChild(vibe);
+
+                    if (p.capacity) {
+                        const cap = document.createElement('span');
+                        cap.style.color = 'rgba(255,255,255,0.5)';
+                        cap.textContent = `👥 max ${p.capacity}`;
+                        meta.appendChild(cap);
+                    }
+
+                    const desc = document.createElement('p');
+                    desc.className = 'hosted-desc';
+                    desc.style.fontFamily = 'var(--font-mono)';
+                    desc.textContent = p.desc || '';
+
+                    const stats = document.createElement('div');
+                    stats.className = 'hosted-stats';
+                    stats.innerHTML = `
+                        <div class="stat"><strong style="font-family:var(--font-heading); color:#ff2d2d;">${requests.length}</strong>interested</div>
+                        <div class="stat"><strong style="font-family:var(--font-heading); color:#ff2d2d;">${acceptedReqs.length}</strong>accepted</div>
+                    `;
+
+                    card.appendChild(top);
+                    card.appendChild(time);
+                    card.appendChild(meta);
+                    card.appendChild(desc);
+                    card.appendChild(stats);
+
+                    // Dashboard requests section
+                    if (pendingReqs.length > 0) {
+                        const reqHeader = document.createElement('div');
+                        reqHeader.style.marginTop = '1rem';
+                        reqHeader.style.paddingTop = '1rem';
+                        reqHeader.style.borderTop = '1px solid rgba(255,45,45,0.1)';
+                        reqHeader.innerHTML = '<span style="font-family:var(--font-mono); color:#ff2d2d; font-size:0.75rem;">pending requests</span>';
+                        card.appendChild(reqHeader);
+
+                        pendingReqs.forEach(req => {
+                            const reqDiv = document.createElement('div');
+                            reqDiv.className = 'request-item';
+                            
+                            const reqName = document.createElement('span');
+                            reqName.style.fontFamily = 'var(--font-mono)';
+                            reqName.style.fontSize = '0.8rem';
+                            reqName.textContent = req.userDisplayName || 'Anonymous User';
+
+                            const actions = document.createElement('div');
+                            actions.style.display = 'flex';
+                            actions.style.gap = '8px';
+
+                            const acceptBtn = document.createElement('button');
+                            acceptBtn.textContent = '✓ accept';
+                            acceptBtn.style.cssText = 'background:transparent; border:1px solid #4ade80; color:#4ade80; padding:0.2rem 0.6rem; border-radius:50px; cursor:pointer; font-family:var(--font-mono); font-size:0.7rem;';
+                            acceptBtn.onclick = () => updateReqStatus(req.id, 'accepted');
+
+                            const declineBtn = document.createElement('button');
+                            declineBtn.textContent = '✕ decline';
+                            declineBtn.style.cssText = 'background:transparent; border:1px solid rgba(255,45,45,0.5); color:#ff2d2d; padding:0.2rem 0.6rem; border-radius:50px; cursor:pointer; font-family:var(--font-mono); font-size:0.7rem;';
+                            declineBtn.onclick = () => updateReqStatus(req.id, 'declined');
+
+                            actions.appendChild(acceptBtn);
+                            actions.appendChild(declineBtn);
+                            reqDiv.appendChild(reqName);
+                            reqDiv.appendChild(actions);
+
+                            card.appendChild(reqDiv);
+                        });
+                    }
+
+                    list.appendChild(card);
+                }
+            } catch(e) {
+                console.error("Error loading host dashboard:", e);
+                list.innerHTML = '<div class="empty-hosted"><p>error loading your events.</p></div>';
+            }
         }
 
-        function deleteParty(index) {
-            const parties = getHostedParties();
-            parties.splice(index, 1);
-            saveHostedParties(parties);
-            renderHosted();
-            showToast('fun removed 👋');
+        window.updateReqStatus = async function(reqId, status) {
+            try {
+                await updateDoc(doc(db, "joinRequests", reqId), { status: status });
+                showToast(`Request ${status}!`);
+                renderHosted(); // refresh live list
+            } catch(e) {
+                console.error("Error updating req", e);
+                showToast('Failed to update.');
+            }
         }
 
         // Form submit
-        document.getElementById('hostForm').addEventListener('submit', (e) => {
+        document.getElementById('hostForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const name = document.getElementById('partyName').value.trim();
@@ -664,8 +760,13 @@
             const vibe = document.getElementById('partyVibe').value;
             const capacity = document.getElementById('partyCapacity').value;
             const desc = document.getElementById('partyDesc').value.trim();
+            const lat = document.getElementById('partyLat').value;
+            const lng = document.getElementById('partyLng').value;
 
-            if (!name || !date || !time || !location || !desc) return;
+            if (!name || !date || !time || !location || !desc || !lat || !lng) {
+                showToast("Please drop a pin on the map!");
+                return;
+            }
 
             const vibeEmojis = {
                 chill: '🧊 chill',
@@ -675,32 +776,40 @@
                 kickback: '🌙 kickback'
             };
 
-            const party = {
-                name,
-                date,
-                time,
+            const partyData = {
+                hostUid: currentUser.uid,
+                hostCircle: currentUserProfileName,
+                name: name,
+                date: date,
+                time: time,
                 displayTime: formatDateTime(date, time),
-                location,
+                location: location,
                 vibe: vibeEmojis[vibe],
                 capacity: capacity || null,
-                desc,
-                createdAt: new Date().toISOString()
+                desc: desc,
+                lat: parseFloat(lat),
+                lng: parseFloat(lng),
+                createdAt: serverTimestamp()
             };
 
-            const parties = getHostedParties();
-            parties.unshift(party);
-            saveHostedParties(parties);
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.textContent = 'publishing...';
+            submitBtn.disabled = true;
 
-            e.target.reset();
-            renderHosted();
-            showToast('fun published! 🎉');
-
-            // Scroll to the list
-            document.querySelector('.section-divider').scrollIntoView({ behavior: 'smooth' });
+            try {
+                await addDoc(collection(db, "events"), partyData);
+                e.target.reset();
+                showToast('fun published! 🎉');
+                document.querySelector('.section-divider').scrollIntoView({ behavior: 'smooth' });
+                await renderHosted();
+            } catch (err) {
+                console.error("Error adding doc:", err);
+                showToast('Publish failed.');
+            } finally {
+                submitBtn.textContent = 'publish fun 🚀';
+                submitBtn.disabled = false;
+            }
         });
-
-        // Initial render
-        renderHosted();
     </script>
 </body>
 </html>

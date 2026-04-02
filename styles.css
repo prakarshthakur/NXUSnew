@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 
 :root {
     --bg-color: #000000;
@@ -7,6 +7,8 @@
     --glass-border: #ff0000; 
     --glass-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
     --accent: #ff0000;
+    --font-heading: 'Syne', sans-serif;
+    --font-mono: 'Space Mono', monospace;
 }
 
 * {
@@ -18,7 +20,8 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Oswald', sans-serif;
+    font-family: var(--font-heading);
+    text-transform: lowercase;
     min-height: 100vh;
     overflow-x: hidden;
     display: flex;
@@ -45,11 +48,11 @@ body {
     padding: 2rem 1rem;
 }
 
-/* Tactical IO Liquid Glass Effect */
+/* Brutalist-lite Glass Panel */
 .glass-panel {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    background: #111111;
+    border: 1px solid rgba(255, 45, 45, 0.3);
+    box-shadow: 0 0 30px rgba(255, 45, 45, 0.1);
     border-radius: 0; /* Hard edges */
     padding: 5rem 6rem;
     text-align: center;
@@ -66,61 +69,53 @@ body {
     display: none;
 }
 
-/* Forensic Interface Logo */
+/* Title Logo */
 .logo-text {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(5rem, 12vw, 9rem);
-    font-weight: 400;
-    letter-spacing: 0.15em;
+    font-family: var(--font-heading);
+    font-size: clamp(4rem, 12vw, 8rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
     line-height: 1;
-    margin-right: -0.15em; 
-    color: #ff0000;
-    text-shadow: 0 0 15px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.4);
+    color: #ff2d2d;
+    text-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+    text-transform: lowercase;
 }
 
 .subtitle {
-    font-family: 'Oswald', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.8rem, 2vw, 1rem);
     font-weight: 400;
     letter-spacing: 0.1em;
-    color: #ff0000;
-    text-transform: uppercase;
+    color: #ff2d2d;
+    text-transform: lowercase;
     margin-bottom: 2rem;
+    opacity: 0.8;
 }
 
-.subtitle::before, .subtitle::after {
-    content: '//';
-    margin: 0 15px;
-    color: var(--accent);
-    opacity: 0.7;
-}
-
-/* Redacta Tactical Button */
+/* Pill Buttons */
 .btn-redacta {
-    background: #000000;
-    border: 1px solid #ff0000;
-    border-bottom: 2px solid var(--accent);
-    color: #ff0000;
-    font-family: 'Oswald', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 400;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 1rem 4rem;
-    border-radius: 0;
+    background: #111111;
+    border: 1px solid #ff2d2d;
+    color: #ff2d2d;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    padding: 1rem 3rem;
+    border-radius: 50px; /* Pill shaped */
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
 .btn-redacta:hover {
-    background: #ff0000;
+    background: #ff2d2d;
     color: #000000;
-    box-shadow: 0 0 20px #ff0000;
+    box-shadow: 0 0 20px rgba(255, 45, 45, 0.3);
 }
 
 .btn-redacta:active {
-    transform: translateY(1px);
+    transform: translateY(2px);
 }
 
 .footer {
@@ -129,11 +124,12 @@ body {
     z-index: 2;
     text-align: center;
     padding: 2.5rem;
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: #ff0000;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #ff2d2d;
+    opacity: 0.6;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
 }
 
 /* Form Elements for Login */
@@ -141,11 +137,16 @@ body {
     padding: 3.5rem 4rem;
     width: 100%;
     max-width: 500px;
+    background: #111111;
+    border: 1px solid rgba(255, 45, 45, 0.2);
+    border-radius: 12px;
 }
 
 .login-logo {
     font-size: clamp(3rem, 8vw, 5rem);
     margin-bottom: -1rem;
+    letter-spacing: -0.05em;
+    font-weight: 800;
 }
 
 .login-form {
@@ -166,33 +167,35 @@ body {
 }
 
 .input-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.85rem;
-    color: #ff0000;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #ff2d2d;
+    text-transform: lowercase;
+    opacity: 0.8;
 }
 
 .tactical-input {
     background: #000000;
-    border: 1px solid #ff0000;
-    border-radius: 0;
-    color: #ff0000;
-    font-family: 'Oswald', sans-serif;
+    border: 1px solid rgba(255, 45, 45, 0.4);
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: var(--font-heading);
     font-size: 1rem;
     padding: 0.8rem 1rem;
     outline: none;
     transition: all 0.3s ease;
-    box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
 .tactical-input:focus {
-    background: rgba(255, 0, 0, 0.1);
-    box-shadow: 0 0 15px #ff0000;
+    background: #111111;
+    border-color: #ff2d2d;
 }
 
 .tactical-input::placeholder {
-    color: rgba(255, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: lowercase;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
 }
 
 .btn-submit {
@@ -200,6 +203,7 @@ body {
     width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
+    border-radius: 50px;
 }
 
 /* Auth Tabs */
@@ -210,25 +214,24 @@ body {
 .tab-btn {
     background: transparent;
     border: none;
-    color: rgba(255, 0, 0, 0.5);
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.95rem;
-    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     padding: 0.5rem 1rem;
     position: relative;
     transition: all 0.3s ease;
     outline: none;
-    text-transform: uppercase;
+    text-transform: lowercase;
 }
 
 .tab-btn:hover {
-    color: #ff0000;
+    color: #ffffff;
 }
 
 .tab-btn.active {
-    color: #ff0000;
-    font-weight: bold;
+    color: #ff2d2d;
 }
 
 .tab-btn.active::after {
@@ -236,8 +239,7 @@ body {
     position: absolute;
     bottom: 0; left: 10%; right: 10%;
     height: 2px;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
+    background: #ff2d2d;
 }
 
 /* Social Login Elements */
@@ -246,20 +248,20 @@ body {
     align-items: center;
     text-align: center;
     margin: 0.5rem 0;
-    color: #ff0000;
+    color: rgba(255, 255, 255, 0.4);
     font-size: 0.8rem;
+    font-family: var(--font-mono);
 }
 
 .social-login-divider::before,
 .social-login-divider::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid #ff0000;
+    border-bottom: 1px solid rgba(255, 45, 45, 0.2);
 }
 
 .social-login-divider span {
     padding: 0 10px;
-    font-family: 'Oswald', sans-serif;
 }
 
 .social-buttons {
@@ -273,22 +275,23 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    background: #000000;
-    border: 1px solid #ff0000;
-    color: #ff0000;
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.95rem;
+    background: #111111;
+    border: 1px solid rgba(255, 45, 45, 0.3);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
     padding: 0.8rem;
-    border-radius: 0;
+    border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
-    text-transform: uppercase;
+    text-transform: lowercase;
 }
 
 .btn-social:hover {
-    background: rgba(255, 0, 0, 0.2);
-    box-shadow: 0 0 15px #ff0000;
+    background: rgba(255, 45, 45, 0.1);
+    border-color: #ff2d2d;
 }
 
 /* Tooltip Styles */
@@ -302,7 +305,7 @@ body {
     position: absolute;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s ease;
     pointer-events: none;
     z-index: 100;
 }
@@ -313,15 +316,13 @@ body {
     right: 0;
     width: max-content;
     padding: 0.6rem 1.2rem;
-    background: #000000;
-    border: 1px solid #ff0000;
-    border-radius: 0;
-    color: #ff0000;
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.85rem;
+    background: #111111;
+    border: 1px solid #ff2d2d;
+    border-radius: 8px;
+    color: #ff2d2d;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
     text-transform: lowercase;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-    transform: translateY(-10px);
 }
 
 [data-tooltip]::after {
@@ -330,7 +331,7 @@ body {
     right: 25px;
     border-width: 0 6px 6px 6px;
     border-style: solid;
-    border-color: transparent transparent #ff0000 transparent;
+    border-color: transparent transparent #ff2d2d transparent;
     transform: translateY(-10px);
 }
 
@@ -341,121 +342,31 @@ body {
     transform: translateY(0);
 }
 
-/* Vignette / Monitor Edge Blend */
-body::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: radial-gradient(circle at center, transparent 40%, #000000 120%);
-    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
-    z-index: 1;
-    pointer-events: none;
-}
-
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
-    .redacta-desktop {
-        display: none !important;
-    }
+    .redacta-desktop { display: none !important; }
+    .redacta-mobile { display: flex !important; }
 
-    .redacta-mobile {
-        display: flex !important;
-    }
+    .glass-panel { padding: 3rem 2rem; gap: 1.5rem; }
+    .login-panel { padding: 2.5rem 1.5rem; max-width: 95%; }
 
-    .glass-panel {
-        padding: 3rem 2rem;
-        gap: 1.5rem;
-        border-radius: 0;
-    }
+    .logo-text, .login-logo { font-size: clamp(3.5rem, 14vw, 5rem); }
+    .subtitle { font-size: clamp(0.7rem, 2vw, 0.85rem); margin-bottom: 1rem; }
+    
+    .btn-redacta { font-size: 1rem; padding: 0.8rem 2rem; }
+    .btn-submit { padding: 0.9rem; font-size: 1rem; }
+    .tactical-input { font-size: 0.95rem; padding: 0.75rem 0.9rem; }
+    
+    .tab-btn { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
+    .btn-social { font-size: 0.85rem; padding: 0.7rem; }
+    .footer { padding: 1.5rem; font-size: 0.7rem; }
+    .content-wrapper { padding: 1rem 0.75rem; }
 
-    .login-panel {
-        padding: 2.5rem 1.5rem;
-        max-width: 95%;
-    }
-
-    .logo-text {
-        font-size: clamp(3.5rem, 14vw, 5rem);
-    }
-
-    .login-logo {
-        font-size: clamp(2.5rem, 10vw, 4rem);
-    }
-
-    .subtitle {
-        font-size: clamp(0.75rem, 2.5vw, 1rem);
-        margin-bottom: 1rem;
-    }
-
-    .subtitle::before, .subtitle::after {
-        margin: 0 8px;
-    }
-
-    .btn-redacta {
-        font-size: 1rem;
-        padding: 0.8rem 2rem;
-        letter-spacing: 0.15em;
-    }
-
-    .btn-submit {
-        padding: 0.9rem;
-        font-size: 1rem;
-    }
-
-    .tactical-input {
-        font-size: 0.95rem;
-        padding: 0.75rem 0.9rem;
-    }
-
-    .input-label {
-        font-size: 0.8rem;
-    }
-
-    .tab-btn {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.8rem;
-    }
-
-    .btn-social {
-        font-size: 0.85rem;
-        padding: 0.7rem;
-        gap: 8px;
-    }
-
-    .footer {
-        padding: 1.5rem;
-        font-size: 0.7rem;
-    }
-
-    .content-wrapper {
-        padding: 1rem 0.75rem;
-    }
-
-    /* Hide tooltip on mobile (no hover) */
-    [data-tooltip]::before,
-    [data-tooltip]::after {
-        display: none;
-    }
+    [data-tooltip]::before, [data-tooltip]::after { display: none; }
 }
 
 @media (max-width: 400px) {
-    .login-panel {
-        padding: 2rem 1.2rem;
-    }
-
-    .logo-text {
-        font-size: clamp(3rem, 16vw, 4rem);
-    }
-
-    .login-logo {
-        font-size: clamp(2rem, 12vw, 3rem);
-    }
-
-    .subtitle {
-        font-size: 0.7rem;
-    }
-
-    .btn-redacta {
-        font-size: 0.9rem;
-        padding: 0.7rem 1.5rem;
-    }
+    .login-panel { padding: 2rem 1.2rem; }
+    .logo-text, .login-logo { font-size: clamp(2.5rem, 12vw, 3.5rem); }
+    .btn-redacta { font-size: 0.9rem; padding: 0.7rem 1.5rem; }
 }

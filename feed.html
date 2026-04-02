@@ -549,99 +549,120 @@
         </div>
     </div>
 
-    <script>
-        // Swiping Logic
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { collection, query, getDocs, addDoc, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
         const container = document.getElementById('swipeContainer');
-        const cardsData = [
-            { 
-                title: "Freshers Bash", 
-                time: "fri mar 28 @ 9pm", 
-                host: "Delta Kappa",
-                location: "South Campus Block C Terrace",
-                people: "127 going",
-                desc: "The official welcome party for the new batch. Free entry for first-years, DJ Arjun spinning Bollywood x EDM all night. BYOB after 11.",
-                lat: 28.5648, lng: 77.2100
-            },
-            { 
-                title: "Sunburn Pregame", 
-                time: "sat mar 29 @ 7pm",
-                host: "Rahul & Sneha",
-                location: "Rahul's Flat, Hauz Khas",
-                people: "43 going",
-                desc: "Chill pregame before everyone heads to Sunburn afterparty at Kitty Su. Drinks sorted, just bring good vibes. Uber pool from here at 11.",
-                lat: 28.5494, lng: 77.2001
-            },
-            { 
-                title: "Acoustic Night", 
-                time: "thu mar 27 @ 8pm",
-                host: "Music Society",
-                location: "Open Air Theatre",
-                people: "89 going",
-                desc: "Unplugged performances by campus bands, chai and maggi stalls, fairy lights on the lawn. Chill one before end-sems hit.",
-                lat: 28.5459, lng: 77.1926
-            },
-            { 
-                title: "Holi Rave", 
-                time: "sat apr 5 @ 11am",
-                host: "Cultural Committee",
-                location: "Sports Ground",
-                people: "312 going",
-                desc: "Organic colours, rain dance, live dhol, and thandai bar. Wear whites. After-party at someone's farmhouse TBD.",
-                lat: 28.5421, lng: 77.1843
-            },
-            { 
-                title: "Rooftop Kickback", 
-                time: "tonight @ 10pm",
-                host: "Aman's Circle",
-                location: "PG Rooftop, Vijay Nagar",
-                people: "18 going",
-                desc: "Small gathering, good music, cold ones on the roof. Keep it lowkey — no stories. DM for address.",
-                lat: 28.7041, lng: 77.1025
-            },
-            { 
-                title: "FIFA Tournament", 
-                time: "sun mar 30 @ 3pm",
-                host: "Gaming Club",
-                location: "Common Room, Hostel 4",
-                people: "32 going",
-                desc: "₹100 entry, winner takes the pool. PS5 on the projector, snacks provided. Losing team buys chai for everyone.",
-                lat: 28.5460, lng: 77.1930
+        let cardsData = [];
+        let originalCardsData = [];
+        let cards = [];
+        let currentUser = null;
+        let currentUserProfileName = "NXUS User";
+        let showPassedEvents = false;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                currentUserProfileName = user.displayName || user.email.split('@')[0];
+                await loadEvents();
+            } else {
+                window.location.href = 'index.html';
             }
-        ];
-
-        // Store original order for detail lookup
-        const originalCardsData = [...cardsData];
-
-        cardsData.reverse().forEach((data, index) => {
-            const card = document.createElement('div');
-            card.className = 'party-card';
-            card.dataset.partyIndex = originalCardsData.indexOf(data);
-            card.innerHTML = `
-                <span class="hint hint-like">LIKE</span>
-                <span class="hint hint-dislike">NOPE</span>
-                <div class="card-title">${data.title}</div>
-                <div class="card-time">${data.time}</div>
-                <div class="card-meta">
-                    <span style="color: rgba(255,0,0,0.5);">📍 ${data.location}</span>
-                    <span style="color: #ff0000;">👥 ${data.people}</span>
-                </div>
-                <p class="card-desc">${data.desc}</p>
-                <p class="card-host">hosted by <span>${data.host}</span></p>
-                <span class="tap-hint">tap for details</span>
-            `;
-            container.appendChild(card);
         });
 
-        let cards = Array.from(document.querySelectorAll('.party-card'));
+        async function loadEvents() {
+            container.innerHTML = '<div class="empty-state"><p style="font-family:var(--font-mono); opacity:0.5;">loading radar...</p></div>';
+            try {
+                const requestsSnap = await getDocs(query(collection(db, "joinRequests"), where("userId", "==", currentUser.uid)));
+                const swipedIds = new Set();
+                const passedIds = new Set();
+                requestsSnap.forEach(doc => {
+                    const data = doc.data();
+                    swipedIds.add(data.eventId);
+                    if (data.status === 'passed') passedIds.add(data.eventId);
+                });
 
-        function initTopCard() {
-            if (cards.length === 0) {
+                const eventsSnap = await getDocs(collection(db, "events"));
+                cardsData = [];
+                eventsSnap.forEach(doc => {
+                    const data = doc.data();
+                    if (data.hostUid === currentUser.uid) return; // don't show own events
+                    
+                    if (showPassedEvents) {
+                        if (passedIds.has(doc.id)) cardsData.push({ id: doc.id, ...data });
+                    } else {
+                        if (!swipedIds.has(doc.id)) cardsData.push({ id: doc.id, ...data });
+                    }
+                });
+
+                originalCardsData = [...cardsData];
+                renderCards();
+            } catch (err) {
+                console.error("Error loading events", err);
+                container.innerHTML = '<div class="empty-state"><p>error connecting to radar.</p></div>';
+            }
+        }
+
+        function renderCards() {
+            container.innerHTML = '';
+            cards = [];
+            if (cardsData.length === 0) {
+                const actionBtn = !showPassedEvents 
+                    ? `<button class="btn-redacta" id="viewPassedBtn" style="margin-top:1.5rem;font-size:0.9rem;padding:0.7rem 1.5rem;">view passed events</button>`
+                    : `<button class="btn-redacta" id="refreshFeedBtn" style="margin-top:1.5rem;font-size:0.9rem;padding:0.7rem 1.5rem;">refresh radar</button>`;
+                    
                 container.innerHTML = `
                     <div class="empty-state">
                         <p style="font-size: 2rem;">🫠</p>
-                        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: #ff0000; margin-top: 0.5rem;">that's all for now</h2>
-                        <p style="color: rgba(255,0,0,0.4); font-family: 'Oswald', sans-serif; font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
+                        <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: #ff2d2d; margin-top: 0.5rem; font-weight:800;">that's all for now</h2>
+                        <p style="color: rgba(255,45,45,0.4); font-family: var(--font-mono); font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
+                        ${actionBtn}
                     </div>`;
+                
+                if (!showPassedEvents && document.getElementById('viewPassedBtn')) {
+                    document.getElementById('viewPassedBtn').addEventListener('click', () => {
+                        showPassedEvents = true;
+                        loadEvents();
+                    });
+                }
+                if (showPassedEvents && document.getElementById('refreshFeedBtn')) {
+                    document.getElementById('refreshFeedBtn').addEventListener('click', () => {
+                        showPassedEvents = false;
+                        loadEvents();
+                    });
+                }
+                return;
+            }
+
+            // Render cards in reverse so first in array is on top
+            cardsData.slice().reverse().forEach((data) => {
+                const card = document.createElement('div');
+                card.className = 'party-card';
+                card.dataset.partyIndex = originalCardsData.indexOf(data);
+                card.innerHTML = `
+                    <span class="hint hint-like">LIKE</span>
+                    <span class="hint hint-dislike">NOPE</span>
+                    <div class="card-title">${data.name}</div>
+                    <div class="card-time">${data.displayTime}</div>
+                    <div class="card-meta">
+                        <span style="color: rgba(255,255,255,0.5);">📍 ${data.location}</span>
+                        <span style="color: #ff2d2d;">${data.vibe || ''}</span>
+                    </div>
+                    <p class="card-desc" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${data.desc}</p>
+                    <span class="tap-hint">tap for details</span>
+                `;
+                container.appendChild(card);
+            });
+
+            cards = Array.from(document.querySelectorAll('.party-card'));
+            initTopCard();
+        }
+
+        function initTopCard() {
+            if (cards.length === 0) {
+                renderCards(); // Trigger empty state
                 return;
             }
 
@@ -662,45 +683,50 @@
             });
         }
 
-        // Detail modal logic
         const overlay = document.getElementById('detailOverlay');
         let activeDetailIndex = null;
 
-        function openDetail(dataIndex) {
+        window.openDetail = function(dataIndex) {
             const data = originalCardsData[dataIndex];
             if (!data) return;
             activeDetailIndex = dataIndex;
-            document.getElementById('detailTitle').textContent = data.title;
-            document.getElementById('detailTime').textContent = data.time;
+            document.getElementById('detailTitle').textContent = data.name;
+            document.getElementById('detailTime').textContent = data.displayTime;
             document.getElementById('detailLocation').textContent = '📍 ' + data.location;
-            document.getElementById('detailPeople').textContent = '👥 ' + data.people;
+            document.getElementById('detailPeople').textContent = data.vibe || '';
             document.getElementById('detailDesc').textContent = data.desc;
-            document.getElementById('detailHost').textContent = data.host;
-            document.getElementById('detailMap').innerHTML = `<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${data.lng-0.008}%2C${data.lat-0.005}%2C${data.lng+0.008}%2C${data.lat+0.005}&layer=mapnik&marker=${data.lat}%2C${data.lng}" loading="lazy"></iframe>`;
+            document.getElementById('detailHost').textContent = data.hostCircle || 'Private Host';
+            
+            // Google Maps Embed API
+            const mapHtml = `<iframe width="100%" height="100%" style="border:0" loading="lazy" allowfullscreen src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8&q=${data.lat},${data.lng}&zoom=15"></iframe>`;
+            document.getElementById('detailMap').innerHTML = mapHtml;
             overlay.style.display = 'flex';
-        }
+        };
 
-        function closeDetail() {
+        window.closeDetail = function() {
             overlay.style.display = 'none';
             activeDetailIndex = null;
-        }
+        };
 
-        document.getElementById('detailClose').addEventListener('click', closeDetail);
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDetail(); });
+        document.getElementById('detailClose').addEventListener('click', window.closeDetail);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) window.closeDetail(); });
 
         document.getElementById('detailLike').addEventListener('click', () => {
-            closeDetail();
+            window.closeDetail();
             const topCard = cards[cards.length - 1];
             if (topCard) {
-                saveLike(parseInt(topCard.dataset.partyIndex));
+                saveLike(parseInt(topCard.dataset.partyIndex), 'pending');
                 flyOut(topCard, -window.innerWidth - 200, 0, -30);
             }
         });
 
         document.getElementById('detailDislike').addEventListener('click', () => {
-            closeDetail();
+            window.closeDetail();
             const topCard = cards[cards.length - 1];
-            if (topCard) flyOut(topCard, window.innerWidth + 200, 0, 30);
+            if (topCard) {
+                saveLike(parseInt(topCard.dataset.partyIndex), 'passed');
+                flyOut(topCard, window.innerWidth + 200, 0, 30);
+            }
         });
 
         function setupDrag(card) {
@@ -746,13 +772,12 @@
                 if (!isDragging) return;
                 isDragging = false;
 
-                // Tap detection — if barely moved, it's a click
                 if (!hasMoved) {
                     card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                     card.style.transform = 'scale(1) translateY(0px)';
                     currentX = 0; currentY = 0;
                     const idx = parseInt(card.dataset.partyIndex);
-                    openDetail(idx);
+                    window.openDetail(idx);
                     return;
                 }
                 
@@ -760,8 +785,10 @@
                 
                 if (currentX < -throwOutThreshold) {
                     flyOut(card, -window.innerWidth - 200, currentY, -30);
+                    saveLike(parseInt(card.dataset.partyIndex), 'pending');
                 } else if (currentX > throwOutThreshold) {
                     flyOut(card, window.innerWidth + 200, currentY, 30);
+                    saveLike(parseInt(card.dataset.partyIndex), 'passed');
                 } else {
                     card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                     card.style.transform = 'scale(1) translateY(0px)';
@@ -775,33 +802,28 @@
             card.addEventListener('pointercancel', resetCard);
         }
 
-        function saveLike(dataIndex) {
+        async function saveLike(dataIndex, status) {
             const data = originalCardsData[dataIndex];
             if (!data) return;
-            const liked = JSON.parse(localStorage.getItem('nxus_liked') || '[]');
-            // Don't add duplicates
-            if (liked.some(p => p.title === data.title)) return;
-            // Simulate host acceptance (random for demo)
-            const statuses = ['pending', 'pending', 'pending', 'accepted', 'declined'];
-            const status = statuses[Math.floor(Math.random() * statuses.length)];
-            liked.push({
-                title: data.title,
-                time: data.time,
-                host: data.host,
-                location: data.location,
-                people: data.people,
-                status: status
-            });
-            localStorage.setItem('nxus_liked', JSON.stringify(liked));
+            try {
+                // If it's a pass and we're currently IN "passed" mode, don't write a dupe
+                if (showPassedEvents && status === 'passed') return;
+                // If it's a 'pending' like from 'passed' mode, we should technically update the existing doc.
+                // For simplicity, we just add a new record. Firestore rules may permit duplicate requests, 
+                // but My Fun page handles dupes by just showing the latest or we can refine it if needed.
+                await addDoc(collection(db, "joinRequests"), {
+                    eventId: data.id,
+                    userId: currentUser.uid,
+                    userDisplayName: currentUserProfileName,
+                    status: status,
+                    requestedAt: serverTimestamp()
+                });
+            } catch (error) {
+                console.error("Error writing request: ", error);
+            }
         }
 
         function flyOut(card, destX, destY, destRot) {
-            // If swiped left (like), save it
-            if (destX < 0) {
-                const idx = parseInt(card.dataset.partyIndex);
-                saveLike(idx);
-            }
-
             card.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease';
             card.style.transform = `translate(${destX}px, ${destY}px) rotate(${destRot}deg)`;
             card.style.opacity = 0;
@@ -812,8 +834,6 @@
                 initTopCard();
             }, 300);
         }
-
-        window.addEventListener('load', initTopCard);
     </script>
 </body>
 </html>

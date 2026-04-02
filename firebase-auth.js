@@ -1,27 +1,11 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { auth } from './firebase-config.js';
 import { 
-    getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
     GoogleAuthProvider,
-    OAuthProvider,
     signInWithPopup,
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-// Your Firebase project configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC7UHaQ9ndrf58hQVr8LRpPGkQiYwUdUcU",
-  authDomain: "nxusdxb.firebaseapp.com",
-  projectId: "nxusdxb",
-  storageBucket: "nxusdxb.firebasestorage.app",
-  messagingSenderId: "518385929367",
-  appId: "1:518385929367:web:c3bf8f1937b9e23443add2",
-  measurementId: "G-22P27KCMNZ"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 // Check if user is already logged in and auto-redirect
 onAuthStateChanged(auth, (user) => {

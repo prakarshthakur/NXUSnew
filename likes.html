@@ -361,9 +361,12 @@
 
     <div class="content-wrapper">
         <div class="likes-page">
-            <div class="likes-header">
-                <h1 class="likes-title">my fun</h1>
-                <p class="likes-subtitle">fun you've liked</p>
+            <div class="likes-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div>
+                    <h1 class="likes-title" style="font-family: var(--font-heading); font-weight:800; color:#ff2d2d;">my fun</h1>
+                    <p class="likes-subtitle" style="font-family: var(--font-mono); opacity:0.8;">your joined requests</p>
+                </div>
+                <button class="nav-btn" onclick="window.location.href='host.html'" style="font-family: var(--font-heading); padding: 0.6rem 1.2rem; margin-bottom:0.5rem; background:#111; color:#ff2d2d; border:1px solid rgba(255,45,45,0.4); text-transform:lowercase; font-weight:600; font-size:1rem;">+ host</button>
             </div>
 
             <div class="status-tabs" id="statusTabs">
@@ -374,12 +377,28 @@
             </div>
 
             <div class="party-list" id="partyList">
-                <!-- Rendered by JS -->
+                <div class="empty-likes"><p style="font-family:var(--font-mono); opacity:0.5;">loading requests...</p></div>
             </div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { collection, query, getDocs, getDoc, doc, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        let currentUser = null;
+        let likedParties = []; // Will hold combined request + event data
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadLikedParties();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
         const statusMessages = {
             pending: "waiting for the host to review your request...",
             accepted: "you're in! 🎉 check the location and show up on time",
@@ -397,35 +416,77 @@
             declined: '😮‍💨'
         };
 
-        function getLikedParties() {
-            return JSON.parse(localStorage.getItem('nxus_liked') || '[]');
+        async function loadLikedParties() {
+            try {
+                // Fetch joinRequests for the user, excluding 'passed'
+                const requestsSnap = await getDocs(query(collection(db, "joinRequests"), where("userId", "==", currentUser.uid)));
+                
+                const fetchPromises = [];
+                const requestsData = [];
+                
+                requestsSnap.forEach(reqDoc => {
+                    const data = reqDoc.data();
+                    if (data.status !== 'passed') {
+                        requestsData.push(data);
+                        fetchPromises.push(getDoc(doc(db, "events", data.eventId)));
+                    }
+                });
+
+                const eventsSnaps = await Promise.all(fetchPromises);
+                
+                likedParties = [];
+                for (let i = 0; i < requestsData.length; i++) {
+                    const eventDoc = eventsSnaps[i];
+                    if (eventDoc.exists()) {
+                        const eventData = eventDoc.data();
+                        likedParties.push({
+                            id: requestsData[i].eventId,
+                            status: requestsData[i].status,
+                            title: eventData.name,
+                            time: eventData.displayTime,
+                            location: eventData.location,
+                            people: eventData.vibe || '',
+                            host: eventData.hostCircle || 'Private Host'
+                        });
+                    }
+                }
+                
+                // Sort by implicit chronological (newest local render first)
+                likedParties.reverse();
+                renderParties();
+            } catch (err) {
+                console.error("Error loading likes", err);
+                document.getElementById('partyList').innerHTML = '<div class="empty-likes"><p>error loading requests.</p></div>';
+            }
         }
 
         function renderParties(filter = 'all') {
             const list = document.getElementById('partyList');
-            const parties = getLikedParties();
-
             const safeFilter = filter === 'all' ? 'all' : normalizeStatus(filter);
             const filtered = safeFilter === 'all'
-                ? parties
-                : parties.filter(p => normalizeStatus(p.status) === safeFilter);
+                ? likedParties
+                : likedParties.filter(p => normalizeStatus(p.status) === safeFilter);
 
             if (filtered.length === 0) {
                 list.textContent = '';
-
                 const empty = document.createElement('div');
                 empty.className = 'empty-likes';
 
                 const pEmoji = document.createElement('p');
+                pEmoji.style.fontSize = '2rem';
                 pEmoji.textContent = safeFilter === 'all' ? '💤' : statusEmoji[safeFilter];
 
                 const h = document.createElement('h3');
-                h.textContent = safeFilter === 'all' ? 'no liked fun yet' : 'nothing here';
+                h.style.fontFamily = 'var(--font-heading)';
+                h.style.color = '#ff2d2d';
+                h.textContent = safeFilter === 'all' ? 'no joined fun yet' : 'nothing here';
 
                 const pMsg = document.createElement('p');
+                pMsg.style.fontFamily = 'var(--font-mono)';
+                pMsg.style.opacity = '0.6';
                 pMsg.textContent = safeFilter === 'all'
-                    ? 'head to the feed and swipe left on something fire'
-                    : 'no fun with this status right now';
+                    ? 'head to the feed and press like on something fire'
+                    : 'no requests with this status right now';
 
                 empty.appendChild(pEmoji);
                 empty.appendChild(h);
@@ -434,7 +495,11 @@
                 if (safeFilter === 'all') {
                     const a = document.createElement('a');
                     a.href = 'feed.html';
-                    a.className = 'explore-btn';
+                    a.className = 'btn-redacta';
+                    a.style.display = 'inline-block';
+                    a.style.marginTop = '1.5rem';
+                    a.style.textDecoration = 'none';
+                    a.style.padding = '0.8rem 2rem';
                     a.textContent = 'explore fun →';
                     empty.appendChild(a);
                 }
@@ -444,7 +509,6 @@
             }
 
             list.textContent = '';
-
             filtered.forEach((party) => {
                 const status = normalizeStatus(party.status);
 
@@ -456,10 +520,12 @@
 
                 const title = document.createElement('span');
                 title.className = 'liked-card-title';
+                title.style.fontFamily = 'var(--font-heading)';
                 title.textContent = party.title || '';
 
                 const badge = document.createElement('span');
                 badge.className = `status-badge badge-${status}`;
+                badge.style.fontFamily = 'var(--font-mono)';
                 badge.textContent = status;
 
                 top.appendChild(title);
@@ -467,32 +533,40 @@
 
                 const time = document.createElement('div');
                 time.className = 'liked-card-time';
+                time.style.fontFamily = 'var(--font-mono)';
                 time.textContent = party.time || '';
 
                 const meta = document.createElement('div');
                 meta.className = 'liked-card-meta';
+                meta.style.fontFamily = 'var(--font-mono)';
+                meta.style.fontSize = '0.8rem';
+                meta.style.color = 'rgba(255,255,255,0.6)';
 
                 const location = document.createElement('span');
-                location.style.color = 'rgba(255,0,0,0.4)';
-                location.textContent = `📍 ${party.location || ''}`;
-
+                location.textContent = `📍 ${party.location || ''} `;
                 const people = document.createElement('span');
-                people.style.color = '#ff0000';
-                people.textContent = `👥 ${party.people || ''}`;
+                people.textContent = `${party.people || ''}`;
 
                 meta.appendChild(location);
                 meta.appendChild(people);
 
                 const hosted = document.createElement('div');
-                hosted.className = 'liked-card-host';
-                hosted.appendChild(document.createTextNode('hosted by '));
-
+                const HostedPrefix = document.createElement('span');
+                HostedPrefix.style.opacity = '0.5';
+                HostedPrefix.style.fontFamily = 'var(--font-mono)';
+                HostedPrefix.textContent = 'hosted by ';
+                
                 const hostName = document.createElement('span');
+                hostName.style.color = '#ff2d2d';
+                hostName.style.fontFamily = 'var(--font-heading)';
                 hostName.textContent = party.host || '';
+                hosted.appendChild(HostedPrefix);
                 hosted.appendChild(hostName);
 
                 const statusMsg = document.createElement('div');
                 statusMsg.className = `status-msg msg-${status}`;
+                statusMsg.style.fontFamily = 'var(--font-mono)';
+                statusMsg.style.fontSize = '0.75rem';
                 statusMsg.textContent = statusMessages[status];
 
                 card.appendChild(top);
@@ -512,9 +586,6 @@
             e.target.classList.add('active');
             renderParties(e.target.dataset.filter);
         });
-
-        // Initial render
-        renderParties();
     </script>
 </body>
 </html>
