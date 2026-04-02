@@ -112,7 +112,7 @@ export default function App() {
           }
         />
         <Route path="/event/:eventId" element={<EventPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+<Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

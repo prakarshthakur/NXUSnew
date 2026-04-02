@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
 import TagPill from './TagPill';
 
 export default function RequestRow({ request, eventId }) {
+  const navigate = useNavigate();
   const [userDoc, setUserDoc] = useState(null);
   const [actionDone, setActionDone] = useState(false);
   const [fading, setFading] = useState(false);
@@ -70,7 +72,12 @@ export default function RequestRow({ request, eventId }) {
     }}>
       {/* Main row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <ProfileAvatar userId={request.userId} size={32} />
+        <div
+          onClick={() => navigate(`/profile/${request.userId}`)}
+          style={{ cursor: 'pointer', flexShrink: 0 }}
+        >
+          <ProfileAvatar userId={request.userId} size={32} />
+        </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontFamily: "'IBM Plex Mono', monospace",
@@ -79,7 +86,12 @@ export default function RequestRow({ request, eventId }) {
             marginBottom: '0.25rem',
             textTransform: 'lowercase',
           }}>
-            {displayName}
+            <span
+              onClick={() => navigate(`/profile/${request.userId}`)}
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#FF2D2D'}
+              onMouseLeave={e => e.currentTarget.style.color = '#ffffff'}
+            >{displayName}</span>
             {timeStr && (
               <span style={{ color: '#444', marginLeft: '0.5rem', fontSize: '0.7rem' }}>{timeStr}</span>
             )}

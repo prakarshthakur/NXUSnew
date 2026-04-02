@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, getDoc,
+  collection, query, where, getDocs, getDocsFromServer, addDoc, updateDoc, serverTimestamp, doc, getDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -8,16 +8,21 @@ import NavBar from '../components/NavBar';
 import ProfileAvatar from '../components/ProfileAvatar';
 import { useNavigate } from 'react-router-dom';
 import ShareButton from '../components/ShareButton';
+import FlairBadge from '../components/FlairBadge';
 
 const MAPS_KEY = 'AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8';
 
 function DetailModal({ event, onClose, onLike, onPass }) {
   const [hostName, setHostName] = useState('');
+  const [hostFlair, setHostFlair] = useState(null);
 
   useEffect(() => {
     if (!event.hostUid) return;
     getDoc(doc(db, 'users', event.hostUid)).then(snap => {
-      if (snap.exists()) setHostName(snap.data().displayName || 'anonymous');
+      if (snap.exists()) {
+        setHostName(snap.data().displayName || 'anonymous');
+        setHostFlair(snap.data().flair || null);
+      }
     }).catch(() => {});
   }, [event.hostUid]);
 
@@ -123,19 +128,20 @@ function DetailModal({ event, onClose, onLike, onPass }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <ProfileAvatar userId={event.hostUid} size={32} />
-          <span style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '0.78rem',
-            color: '#FF2D2D',
-            textTransform: 'lowercase',
-          }}>
-            hosted by {hostName || 'unknown'}
-          </span>
-          {event.hostCircle && (
-            <span style={{ color: '#444', fontSize: '0.72rem', fontFamily: "'IBM Plex Mono', monospace" }}>
-              · {event.hostCircle}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <span style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '0.78rem',
+              color: '#FF2D2D',
+              textTransform: 'lowercase',
+            }}>
+              hosted by {hostName || 'unknown'}
+              {event.hostCircle && (
+                <span style={{ color: '#444', marginLeft: '0.4rem' }}>· {event.hostCircle}</span>
+              )}
             </span>
-          )}
+            {hostFlair && <FlairBadge flair={hostFlair} size="xs" />}
+          </div>
         </div>
 
         {event.lat && event.lng && (
@@ -378,6 +384,7 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
 
 function HostRow({ hostUid, attendeeCount, eventId }) {
   const [hostName, setHostName] = useState('');
+  const [hostFlair, setHostFlair] = useState(null);
   const [showAttendees, setShowAttendees] = useState(false);
   const [attendeeNames, setAttendeeNames] = useState([]);
   const navigate = useNavigate();
@@ -385,7 +392,10 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
   useEffect(() => {
     if (!hostUid) return;
     getDoc(doc(db, 'users', hostUid)).then(snap => {
-      if (snap.exists()) setHostName(snap.data().displayName || 'anonymous');
+      if (snap.exists()) {
+        setHostName(snap.data().displayName || 'anonymous');
+        setHostFlair(snap.data().flair || null);
+      }
     }).catch(() => {});
   }, [hostUid]);
 
@@ -417,14 +427,17 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
           onClick={e => { e.stopPropagation(); navigate(`/profile/${hostUid}`); }}
         >
           <ProfileAvatar userId={hostUid} size={28} />
-          <span style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '0.75rem',
-            color: '#FF2D2D',
-            textTransform: 'lowercase',
-          }}>
-            {hostName || 'host'}
-          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <span style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '0.75rem',
+              color: '#FF2D2D',
+              textTransform: 'lowercase',
+            }}>
+              {hostName || 'host'}
+            </span>
+            {hostFlair && <FlairBadge flair={hostFlair} size="xs" />}
+          </div>
         </div>
         <button
           onClick={fetchAttendees}
@@ -482,10 +495,10 @@ export default function Feed() {
     if (!user?.uid) return;
     setLoading(true);
     try {
-      const allEventsSnap = await getDocs(collection(db, 'events'));
+      const allEventsSnap = await getDocsFromServer(collection(db, 'events'));
       const allEvents = allEventsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-      const swipedSnap = await getDocs(
+      const swipedSnap = await getDocsFromServer(
         query(collection(db, 'joinRequests'), where('userId', '==', user.uid))
       );
       const swipedIds = new Set(swipedSnap.docs.map(d => d.data().eventId));
@@ -694,6 +707,20 @@ export default function Feed() {
                 >
                   ← back to feed
                 </button>
+              )}
+
+              {!passedMode && (
+                <p style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '0.68rem',
+                  color: '#333',
+                  textTransform: 'lowercase',
+                  textAlign: 'center',
+                  lineHeight: 1.6,
+                  margin: '0.25rem 0',
+                }}>
+                  refresh the page to check for new events
+                </p>
               )}
 
               <button

@@ -8,6 +8,13 @@ import { useAuth } from '../hooks/useAuth';
 import NavBar from '../components/NavBar';
 import TagPill from '../components/TagPill';
 import AvatarComponent from '../components/ProfileAvatar';
+import FlairBadge from '../components/FlairBadge';
+
+const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
+const FLAIR_COLORS = [
+  '#FF2D2D', '#fb923c', '#f59e0b', '#4ade80',
+  '#2dd4bf', '#60a5fa', '#a78bfa', '#f472b6', '#e5e5e5',
+];
 
 export default function Profile() {
   const { userId } = useParams();
@@ -27,8 +34,16 @@ export default function Profile() {
   const [keywordInput, setKeywordInput] = useState('');
   const [editInstagram, setEditInstagram] = useState('');
 
+  // Admin flair editor
+  const isAdmin = authUser?.email === ADMIN_EMAIL;
+  const [flairEditing, setFlairEditing] = useState(false);
+  const [flairText, setFlairText] = useState('');
+  const [flairColor, setFlairColor] = useState(FLAIR_COLORS[0]);
+  const [flairSaving, setFlairSaving] = useState(false);
+
   const [eventsHosted, setEventsHosted] = useState(0);
   const [eventsAttended, setEventsAttended] = useState(0);
+  const [hostedEventsList, setHostedEventsList] = useState([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -74,6 +89,14 @@ export default function Profile() {
           query(collection(db, 'events'), where('hostUid', '==', targetUserId))
         );
         setEventsHosted(hostedSnap.size);
+        const events = hostedSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => {
+            const ta = a.dateTime?.toDate?.() || new Date(a.dateTime || 0);
+            const tb = b.dateTime?.toDate?.() || new Date(b.dateTime || 0);
+            return tb - ta;
+          });
+        setHostedEventsList(events);
 
         const attendedSnap = await getDocs(
           query(
@@ -87,6 +110,30 @@ export default function Profile() {
     };
     loadStats();
   }, [targetUserId]);
+
+  const handleFlairSave = async () => {
+    if (!flairText.trim()) return;
+    setFlairSaving(true);
+    try {
+      await updateDoc(doc(db, 'users', targetUserId), {
+        flair: { text: flairText.trim(), color: flairColor },
+      });
+      setUserDoc(prev => ({ ...prev, flair: { text: flairText.trim(), color: flairColor } }));
+      setFlairEditing(false);
+    } catch (e) { console.error(e); }
+    setFlairSaving(false);
+  };
+
+  const handleFlairRemove = async () => {
+    setFlairSaving(true);
+    try {
+      await updateDoc(doc(db, 'users', targetUserId), { flair: null });
+      setUserDoc(prev => ({ ...prev, flair: null }));
+      setFlairEditing(false);
+      setFlairText('');
+    } catch (e) { console.error(e); }
+    setFlairSaving(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -194,6 +241,29 @@ export default function Profile() {
                 {displayName}
               </h1>
             )}
+            {userDoc?.flair && !editing && (
+              <div style={{ marginBottom: '0.25rem' }}>
+                <FlairBadge flair={userDoc.flair} />
+              </div>
+            )}
+            {userDoc?.foundingMember && !editing && (
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                background: 'rgba(255,45,45,0.08)',
+                border: '1px solid rgba(255,45,45,0.25)',
+                borderRadius: '50px',
+                padding: '0.2rem 0.65rem',
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: '0.65rem',
+                color: '#FF2D2D',
+                textTransform: 'lowercase',
+                marginBottom: '0.3rem',
+              }}>
+                <span style={{ fontSize: '0.6rem' }}>🔴</span> founding 10
+              </div>
+            )}
             {userDoc?.email && !editing && (
               <div style={{
                 fontFamily: "'IBM Plex Mono', monospace",
@@ -232,6 +302,108 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {/* Admin flair editor */}
+        {isAdmin && !editing && (
+          <div style={{
+            marginBottom: '1.25rem',
+            padding: '0.85rem 1rem',
+            background: '#0a0a0a',
+            border: '1px solid #1a1a1a',
+            borderRadius: '8px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: flairEditing ? '0.75rem' : 0 }}>
+              <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.65rem', color: '#333', textTransform: 'lowercase' }}>
+                admin · flair {userDoc?.flair ? `— ${userDoc.flair.text}` : '— none'}
+              </span>
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <button
+                  onClick={() => {
+                    setFlairText(userDoc?.flair?.text || '');
+                    setFlairColor(userDoc?.flair?.color || FLAIR_COLORS[0]);
+                    setFlairEditing(v => !v);
+                  }}
+                  style={{
+                    background: 'transparent', border: '1px solid #222', borderRadius: '50px',
+                    padding: '0.2rem 0.6rem', color: '#555', fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: '0.65rem', cursor: 'pointer', textTransform: 'lowercase',
+                  }}
+                >
+                  {flairEditing ? 'cancel' : userDoc?.flair ? 'edit' : '+ add'}
+                </button>
+                {userDoc?.flair && !flairEditing && (
+                  <button
+                    onClick={handleFlairRemove}
+                    disabled={flairSaving}
+                    style={{
+                      background: 'transparent', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '50px',
+                      padding: '0.2rem 0.6rem', color: '#ef4444', fontFamily: "'IBM Plex Mono', monospace",
+                      fontSize: '0.65rem', cursor: 'pointer', textTransform: 'lowercase',
+                      opacity: flairSaving ? 0.5 : 1,
+                    }}
+                  >
+                    remove
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {flairEditing && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <input
+                  value={flairText}
+                  onChange={e => setFlairText(e.target.value.slice(0, 22))}
+                  placeholder="flair text"
+                  maxLength={22}
+                  autoFocus
+                  style={{
+                    background: '#111', border: '1px solid #222', borderRadius: '6px',
+                    color: '#fff', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem',
+                    padding: '0.45rem 0.65rem', outline: 'none', width: '100%',
+                  }}
+                  onFocus={e => e.currentTarget.style.borderColor = flairColor}
+                  onBlur={e => e.currentTarget.style.borderColor = '#222'}
+                />
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  {FLAIR_COLORS.map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setFlairColor(c)}
+                      title={c}
+                      style={{
+                        width: '20px', height: '20px', borderRadius: '50%',
+                        background: c, border: flairColor === c ? '2px solid #fff' : '2px solid transparent',
+                        cursor: 'pointer', padding: 0, flexShrink: 0,
+                        boxShadow: flairColor === c ? `0 0 0 1px ${c}` : 'none',
+                        transition: 'border 0.15s',
+                      }}
+                    />
+                  ))}
+                </div>
+                {flairText.trim() && (
+                  <div>
+                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.62rem', color: '#333', marginRight: '0.4rem' }}>preview:</span>
+                    <FlairBadge flair={{ text: flairText, color: flairColor }} />
+                  </div>
+                )}
+                <button
+                  onClick={handleFlairSave}
+                  disabled={flairSaving || !flairText.trim()}
+                  style={{
+                    background: flairColor, border: 'none', borderRadius: '50px',
+                    padding: '0.4rem 1rem', color: '#000', fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: '0.72rem', fontWeight: 700, textTransform: 'lowercase',
+                    cursor: flairSaving || !flairText.trim() ? 'not-allowed' : 'pointer',
+                    opacity: flairSaving || !flairText.trim() ? 0.5 : 1,
+                    alignSelf: 'flex-start',
+                  }}
+                >
+                  {flairSaving ? 'saving...' : 'save flair'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Stats row */}
         <div className="profile-stats-row" style={{
@@ -450,6 +622,73 @@ export default function Profile() {
             >
               cancel
             </button>
+          </div>
+        )}
+
+        {/* Hosted events */}
+        {hostedEventsList.length > 0 && (
+          <div style={{ marginTop: '2.5rem' }}>
+            <div style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: '0.7rem',
+              color: '#444',
+              textTransform: 'lowercase',
+              letterSpacing: '0.08em',
+              marginBottom: '0.75rem',
+            }}>
+              hosted events
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {hostedEventsList.map(event => {
+                const dt = event.dateTime?.toDate?.() || (event.dateTime ? new Date(event.dateTime) : null);
+                const isPast = dt && dt < new Date();
+                return (
+                  <div
+                    key={event.id}
+                    onClick={() => navigate(`/event/${event.id}`)}
+                    style={{
+                      background: '#0d0d0d',
+                      border: '1px solid #1a1a1a',
+                      borderRadius: '8px',
+                      padding: '0.75rem 1rem',
+                      cursor: 'pointer',
+                      opacity: isPast ? 0.5 : 1,
+                      transition: 'border-color 0.15s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = '#333'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a'}
+                  >
+                    <div style={{
+                      fontFamily: "'Syne', sans-serif",
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
+                      color: '#fff',
+                      textTransform: 'lowercase',
+                      marginBottom: '0.2rem',
+                    }}>
+                      {event.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {dt && (
+                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#555' }}>
+                          {dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      )}
+                      {event.location && (
+                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#555' }}>
+                          {event.location}
+                        </span>
+                      )}
+                      {isPast && (
+                        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.62rem', color: '#333' }}>
+                          past
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

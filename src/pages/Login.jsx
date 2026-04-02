@@ -7,8 +7,9 @@ import {
   signInWithPopup,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { FOUNDING_STORAGE_KEY } from './AlphaGate';
 
 const inputStyle = {
   background: '#0d0d0d',
@@ -48,17 +49,30 @@ export default function Login() {
     }
   };
 
+  const claimFoundingStatus = async (uid) => {
+    const foundingKey = localStorage.getItem(FOUNDING_STORAGE_KEY);
+    if (!foundingKey) return;
+    try {
+      await updateDoc(doc(db, 'users', uid), { foundingMember: true });
+      localStorage.removeItem(FOUNDING_STORAGE_KEY);
+    } catch (e) {
+      console.warn('claimFoundingStatus failed (non-critical):', e.message);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
       if (mode === 'login') {
-        await signInWithEmailAndPassword(auth, email, password);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        await claimFoundingStatus(cred.user.uid);
       } else {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName });
         await createUserDoc(cred.user, displayName);
+        await claimFoundingStatus(cred.user.uid);
       }
       navigate('/feed');
     } catch (err) {
@@ -80,6 +94,7 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
       await createUserDoc(cred.user, cred.user.displayName);
+      await claimFoundingStatus(cred.user.uid);
       navigate('/feed');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {

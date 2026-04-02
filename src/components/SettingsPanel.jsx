@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
 
 function Divider() {
   return <div style={{ height: '1px', background: '#1a1a1a', margin: '0.25rem 0' }} />;
 }
 
 export default function SettingsPanel({ user, onClose, mobile = false }) {
-  const navigate = useNavigate();
   const panelRef = useRef(null);
 
   // Close on outside click
@@ -21,9 +19,8 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
   }, [onClose]);
 
   const handleLogout = async () => {
-    await signOut(auth);
-    onClose();
-    navigate('/login');
+    try { await signOut(auth); } catch (e) { console.error(e); }
+    window.location.href = '/login';
   };
 
   return (
