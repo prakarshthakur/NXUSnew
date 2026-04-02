@@ -510,6 +510,7 @@
         <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;" onclick="window.location.href='feed.html'" style="cursor:pointer;">
         <div style="display: flex; gap: 0.6rem;">
             <button class="nav-btn" onclick="window.location.href='likes.html'">❤ my fun</button>
+            <button class="nav-btn" onclick="window.location.href='host.html'">🎤 my events</button>
             <button class="nav-btn" onclick="window.location.href='settings.html'">⚙</button>
         </div>
     </div>
@@ -588,7 +589,6 @@
                 cardsData = [];
                 eventsSnap.forEach(doc => {
                     const data = doc.data();
-                    if (data.hostUid === currentUser.uid) return; // don't show own events
                     
                     if (showPassedEvents) {
                         if (passedIds.has(doc.id)) cardsData.push({ id: doc.id, ...data });
