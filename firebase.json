@@ -13,7 +13,11 @@
       "capacitor.config.json",
       "android/**",
       "ios/**",
-      "redacta/**"
+      "redacta/**",
+      "firestore.rules"
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }
