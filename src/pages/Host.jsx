@@ -91,9 +91,14 @@ function PreviewCard({ form }) {
       <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem', color: '#666', textTransform: 'lowercase' }}>
         {formatDate()}
       </div>
-      {form.locationName && (
+      {form.eventType === 'offline' && form.locationName && (
         <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem', color: '#666', textTransform: 'lowercase' }}>
           📍 {form.locationName}
+        </div>
+      )}
+      {form.eventType === 'online' && (
+        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem', color: '#666', textTransform: 'lowercase' }}>
+          🔗 online event
         </div>
       )}
       {form.description && (
@@ -136,9 +141,11 @@ export default function Host() {
     date: '',
     time: '',
     hostCircle: '',
+    eventType: 'offline',
     locationName: '',
     lat: null,
     lng: null,
+    eventLink: '',
     maxAttendees: '',
   });
 
@@ -179,9 +186,11 @@ export default function Host() {
         title: form.title.trim(),
         description: form.description.trim(),
         datetime: Timestamp.fromDate(datetimeObj),
-        locationName: form.locationName.trim(),
-        lat: form.lat || null,
-        lng: form.lng || null,
+        eventType: form.eventType,
+        locationName: form.eventType === 'offline' ? form.locationName.trim() : '',
+        lat: form.eventType === 'offline' ? (form.lat || null) : null,
+        lng: form.eventType === 'offline' ? (form.lng || null) : null,
+        eventLink: form.eventType === 'online' ? form.eventLink.trim() : '',
         hostUid: user.uid,
         hostCircle: form.hostCircle.trim(),
         maxAttendees: form.maxAttendees ? parseInt(form.maxAttendees) : null,
@@ -319,6 +328,33 @@ export default function Host() {
                   onChange={e => setField('hostCircle', e.target.value)}
                 />
               </div>
+
+              <div>
+                <label style={labelStyle}>event type</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {['offline', 'online'].map(type => (
+                    <button
+                      key={type}
+                      onClick={() => setField('eventType', type)}
+                      style={{
+                        flex: 1,
+                        padding: '0.65rem 1rem',
+                        borderRadius: '8px',
+                        border: form.eventType === type ? '1px solid #FF2D2D' : '1px solid #1a1a1a',
+                        background: form.eventType === type ? 'rgba(255,45,45,0.1)' : '#0d0d0d',
+                        color: form.eventType === type ? '#FF2D2D' : '#555',
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: '0.82rem',
+                        textTransform: 'lowercase',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {type === 'offline' ? '📍 offline' : '🔗 online'}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
@@ -332,31 +368,50 @@ export default function Host() {
                 textTransform: 'lowercase',
                 marginBottom: '0.5rem',
               }}>
-                the place
+                {form.eventType === 'online' ? 'the link' : 'the place'}
               </div>
 
-              <div>
-                <label style={labelStyle}>location name</label>
-                <input
-                  ref={locationInputRef}
-                  className="host-input"
-                  style={inputStyle}
-                  type="text"
-                  placeholder="e.g. rooftop, downtown dubai"
-                  value={form.locationName}
-                  onChange={e => setField('locationName', e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label style={labelStyle}>drop a pin</label>
-                <MapPicker onLocationSelect={handleLocationSelect} inputRef={locationInputRef} />
-                {form.lat && form.lng && (
-                  <div style={{ color: '#444', fontSize: '0.7rem', fontFamily: "'IBM Plex Mono', monospace", marginTop: '0.4rem' }}>
-                    📍 {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
+              {form.eventType === 'offline' ? (
+                <>
+                  <div>
+                    <label style={labelStyle}>location name</label>
+                    <input
+                      ref={locationInputRef}
+                      className="host-input"
+                      style={inputStyle}
+                      type="text"
+                      placeholder="e.g. rooftop, downtown dubai"
+                      value={form.locationName}
+                      onChange={e => setField('locationName', e.target.value)}
+                    />
                   </div>
-                )}
-              </div>
+
+                  <div>
+                    <label style={labelStyle}>drop a pin</label>
+                    <MapPicker onLocationSelect={handleLocationSelect} inputRef={locationInputRef} />
+                    {form.lat && form.lng && (
+                      <div style={{ color: '#444', fontSize: '0.7rem', fontFamily: "'IBM Plex Mono', monospace", marginTop: '0.4rem' }}>
+                        📍 {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label style={labelStyle}>meeting link</label>
+                  <input
+                    className="host-input"
+                    style={inputStyle}
+                    type="url"
+                    placeholder="zoom, google meet, discord..."
+                    value={form.eventLink}
+                    onChange={e => setField('eventLink', e.target.value)}
+                  />
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#333', marginTop: '0.4rem' }}>
+                    link is only shared with accepted attendees
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label style={labelStyle}>max attendees (optional)</label>
