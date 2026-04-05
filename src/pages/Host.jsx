@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import MapPicker from '../components/MapPicker';
+import DateTimePicker from '../components/DateTimePicker';
 
 const inputStyle = {
   background: '#0d0d0d',
@@ -294,27 +295,14 @@ export default function Host() {
                 />
               </div>
 
-              <div className="host-datetime-row" style={{ display: 'flex', gap: '1rem' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>date</label>
-                  <input
-                    className="host-input"
-                    style={{ ...inputStyle, colorScheme: 'dark' }}
-                    type="date"
-                    value={form.date}
-                    onChange={e => setField('date', e.target.value)}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={labelStyle}>time</label>
-                  <input
-                    className="host-input"
-                    style={{ ...inputStyle, colorScheme: 'dark' }}
-                    type="time"
-                    value={form.time}
-                    onChange={e => setField('time', e.target.value)}
-                  />
-                </div>
+              <div>
+                <label style={labelStyle}>when</label>
+                <DateTimePicker
+                  date={form.date}
+                  time={form.time}
+                  onDateChange={(val) => setField('date', val)}
+                  onTimeChange={(val) => setField('time', val)}
+                />
               </div>
 
               <div>
