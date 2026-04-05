@@ -31,7 +31,7 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
     if (date) return parseInt(date.split('-')[1]) - 1;
     return today.getMonth();
   });
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [activePanel, setActivePanel] = useState('date');
   const [selectedHour, setSelectedHour] = useState(() => {
     if (time) return parseInt(time.split(':')[0]);
     return 19; // default 7pm
@@ -98,7 +98,7 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
     setSelectedHour(h);
     setSelectedMinute(m);
     onTimeChange(`${pad(h)}:${pad(m)}`);
-    setShowTimePicker(false);
+    setActivePanel('date');
   };
 
   // Format display strings
@@ -141,26 +141,32 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
       {/* ── Selected summary chips ── */}
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         <div
+          onClick={() => setActivePanel('date')}
           style={{
             flex: 1,
             minWidth: '120px',
-            background: date ? 'rgba(255,45,45,0.08)' : '#0d0d0d',
-            border: date ? '1px solid rgba(255,45,45,0.3)' : '1px solid #1a1a1a',
+            background: activePanel === 'date'
+              ? (date ? 'rgba(255,45,45,0.12)' : 'rgba(255,45,45,0.05)')
+              : (date ? 'rgba(255,45,45,0.08)' : '#0d0d0d'),
+            border: activePanel === 'date'
+              ? '1px solid rgba(255,45,45,0.5)'
+              : (date ? '1px solid rgba(255,45,45,0.3)' : '1px solid #1a1a1a'),
             borderRadius: '10px',
             padding: '0.65rem 0.85rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '0.15rem',
-            cursor: 'default',
-            transition: 'border-color 0.2s',
+            cursor: 'pointer',
+            transition: 'border-color 0.2s, background 0.2s',
           }}
         >
           <span style={{
             fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '0.62rem',
-            color: '#555',
+            color: activePanel === 'date' ? '#FF2D2D' : '#555',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
+            transition: 'color 0.2s',
           }}>
             📅 date
           </span>
@@ -176,12 +182,16 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
         </div>
 
         <div
-          onClick={() => setShowTimePicker(!showTimePicker)}
+          onClick={() => setActivePanel('time')}
           style={{
             flex: 1,
             minWidth: '120px',
-            background: time ? 'rgba(255,45,45,0.08)' : '#0d0d0d',
-            border: time ? '1px solid rgba(255,45,45,0.3)' : '1px solid #1a1a1a',
+            background: activePanel === 'time'
+              ? (time ? 'rgba(255,45,45,0.12)' : 'rgba(255,45,45,0.05)')
+              : (time ? 'rgba(255,45,45,0.08)' : '#0d0d0d'),
+            border: activePanel === 'time'
+              ? '1px solid rgba(255,45,45,0.5)'
+              : (time ? '1px solid rgba(255,45,45,0.3)' : '1px solid #1a1a1a'),
             borderRadius: '10px',
             padding: '0.65rem 0.85rem',
             display: 'flex',
@@ -194,9 +204,10 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
           <span style={{
             fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '0.62rem',
-            color: '#555',
+            color: activePanel === 'time' ? '#FF2D2D' : '#555',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
+            transition: 'color 0.2s',
           }}>
             🕐 time
           </span>
@@ -213,6 +224,7 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
       </div>
 
       {/* ── Calendar grid ── */}
+      {activePanel === 'date' && (
       <div style={{
         background: '#0a0a0a',
         border: '1px solid #1a1a1a',
@@ -368,9 +380,10 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
           })}
         </div>
       </div>
+      )}
 
       {/* ── Time picker ── */}
-      {showTimePicker && (
+      {activePanel === 'time' && (
         <div style={{
           background: '#0a0a0a',
           border: '1px solid #1a1a1a',
