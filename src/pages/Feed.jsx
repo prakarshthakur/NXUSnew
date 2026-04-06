@@ -617,9 +617,24 @@ export default function Feed() {
   const isDone = !loading && currentIndex >= events.length;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000', animation: 'fadeIn 0.2s ease' }}>
+    <div className="feed-container" style={{ minHeight: '100vh', position: 'relative', animation: 'fadeIn 0.2s ease' }}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .feed-container::before {
+          content: "";
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          z-index: -1;
+          background-image: url('/assets/feed_bg.jpg');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+        }
+        @media (max-width: 768px) {
+          .feed-container::before {
+            background-image: url('/assets/feed_bg_mobile.jpg');
+          }
+        }
       `}</style>
       <NavBar />
       <div style={{
