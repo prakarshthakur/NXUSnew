@@ -175,13 +175,13 @@ export default function AlphaGate({ onUnlock }) {
       {/* Logo */}
       <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
         <img
-          src="/assets/nxus_logo.png"
+          src="/assets/nxus_logo_icon.svg"
           alt="NXUS"
           style={{ width: '52px', height: '52px', objectFit: 'contain', marginBottom: '1rem' }}
           onError={e => { e.currentTarget.style.display = 'none'; }}
         />
         <div style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2rem',
           fontWeight: 800,
           color: '#FF2D2D',

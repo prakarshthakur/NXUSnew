@@ -160,7 +160,7 @@ export default function Login() {
       }}>
         <img
           className="login-logo"
-          src="/assets/nxus_logo.png"
+          src="/assets/nxus_logo_icon.svg"
           alt="NXUS"
           style={{ height: '80px', objectFit: 'contain' }}
         />

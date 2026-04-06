@@ -77,7 +77,7 @@ export default function NavBar() {
         justifyContent: 'space-between',
       }}>
         <img
-          src="/assets/nxus_logo.png"
+          src="/assets/nxus_logo_icon.svg"
           alt="NXUS"
           style={{ height: '28px', cursor: 'pointer', objectFit: 'contain' }}
           onClick={() => navigate('/feed')}
@@ -117,7 +117,7 @@ export default function NavBar() {
             {avatarUrl ? (
               <img src={avatarUrl} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span style={{ color: '#FF2D2D', fontSize: '0.7rem', fontFamily: "'Syne', sans-serif", fontWeight: 700 }}>
+              <span style={{ color: '#FF2D2D', fontSize: '0.7rem', fontFamily: "grovant, sans-serif", fontWeight: 700 }}>
                 {user?.displayName?.[0]?.toUpperCase() || '?'}
               </span>
             )}

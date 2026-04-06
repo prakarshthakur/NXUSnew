@@ -231,7 +231,7 @@ export default function Profile() {
               />
             ) : (
               <h1 style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "grovant, sans-serif",
                 fontSize: '1.8rem',
                 fontWeight: 800,
                 color: '#FF2D2D',
@@ -413,7 +413,7 @@ export default function Profile() {
           flexWrap: 'wrap',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FF2D2D' }}>
+            <div style={{ fontFamily: "grovant, sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FF2D2D' }}>
               {eventsAttended}
             </div>
             <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#555', textTransform: 'lowercase' }}>
@@ -421,7 +421,7 @@ export default function Profile() {
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FF2D2D' }}>
+            <div style={{ fontFamily: "grovant, sans-serif", fontSize: '1.4rem', fontWeight: 800, color: '#FF2D2D' }}>
               {eventsHosted}
             </div>
             <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#555', textTransform: 'lowercase' }}>
@@ -659,7 +659,7 @@ export default function Profile() {
                     onMouseLeave={e => e.currentTarget.style.borderColor = '#1a1a1a'}
                   >
                     <div style={{
-                      fontFamily: "'Syne', sans-serif",
+                      fontFamily: "grovant, sans-serif",
                       fontSize: '0.92rem',
                       fontWeight: 700,
                       color: '#fff',

@@ -89,7 +89,7 @@ export default function EventPage() {
             <div style={{ marginBottom: '1.5rem' }}>
               <div className="event-page-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
                 <h1 className="page-title" style={{
-                  fontFamily: "'Syne', sans-serif",
+                  fontFamily: "grovant, sans-serif",
                   fontSize: '2.2rem',
                   fontWeight: 800,
                   color: '#FF2D2D',

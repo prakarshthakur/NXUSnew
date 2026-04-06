@@ -5,6 +5,12 @@ import './styles/mobile.css';
 
 const style = document.createElement('style');
 style.textContent = `
+  @font-face {
+    font-family: 'grovant';
+    src: url('/fonts/grovant.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #000000; color: #ffffff; font-family: 'IBM Plex Mono', monospace; min-height: 100vh; overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }

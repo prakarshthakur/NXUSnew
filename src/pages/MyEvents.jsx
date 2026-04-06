@@ -105,7 +105,7 @@ export default function MyEvents() {
       <NavBar />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',
           fontWeight: 800,
           color: '#FF2D2D',
@@ -181,7 +181,7 @@ export default function MyEvents() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h3 style={{
-                        fontFamily: "'Syne', sans-serif",
+                        fontFamily: "grovant, sans-serif",
                         fontSize: '1.3rem',
                         fontWeight: 700,
                         color: '#FF2D2D',
@@ -339,7 +339,7 @@ export default function MyEvents() {
             width: '100%',
           }}>
             <p style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "grovant, sans-serif",
               fontSize: '1.1rem',
               fontWeight: 700,
               color: '#fff',

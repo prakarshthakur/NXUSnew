@@ -55,7 +55,7 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
         alignItems: 'center',
       }}>
         <span style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '0.82rem',
           fontWeight: 700,
           color: '#FF2D2D',

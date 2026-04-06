@@ -261,7 +261,7 @@ export default function DateTimePicker({ date, time, onDateChange, onTimeChange 
             ‹
           </button>
           <span style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "grovant, sans-serif",
             fontSize: '0.95rem',
             fontWeight: 700,
             color: '#fff',
@@ -540,7 +540,7 @@ function CustomTimePicker({ hour, minute, onConfirm }) {
   };
 
   const numStyle = {
-    fontFamily: "'Syne', sans-serif",
+    fontFamily: "grovant, sans-serif",
     fontSize: '1.8rem',
     fontWeight: 800,
     color: '#fff',
@@ -572,7 +572,7 @@ function CustomTimePicker({ hour, minute, onConfirm }) {
 
         {/* Colon */}
         <div style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '1.8rem',
           fontWeight: 800,
           color: '#FF2D2D',

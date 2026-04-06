@@ -356,7 +356,7 @@ export default function MyFun() {
       <NavBar />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',
           fontWeight: 800,
           color: '#FF2D2D',
@@ -453,7 +453,7 @@ export default function MyFun() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
                   <h3 style={{
-                    fontFamily: "'Syne', sans-serif",
+                    fontFamily: "grovant, sans-serif",
                     fontSize: '1.2rem',
                     fontWeight: 700,
                     color: '#FF2D2D',

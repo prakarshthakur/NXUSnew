@@ -43,7 +43,7 @@ export default function EventCard({ event, style, onTap }) {
     >
       <div>
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2rem',
           fontWeight: 800,
           color: '#FF2D2D',

@@ -69,7 +69,7 @@ function DetailModal({ event, onClose, onLike, onPass }) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <h2 style={{
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "grovant, sans-serif",
             fontSize: '1.8rem',
             fontWeight: 800,
             color: '#FF2D2D',
@@ -203,12 +203,13 @@ function DetailModal({ event, onClose, onLike, onPass }) {
   );
 }
 
-function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY }) {
+function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOut }) {
   const cardRef = useRef(null);
   const startRef = useRef(null);
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [stamp, setStamp] = useState(null); // 'like' | 'nope' | null
+  const [swiped, setSwiped] = useState(false); // committed swipe — keep position
 
   const threshold = window.innerWidth * 0.25;
 
@@ -232,8 +233,10 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
     if (!isDragging) return;
     setIsDragging(false);
     if (dragX > threshold) {
+      setSwiped(true);
       onLike();
     } else if (dragX < -threshold) {
+      setSwiped(true);
       onPass();
     } else {
       setDragX(0);
@@ -242,7 +245,19 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
     startRef.current = null;
   };
 
-  const rotation = isDragging ? (dragX / 20) : 0;
+  let finalDragX = dragX;
+  let finalRotation = (isDragging || swiped) ? (dragX / 20) : 0;
+  
+  if (flyOut === 'like') {
+    finalDragX = window.innerWidth * 1.5;
+    finalRotation = 20;
+  } else if (flyOut === 'pass') {
+    finalDragX = -window.innerWidth * 1.5;
+    finalRotation = -20;
+  }
+
+  // Use transition when resting, returning to center, or flying out. Disable when dragging.
+  const needsTransition = (!isDragging && !swiped) || flyOut;
 
   return (
     <div
@@ -259,10 +274,10 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
         width: '100%',
         touchAction: 'none',
         zIndex,
-        transform: `translateX(${dragX}px) rotate(${rotation}deg) translateY(${offsetY}px) scale(${scale})`,
-        transition: isDragging ? 'none' : 'transform 0.3s ease',
+        transform: `translateX(${finalDragX}px) rotate(${finalRotation}deg) translateY(${offsetY}px) scale(${scale})`,
+        opacity: flyOut ? 0 : 1,
+        transition: needsTransition ? 'transform 0.3s ease, opacity 0.3s ease' : 'none',
         cursor: zIndex >= 10 ? 'grab' : 'default',
-        ...style,
       }}
     >
       <div style={{
@@ -286,7 +301,7 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
             left: '1.5rem',
             border: '3px solid #4ade80',
             color: '#4ade80',
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "grovant, sans-serif",
             fontWeight: 800,
             fontSize: '1.8rem',
             padding: '0.2rem 0.6rem',
@@ -305,7 +320,7 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
             right: '1.5rem',
             border: '3px solid #FF2D2D',
             color: '#FF2D2D',
-            fontFamily: "'Syne', sans-serif",
+            fontFamily: "grovant, sans-serif",
             fontWeight: 800,
             fontSize: '1.8rem',
             padding: '0.2rem 0.6rem',
@@ -319,7 +334,7 @@ function SwipeCard({ event, onLike, onPass, onTap, style, zIndex, scale, offsetY
         )}
 
         <h2 style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2rem',
           fontWeight: 800,
           color: '#FF2D2D',
@@ -605,8 +620,6 @@ export default function Feed() {
     <div style={{ minHeight: '100vh', background: '#000', animation: 'fadeIn 0.2s ease' }}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes flyLeft { to { transform: translateX(-150%) rotate(-20deg); opacity: 0; } }
-        @keyframes flyRight { to { transform: translateX(150%) rotate(20deg); opacity: 0; } }
       `}</style>
       <NavBar />
       <div style={{
@@ -618,7 +631,7 @@ export default function Feed() {
         alignItems: 'center',
       }}>
         <div style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '1rem',
           color: '#333',
           textTransform: 'lowercase',
@@ -645,7 +658,7 @@ export default function Feed() {
             animation: 'fadeIn 0.3s ease',
           }}>
             <div style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "grovant, sans-serif",
               fontSize: '1.5rem',
               fontWeight: 800,
               color: '#FF2D2D',
@@ -756,14 +769,6 @@ export default function Feed() {
               const offsetY = idx * 12;
               const zIndex = 10 - idx;
 
-              const flyStyle = isTop && flyDirection
-                ? {
-                  animation: flyDirection === 'like'
-                    ? 'flyLeft 0.3s ease forwards'
-                    : 'flyRight 0.3s ease forwards',
-                }
-                : {};
-
               return (
                 <SwipeCard
                   key={event.id}
@@ -771,7 +776,7 @@ export default function Feed() {
                   zIndex={zIndex}
                   scale={scale}
                   offsetY={offsetY}
-                  style={flyStyle}
+                  flyOut={isTop ? flyDirection : null}
                   onLike={() => handleLike(event)}
                   onPass={() => handlePass(event)}
                   onTap={() => isTop && setDetailEvent(event)}

@@ -80,7 +80,7 @@ function PreviewCard({ form }) {
       gap: '0.75rem',
     }}>
       <h2 className="host-preview-title" style={{
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "grovant, sans-serif",
         fontSize: '2rem',
         fontWeight: 800,
         color: '#FF2D2D',
@@ -242,7 +242,7 @@ export default function Host() {
       <NavBar />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',
           fontWeight: 800,
           color: '#FF2D2D',
@@ -261,7 +261,7 @@ export default function Host() {
           {step === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "grovant, sans-serif",
                 fontSize: '1.1rem',
                 color: '#ffffff',
                 fontWeight: 700,
@@ -349,7 +349,7 @@ export default function Host() {
           {step === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "grovant, sans-serif",
                 fontSize: '1.1rem',
                 color: '#ffffff',
                 fontWeight: 700,
@@ -419,7 +419,7 @@ export default function Host() {
           {step === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{
-                fontFamily: "'Syne', sans-serif",
+                fontFamily: "grovant, sans-serif",
                 fontSize: '1.1rem',
                 color: '#ffffff',
                 fontWeight: 700,

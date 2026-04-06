@@ -25,7 +25,7 @@ export default function UsernamePage() {
   if (uid === null) {
     return (
       <div style={{ minHeight: '100vh', background: '#000', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <div style={{ color: '#FF2D2D', fontFamily: "'Syne', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'lowercase' }}>
+        <div style={{ color: '#FF2D2D', fontFamily: "grovant, sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'lowercase' }}>
           user not found
         </div>
         <div style={{ color: '#444', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem' }}>

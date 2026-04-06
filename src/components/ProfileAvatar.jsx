@@ -90,7 +90,7 @@ export default function ProfileAvatar({ userId, size = 40, editable = false, onU
           justifyContent: 'center',
           color: '#FF2D2D',
           fontSize: size * 0.35,
-          fontFamily: "'Syne', sans-serif",
+          fontFamily: "grovant, sans-serif",
           fontWeight: 700,
         }}>
           {getInitials(displayName)}
