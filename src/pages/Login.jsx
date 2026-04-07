@@ -152,8 +152,7 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      await claimFoundingStatus(cred.user.uid);
+      await signInWithEmailAndPassword(auth, email, password);
       navigate('/feed');
     } catch (err) {
       let msg = err.message || 'something went wrong';
