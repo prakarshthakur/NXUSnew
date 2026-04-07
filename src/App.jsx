@@ -37,11 +37,10 @@ function LoadingScreen() {
   );
 }
 
-function ProtectedRoute({ children, allowUnverified = false }) {
+function ProtectedRoute({ children }) {
   const user = useAuth();
   if (user === undefined) return <LoadingScreen />;
   if (user === null) return <Navigate to="/login" replace />;
-  if (!allowUnverified && !user.emailVerified) return <Navigate to="/verify" replace />;
   return children;
 }
 
@@ -49,7 +48,6 @@ function RootRedirect() {
   const user = useAuth();
   if (user === undefined) return <LoadingScreen />;
   if (user === null) return <Navigate to="/login" replace />;
-  if (!user.emailVerified) return <Navigate to="/verify" replace />;
   return <Navigate to="/feed" replace />;
 }
 
