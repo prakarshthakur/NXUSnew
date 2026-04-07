@@ -471,6 +471,21 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
             }}>
               {hostName || 'host'}
               <VerifiedBadge verified={hostVerified} size={13} />
+              {hostVerified && hostUniFlair && UNI_FLAIR_COLORS[hostUniFlair] && (
+                <span style={{
+                  marginLeft: '0.25rem',
+                  background: UNI_FLAIR_COLORS[hostUniFlair] + '22',
+                  border: `1px solid ${UNI_FLAIR_COLORS[hostUniFlair]}55`,
+                  borderRadius: '50px',
+                  padding: '0.05rem 0.4rem',
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '0.58rem',
+                  fontWeight: 700,
+                  color: UNI_FLAIR_COLORS[hostUniFlair],
+                }}>
+                  {hostUniFlair}
+                </span>
+              )}
             </span>
             {hostFlair && <FlairBadge flair={hostFlair} size="xs" />}
           </div>
