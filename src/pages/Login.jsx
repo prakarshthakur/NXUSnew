@@ -512,6 +512,10 @@ export default function Login() {
           </svg>
           continue with google
         </button>
+
+        <div style={{ marginTop: '0.5rem' }}>
+          <SocialLinks variant="login" />
+        </div>
       </div>
     </div>
   );
