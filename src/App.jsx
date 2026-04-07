@@ -7,7 +7,6 @@ import Host from './pages/Host';
 import MyEvents from './pages/MyEvents';
 import MyFun from './pages/MyFun';
 import Profile from './pages/Profile';
-import AlphaGate, { isAlphaUnlocked } from './pages/AlphaGate';
 import EventPage from './pages/EventPage';
 import SignOut from './pages/SignOut';
 import Admin from './pages/Admin';
