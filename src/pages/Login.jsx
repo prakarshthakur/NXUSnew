@@ -198,8 +198,7 @@ export default function Login() {
       setOtpStep(true);
       setTimeout(() => otpRefs.current[0]?.focus(), 50);
     } catch (err) {
-      console.error('sendOtp error:', err);
-      let msg = `failed to send code: ${err?.text || err?.message || JSON.stringify(err)}`;
+      let msg = 'failed to send code — try again';
       if (err.code === 'auth/email-not-allowed') msg = 'this email domain is not allowed to sign up';
       if (err.code === 'auth/invalid-email') msg = 'invalid email address';
       setError(msg.toLowerCase());
