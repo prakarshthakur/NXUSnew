@@ -63,6 +63,11 @@ export default function EventCard({ event, style, onTap }) {
         }}>
           {event.title}
         </h2>
+        {event.flair?.text && (
+          <div style={{ marginBottom: '0.3rem' }}>
+            <FlairBadge flair={event.flair} size="sm" />
+          </div>
+        )}
         <div style={{
           fontFamily: "'IBM Plex Mono', monospace",
           fontSize: '0.8rem',
