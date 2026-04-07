@@ -20,14 +20,9 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
   }, [onClose]);
 
   const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        window.location.href = '/login';
-      })
-      .catch((err) => {
-        console.error('Logout error:', err);
-        alert('Logout failed. Please try again.');
-      });
+    signOut(auth).finally(() => {
+      window.location.replace('/login');
+    });
   };
 
   return (
