@@ -6,7 +6,7 @@ import ProfileAvatar from './ProfileAvatar';
 import VerifiedBadge from './VerifiedBadge';
 import FlairBadge from './FlairBadge';
 
-const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8' };
+const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', MAHE: '#EA580C' };
 
 export default function EventCard({ event, style, onTap }) {
   const [hostName, setHostName] = useState('');
