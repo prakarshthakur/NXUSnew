@@ -69,16 +69,10 @@ export default function Login() {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         await claimFoundingStatus(cred.user.uid);
       } else {
-        if (!isAllowedEmailDomain(email)) {
-          setError('only approved student emails are allowed.');
-          setLoading(false);
-          return;
-        }
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName });
         await createUserDoc(cred.user, displayName);
         await claimFoundingStatus(cred.user.uid);
-        await sendEmailVerification(cred.user);
       }
       navigate('/feed');
     } catch (err) {
