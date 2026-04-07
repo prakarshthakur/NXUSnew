@@ -89,10 +89,10 @@ export default function RequestRow({ request, eventId }) {
           }}>
             <span
               onClick={() => navigate(`/profile/${request.userId}`)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
               onMouseEnter={e => e.currentTarget.style.color = '#FF2D2D'}
               onMouseLeave={e => e.currentTarget.style.color = '#ffffff'}
-            >{displayName}</span>
+            >{displayName}<VerifiedBadge verified={userDoc?.university_verified} size={13} /></span>
             {timeStr && (
               <span style={{ color: '#444', marginLeft: '0.5rem', fontSize: '0.7rem' }}>{timeStr}</span>
             )}
