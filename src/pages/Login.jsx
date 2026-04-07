@@ -107,17 +107,6 @@ export default function Login() {
     }
   };
 
-  const claimFoundingStatus = async (uid) => {
-    const foundingKey = localStorage.getItem(FOUNDING_STORAGE_KEY);
-    if (!foundingKey) return;
-    try {
-      await updateDoc(doc(db, 'users', uid), { foundingMember: true });
-      await setDoc(STATS_REF(), { foundingUsers: increment(1) }, { merge: true });
-      localStorage.removeItem(FOUNDING_STORAGE_KEY);
-    } catch (e) {
-      console.warn('claimFoundingStatus failed (non-critical):', e.message);
-    }
-  };
 
   // ── OTP helpers ──────────────────────────────────────────────────────────
 
