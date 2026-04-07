@@ -8,6 +8,7 @@ function Divider() {
 
 export default function SettingsPanel({ user, onClose, mobile = false }) {
   const panelRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = (e) => {
