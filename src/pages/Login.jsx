@@ -6,10 +6,13 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
+  sendEmailVerification,
+  signOut,
 } from 'firebase/auth';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { FOUNDING_STORAGE_KEY } from './AlphaGate';
+import { isAllowedEmailDomain } from '../utils/validation';
 
 const inputStyle = {
   background: '#0d0d0d',
@@ -69,10 +72,16 @@ export default function Login() {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         await claimFoundingStatus(cred.user.uid);
       } else {
+        if (!isAllowedEmailDomain(email)) {
+          setError('only approved student emails are allowed.');
+          setLoading(false);
+          return;
+        }
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName });
         await createUserDoc(cred.user, displayName);
         await claimFoundingStatus(cred.user.uid);
+        await sendEmailVerification(cred.user);
       }
       navigate('/feed');
     } catch (err) {
@@ -93,6 +102,14 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
+      
+      if (!isAllowedEmailDomain(cred.user.email)) {
+        await signOut(auth);
+        setError('only approved student emails are allowed.');
+        setLoading(false);
+        return;
+      }
+      
       await createUserDoc(cred.user, cred.user.displayName);
       await claimFoundingStatus(cred.user.uid);
       navigate('/feed');

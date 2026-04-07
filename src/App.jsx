@@ -9,6 +9,7 @@ import MyFun from './pages/MyFun';
 import Profile from './pages/Profile';
 import AlphaGate, { isAlphaUnlocked } from './pages/AlphaGate';
 import EventPage from './pages/EventPage';
+import VerifyEmail from './pages/VerifyEmail';
 
 function LoadingScreen() {
   return (
@@ -37,10 +38,11 @@ function LoadingScreen() {
   );
 }
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, allowUnverified = false }) {
   const user = useAuth();
   if (user === undefined) return <LoadingScreen />;
   if (user === null) return <Navigate to="/login" replace />;
+  if (!allowUnverified && !user.emailVerified) return <Navigate to="/verify" replace />;
   return children;
 }
 
@@ -48,6 +50,7 @@ function RootRedirect() {
   const user = useAuth();
   if (user === undefined) return <LoadingScreen />;
   if (user === null) return <Navigate to="/login" replace />;
+  if (!user.emailVerified) return <Navigate to="/verify" replace />;
   return <Navigate to="/feed" replace />;
 }
 
@@ -63,6 +66,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/verify"
+          element={
+            <ProtectedRoute allowUnverified={true}>
+              <VerifyEmail />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/feed"
           element={
