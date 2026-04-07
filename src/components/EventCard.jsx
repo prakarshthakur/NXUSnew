@@ -7,12 +7,16 @@ import VerifiedBadge from './VerifiedBadge';
 
 export default function EventCard({ event, style, onTap }) {
   const [hostName, setHostName] = useState('');
+  const [hostVerified, setHostVerified] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!event.hostUid) return;
     getDoc(doc(db, 'users', event.hostUid)).then(snap => {
-      if (snap.exists()) setHostName(snap.data().displayName || 'anonymous');
+      if (snap.exists()) {
+        setHostName(snap.data().displayName || 'anonymous');
+        setHostVerified(snap.data().university_verified || false);
+      }
     }).catch(() => {});
   }, [event.hostUid]);
 
