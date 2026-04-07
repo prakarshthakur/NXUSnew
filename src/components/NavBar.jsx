@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
 import ProfileAvatar from './ProfileAvatar';
 import SettingsPanel from './SettingsPanel';
+import MemberCount from './MemberCount';
 
 export default function NavBar() {
   const navigate = useNavigate();
