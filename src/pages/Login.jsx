@@ -143,6 +143,7 @@ export default function Login() {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(cred.user, { displayName });
         await createUserDoc(cred.user, displayName);
+        await setDoc(STATS_REF(), { totalUsers: increment(1) }, { merge: true });
         await claimFoundingStatus(cred.user.uid);
       }
       navigate('/feed');
