@@ -11,6 +11,7 @@ const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
 export default function EventCard({ event, style, onTap }) {
   const [hostName, setHostName] = useState('');
   const [hostVerified, setHostVerified] = useState(false);
+  const [hostUniFlair, setHostUniFlair] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export default function EventCard({ event, style, onTap }) {
       if (snap.exists()) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostVerified(snap.data().university_verified || false);
+        setHostUniFlair(snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [event.hostUid]);
