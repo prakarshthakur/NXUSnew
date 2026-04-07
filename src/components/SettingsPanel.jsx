@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
 
 function Divider() {
   return <div style={{ height: '1px', background: '#1a1a1a', margin: '0.25rem 0' }} />;
