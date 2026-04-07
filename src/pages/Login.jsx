@@ -18,7 +18,7 @@ const STATS_REF = () => doc(db, 'public', 'stats');
 
 const EMAILJS_SERVICE  = 'service_bxm5d9s';
 const EMAILJS_TEMPLATE = 'template_n4cxn9e';
-const EMAILJS_KEY      = 'IyhmkQNdrp88AQRNTWE4-';
+const EMAILJS_KEY      = '0PpBz8KikvlE81sVG';
 const OTP_EXPIRY_MS    = 15 * 60 * 1000;
 const RESEND_COOLDOWN  = 60;
 const MAX_ATTEMPTS     = 5;
