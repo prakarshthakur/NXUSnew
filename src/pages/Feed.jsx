@@ -737,10 +737,7 @@ export default function Feed() {
           textTransform: 'lowercase',
           marginBottom: '1.5rem',
           letterSpacing: '0.05em',
-          border: '1px solid #000',
-          borderRadius: '50px',
-          padding: '0.25rem 0.9rem',
-          display: 'inline-block',
+          textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
         }}>
           swipe to explore
         </div>
