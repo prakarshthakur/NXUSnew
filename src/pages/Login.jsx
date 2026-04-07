@@ -7,9 +7,24 @@ import {
   signInWithPopup,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { FOUNDING_STORAGE_KEY } from './AlphaGate';
+
+const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
+
+async function checkEmailAllowed(email) {
+  if (email === ADMIN_EMAIL) return true;
+  try {
+    const snap = await getDoc(doc(db, 'config', 'emailSuffixes'));
+    if (!snap.exists()) return true;
+    const suffixes = snap.data().suffixes || [];
+    if (suffixes.length === 0) return true;
+    return suffixes.some(s => email.toLowerCase().endsWith(s.toLowerCase()));
+  } catch {
+    return true; // fail open if config unreadable
+  }
+}
 
 const inputStyle = {
   background: '#0d0d0d',
