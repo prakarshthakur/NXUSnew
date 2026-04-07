@@ -19,9 +19,8 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const handleLogout = (e) => {
-    // Intentionally NOT calling e.preventDefault() so the href
-    // on the anchor tag navigates regardless of any JS error below.
+  const handleLogout = () => {
+    // href on the <a> tag handles navigation — this just cleans up auth state.
     try { Object.keys(localStorage).forEach(k => { if (k.startsWith('firebase:')) localStorage.removeItem(k); }); } catch(_) {}
     try { signOut(auth).catch(() => {}); } catch(_) {}
   };
