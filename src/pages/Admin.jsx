@@ -1157,6 +1157,7 @@ export default function Admin() {
         <div style={{
           display: 'flex', gap: '0.4rem',
           marginBottom: '1.5rem',
+          flexWrap: 'wrap',
         }}>
           {TABS.map(tab => (
             <button
