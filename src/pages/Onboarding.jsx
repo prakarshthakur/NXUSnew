@@ -130,7 +130,9 @@ export default function Onboarding() {
         EMAILJS_TEMPLATE,
         {
           to_email: email,
+          email,               // covers templates with recipient field set to {{email}}
           otp_code: code,
+          passcode: code,      // covers templates using {{passcode}}
           user_name: displayName || authUser?.displayName || 'student',
         },
         { publicKey: EMAILJS_KEY }
