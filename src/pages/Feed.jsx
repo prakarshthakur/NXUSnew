@@ -404,6 +404,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
 function HostRow({ hostUid, attendeeCount, eventId }) {
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
+  const [hostVerified, setHostVerified] = useState(false);
   const [showAttendees, setShowAttendees] = useState(false);
   const [attendeeNames, setAttendeeNames] = useState([]);
   const navigate = useNavigate();
@@ -414,6 +415,7 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
       if (snap.exists()) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
+        setHostVerified(snap.data().university_verified || false);
       }
     }).catch(() => {});
   }, [hostUid]);
