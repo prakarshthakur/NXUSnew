@@ -139,6 +139,7 @@ function DetailModal({ event, onClose, onLike, onPass }) {
               textTransform: 'lowercase',
             }}>
               hosted by {hostName || 'unknown'}
+              <VerifiedBadge verified={hostVerified} size={13} />
               {event.hostCircle && (
                 <span style={{ color: '#444', marginLeft: '0.4rem' }}>· {event.hostCircle}</span>
               )}
