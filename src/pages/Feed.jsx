@@ -102,6 +102,10 @@ function DetailModal({ event, onClose, onLike, onPass }) {
           </div>
         </div>
 
+        {event.flair?.text && (
+          <div><FlairBadge flair={event.flair} size="sm" /></div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
           <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.82rem', color: '#666' }}>
             🗓 {formatDate(event.datetime)}
