@@ -413,9 +413,12 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
   const [hostVerified, setHostVerified] = useState(false);
+  const [hostUniFlair, setHostUniFlair] = useState(null);
   const [showAttendees, setShowAttendees] = useState(false);
   const [attendeeNames, setAttendeeNames] = useState([]);
   const navigate = useNavigate();
+
+  const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
 
   useEffect(() => {
     if (!hostUid) return;
@@ -424,6 +427,7 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
         setHostVerified(snap.data().university_verified || false);
+        setHostUniFlair(snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [hostUid]);
