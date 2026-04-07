@@ -47,6 +47,7 @@ export default function LogoutButton({ style }) {
       `}</style>
       <button
         onClick={handleLogout}
+        onMouseDown={e => e.stopPropagation()}
         disabled={loading}
         style={{
           display: 'flex',
