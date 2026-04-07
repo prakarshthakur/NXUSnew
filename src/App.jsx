@@ -159,6 +159,7 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </UserDocProvider>
