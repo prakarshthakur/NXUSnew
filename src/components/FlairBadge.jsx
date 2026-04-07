@@ -7,6 +7,7 @@ export default function FlairBadge({ flair, size = 'sm' }) {
   return (
     <span style={{
       display: 'inline-flex',
+      alignSelf: 'flex-start',
       alignItems: 'center',
       borderRadius: '50px',
       padding,
