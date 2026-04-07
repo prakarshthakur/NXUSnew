@@ -428,7 +428,7 @@ export default function Login() {
           fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem',
           color: '#666666', textTransform: 'lowercase', margin: '-0.5rem 0 0',
         }}>
-          ebay for fun.
+          Eliminate your Boredom.
         </p>
 
         <MemberCount style={{ margin: '-0.35rem 0 0' }} />
