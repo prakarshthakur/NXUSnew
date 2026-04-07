@@ -555,75 +555,171 @@ function EventsTab() {
             const isPast = dt && dt < new Date();
             const dateStr = dt ? dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
+            const isFlairOpen = flairEdit?.id === ev.id;
             return (
               <div
                 key={ev.id}
-                className="admin-row"
                 style={{
                   background: '#0a0a0a',
                   border: '1px solid #1a1a1a',
                   borderRadius: '8px',
-                  padding: '0.75rem 1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
+                  overflow: 'hidden',
                   opacity: isPast ? 0.6 : 1,
-                  transition: 'background 0.1s',
                 }}
               >
-                {/* Type badge */}
-                <div style={{
-                  width: '34px', height: '34px', borderRadius: '8px',
-                  background: '#111', border: '1px solid #222',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ev.eventType === 'online' ? '#60a5fa' : '#4ade80'} strokeWidth="2">
-                    {ev.eventType === 'online'
-                      ? <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
-                      : <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>
-                    }
-                  </svg>
-                </div>
-
-                {/* Info */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontFamily: 'grovant, sans-serif', fontSize: '0.88rem', fontWeight: 700,
-                    color: '#e5e5e5', textTransform: 'lowercase',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    marginBottom: '0.15rem',
-                  }}>
-                    {ev.title || '(no title)'}
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: mono, fontSize: '0.62rem', color: '#444' }}>
-                      by {hostNames[ev.hostUid] || '...'}
-                    </span>
-                    <span style={{ fontFamily: mono, fontSize: '0.62rem', color: '#333' }}>
-                      {dateStr}
-                    </span>
-                    {isPast && (
-                      <span style={{ fontFamily: mono, fontSize: '0.58rem', color: '#2a2a2a' }}>past</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Delete */}
-                <button
-                  style={dangerBtn}
-                  onClick={() => setConfirmDelete({ id: ev.id, title: ev.title || 'this event' })}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
-                    e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)';
+                {/* Main row */}
+                <div
+                  className="admin-row"
+                  style={{
+                    padding: '0.75rem 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    transition: 'background 0.1s',
                   }}
                 >
-                  delete
-                </button>
+                  {/* Type badge */}
+                  <div style={{
+                    width: '34px', height: '34px', borderRadius: '8px',
+                    background: '#111', border: '1px solid #222',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ev.eventType === 'online' ? '#60a5fa' : '#4ade80'} strokeWidth="2">
+                      {ev.eventType === 'online'
+                        ? <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
+                        : <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>
+                      }
+                    </svg>
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontFamily: 'grovant, sans-serif', fontSize: '0.88rem', fontWeight: 700,
+                      color: '#e5e5e5', textTransform: 'lowercase',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      marginBottom: '0.15rem',
+                    }}>
+                      {ev.title || '(no title)'}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontFamily: mono, fontSize: '0.62rem', color: '#444' }}>
+                        by {hostNames[ev.hostUid] || '...'}
+                      </span>
+                      <span style={{ fontFamily: mono, fontSize: '0.62rem', color: '#333' }}>{dateStr}</span>
+                      {isPast && <span style={{ fontFamily: mono, fontSize: '0.58rem', color: '#2a2a2a' }}>past</span>}
+                      {ev.flair?.text && (
+                        <span style={{
+                          background: ev.flair.color + '18', border: `1px solid ${ev.flair.color}55`,
+                          borderRadius: '50px', padding: '0.1rem 0.45rem',
+                          fontFamily: mono, fontSize: '0.58rem', color: ev.flair.color,
+                        }}>
+                          {ev.flair.text}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Flair button */}
+                  <button
+                    style={{
+                      ...ghostBtn,
+                      borderColor: isFlairOpen ? '#FF2D2D' : '#333',
+                      color: isFlairOpen ? '#FF2D2D' : '#666',
+                      fontSize: '0.65rem',
+                    }}
+                    onClick={() => isFlairOpen ? setFlairEdit(null) : openFlairEdit(ev)}
+                  >
+                    {ev.flair?.text ? 'edit flair' : '+ flair'}
+                  </button>
+
+                  {/* Delete */}
+                  <button
+                    style={dangerBtn}
+                    onClick={() => setConfirmDelete({ id: ev.id, title: ev.title || 'this event' })}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)'; }}
+                  >
+                    delete
+                  </button>
+                </div>
+
+                {/* Inline flair editor */}
+                {isFlairOpen && (
+                  <div style={{
+                    borderTop: '1px solid #1a1a1a',
+                    padding: '0.75rem 1rem',
+                    background: '#0d0d0d',
+                    display: 'flex', flexDirection: 'column', gap: '0.6rem',
+                    animation: 'expandIn 0.15s ease',
+                  }}>
+                    <style>{`@keyframes expandIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}`}</style>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <input
+                        style={{ ...inputStyle, flex: 1, fontSize: '0.8rem', padding: '0.45rem 0.75rem' }}
+                        placeholder="flair label (e.g. featured, hot, new)"
+                        value={flairText}
+                        onChange={e => setFlairText(e.target.value)}
+                        className="admin-input"
+                        maxLength={24}
+                        autoFocus
+                        onKeyDown={e => e.key === 'Enter' && handleFlairSave(ev.id)}
+                      />
+                      <button
+                        onClick={() => handleFlairSave(ev.id)}
+                        disabled={flairSaving || !flairText.trim()}
+                        style={{
+                          background: flairColor, border: 'none', borderRadius: '8px',
+                          padding: '0.45rem 1rem', color: '#000',
+                          fontFamily: mono, fontSize: '0.75rem', fontWeight: 700,
+                          cursor: flairSaving || !flairText.trim() ? 'not-allowed' : 'pointer',
+                          opacity: flairSaving || !flairText.trim() ? 0.5 : 1,
+                          textTransform: 'lowercase', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {flairSaving ? '...' : 'save'}
+                      </button>
+                      {ev.flair?.text && (
+                        <button
+                          onClick={() => handleFlairRemove(ev.id)}
+                          disabled={flairSaving}
+                          style={{ ...dangerBtn, padding: '0.45rem 0.75rem' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)'; }}
+                        >
+                          remove
+                        </button>
+                      )}
+                    </div>
+                    {/* Color swatches */}
+                    <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                      {FLAIR_COLORS.map(c => (
+                        <button
+                          key={c}
+                          onClick={() => setFlairColor(c)}
+                          style={{
+                            width: '20px', height: '20px', borderRadius: '50%',
+                            background: c, border: flairColor === c ? '2px solid #fff' : '2px solid transparent',
+                            cursor: 'pointer', padding: 0, flexShrink: 0,
+                            boxShadow: flairColor === c ? `0 0 0 1px ${c}` : 'none',
+                          }}
+                        />
+                      ))}
+                      {/* Preview */}
+                      {flairText.trim() && (
+                        <span style={{
+                          marginLeft: '0.5rem',
+                          background: flairColor + '18', border: `1px solid ${flairColor}55`,
+                          borderRadius: '50px', padding: '0.1rem 0.55rem',
+                          fontFamily: mono, fontSize: '0.62rem', color: flairColor,
+                          alignSelf: 'center',
+                        }}>
+                          {flairText.trim()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
