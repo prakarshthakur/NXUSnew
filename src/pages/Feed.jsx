@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import ShareButton from '../components/ShareButton';
 import FlairBadge from '../components/FlairBadge';
 import VerifiedBadge from '../components/VerifiedBadge';
+import SocialLinks from '../components/SocialLinks';
 
 const MAPS_KEY = 'AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8';
 
