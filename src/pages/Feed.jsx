@@ -923,6 +923,8 @@ export default function Feed() {
             </button>
           </div>
         )}
+
+        <SocialLinks variant="feed" />
       </div>
 
       {detailEvent && (
