@@ -23,8 +23,9 @@ async function checkEmailAllowed(email) {
     const suffixes = snap.data().suffixes || [];
     if (suffixes.length === 0) return true;
     return suffixes.some(s => email.toLowerCase().endsWith(s.toLowerCase()));
-  } catch {
-    return true;
+  } catch (e) {
+    console.error('checkEmailAllowed failed:', e);
+    return false; // fail closed — block signup if config can't be read
   }
 }
 
