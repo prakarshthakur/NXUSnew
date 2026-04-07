@@ -255,7 +255,6 @@ export default function Login() {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
       await createUserDoc(cred.user, cred.user.displayName);
-      await claimFoundingStatus(cred.user.uid);
       navigate('/feed');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
