@@ -207,6 +207,12 @@ function UsersTab() {
 
       await batch.commit();
 
+      // Decrement public stats
+      const deletedUser = users.find(u => u.uid === uid);
+      const statsUpdate = { totalUsers: increment(-1) };
+      if (deletedUser?.foundingMember) statsUpdate.foundingUsers = increment(-1);
+      await setDoc(STATS_REF(), statsUpdate, { merge: true });
+
       setUsers(prev => prev.filter(u => u.uid !== uid));
       setConfirmDelete(null);
       showToast(`deleted user and all their content`);
