@@ -217,7 +217,6 @@ export default function Login() {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName });
       await createUserDoc(cred.user, displayName);
-      await claimFoundingStatus(cred.user.uid);
       navigate('/feed');
     } catch (err) {
       let msg = err.message || 'something went wrong';
