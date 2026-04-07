@@ -251,6 +251,8 @@ export default function Login() {
           ebay for fun.
         </p>
 
+        <MemberCount />
+
         {/* Tab switcher */}
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button style={mode === 'login' ? tabActive : tabInactive} onClick={() => setMode('login')}>
