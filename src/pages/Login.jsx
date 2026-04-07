@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, updateDoc, getDoc, serverTimestamp, increment } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import MemberCount from '../components/MemberCount';
 
