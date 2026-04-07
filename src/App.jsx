@@ -10,6 +10,17 @@ import Profile from './pages/Profile';
 import AlphaGate, { isAlphaUnlocked } from './pages/AlphaGate';
 import EventPage from './pages/EventPage';
 import SignOut from './pages/SignOut';
+import Admin from './pages/Admin';
+
+const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
+
+function AdminRoute({ children }) {
+  const user = useAuth();
+  if (user === undefined) return <LoadingScreen />;
+  if (user === null) return <Navigate to="/login" replace />;
+  if (user.email !== ADMIN_EMAIL) return <Navigate to="/feed" replace />;
+  return children;
+}
 
 function LoadingScreen() {
   return (

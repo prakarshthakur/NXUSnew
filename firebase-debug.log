@@ -1,0 +1,33 @@
+[debug] [2026-04-07T12:30:20.608Z] ----------------------------------------------------------------------
+[debug] [2026-04-07T12:30:20.609Z] Command:       /Users/prakarshthakur/.nvm/versions/node/v24.11.0/bin/node /Users/prakarshthakur/.nvm/versions/node/v24.11.0/bin/firebase deploy --only hosting
+[debug] [2026-04-07T12:30:20.609Z] CLI Version:   15.12.0
+[debug] [2026-04-07T12:30:20.609Z] Platform:      darwin
+[debug] [2026-04-07T12:30:20.609Z] Node Version:  v24.11.0
+[debug] [2026-04-07T12:30:20.609Z] Time:          Tue Apr 07 2026 18:00:20 GMT+0530 (India Standard Time)
+[debug] [2026-04-07T12:30:20.609Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-07T12:30:21.269Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-07T12:30:21.269Z] > authorizing via signed-in user (nxusglobal@gmail.com)
+[debug] [2026-04-07T12:30:21.269Z] [iam] checking project nxusdxb for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-07T12:30:21.269Z] Checked if tokens are valid: false, expires at: 1775563259433
+[debug] [2026-04-07T12:30:21.269Z] Checked if tokens are valid: false, expires at: 1775563259433
+[debug] [2026-04-07T12:30:21.269Z] > refreshing access token with scopes: []
+[debug] [2026-04-07T12:30:21.270Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-07T12:30:21.270Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-07T12:30:21.526Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-04-07T12:30:21.527Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-07T12:30:21.540Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions [none]
+[debug] [2026-04-07T12:30:21.541Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions  x-goog-user-project=nxusdxb
+[debug] [2026-04-07T12:30:21.541Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-07T12:30:23.301Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions 200
+[debug] [2026-04-07T12:30:23.301Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-07T12:30:23.302Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:30:23.302Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:30:23.303Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb [none]
+[debug] [2026-04-07T12:30:23.922Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb 200
+[debug] [2026-04-07T12:30:23.922Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb {"projectId":"nxusdxb","projectNumber":"518385929367","displayName":"NXUS","name":"projects/nxusdxb","resources":{"hostingSite":"nxusdxb"},"state":"ACTIVE","etag":"1_119adc85-02c5-43a8-82fa-fcc5d9ff90c8"}
+[info] 
+[info] === Deploying to 'nxusdxb'...
+[info] 
+[info] i  deploying hosting 
+[info] Running command: npm run build
