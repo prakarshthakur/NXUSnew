@@ -359,6 +359,14 @@ function UsersTab() {
                   {joined}
                 </span>
 
+                {/* Profile link */}
+                <button
+                  style={ghostBtn}
+                  onClick={() => navigate(`/profile/${u.uid}`)}
+                >
+                  profile
+                </button>
+
                 {/* Delete */}
                 {!isAdmin && (
                   <button
