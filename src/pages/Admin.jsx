@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   collection, getDocs, doc, deleteDoc,
   query, where, writeBatch, getDoc, setDoc, updateDoc,
-  orderBy, serverTimestamp,
+  orderBy, serverTimestamp, increment,
 } from 'firebase/firestore';
+
+const STATS_REF = () => doc(db, 'public', 'stats');
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
 import NavBar from '../components/NavBar';
