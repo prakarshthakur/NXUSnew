@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import LogoutButton from './LogoutButton';
 
 function Divider() {
   return <div style={{ height: '1px', background: '#1a1a1a', margin: '0.25rem 0' }} />;
