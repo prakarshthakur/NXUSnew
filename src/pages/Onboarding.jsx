@@ -17,6 +17,7 @@ const RESEND_COOLDOWN  = 60;
 const UNIVERSITY_FLAIRS = [
   { key: 'MDX',  label: 'MDX',  bg: '#7C3AED', color: '#ffffff' },
   { key: 'HWUD', label: 'HWUD', bg: '#1D4ED8', color: '#ffffff' },
+  { key: 'MAHE', label: 'MAHE', bg: '#EA580C', color: '#ffffff' },
 ];
 
 const mono = "'IBM Plex Mono', monospace";
