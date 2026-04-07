@@ -802,12 +802,305 @@ function EmailSuffixesTab() {
   );
 }
 
+// ── Verified Students Tab ─────────────────────────────────────────────────────
+
+function VerifiedStudentsTab() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sortAsc, setSortAsc] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
+
+  const load = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const snap = await getDocs(
+        query(collection(db, 'users'), where('university_verified', '==', true))
+      );
+      setStudents(snap.docs.map(d => ({ uid: d.id, ...d.data() })));
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); setRefreshing(false); }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = students
+    .filter(u => {
+      const q = search.toLowerCase();
+      return (
+        (u.displayName || '').toLowerCase().includes(q) ||
+        (u.universityEmail || '').toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      const ta = a.universityVerifiedAt?.toMillis?.() || 0;
+      const tb = b.universityVerifiedAt?.toMillis?.() || 0;
+      return sortAsc ? ta - tb : tb - ta;
+    });
+
+  if (loading) return <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '2rem 0' }}>loading...</div>;
+
+  return (
+    <div>
+      <SectionHeader title="verified students" count={filtered.length} onRefresh={load} refreshing={refreshing} />
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center' }}>
+        <input
+          style={{ ...inputStyle, flex: 1, boxSizing: 'border-box' }}
+          placeholder="search by name or email..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="admin-input"
+        />
+        <button
+          onClick={() => setSortAsc(v => !v)}
+          style={{ ...ghostBtn, whiteSpace: 'nowrap', fontSize: '0.7rem' }}
+        >
+          date {sortAsc ? '↑' : '↓'}
+        </button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '1.5rem 0' }}>
+          {search ? 'no matches' : 'no verified students yet'}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          {filtered.map(u => {
+            const flairColor = FLAIR_COLORS[u.universityFlair] || '#555';
+            const verifiedDate = u.universityVerifiedAt?.toDate?.()?.toLocaleDateString('en-US', {
+              month: 'short', day: 'numeric', year: 'numeric',
+            }) || '—';
+            return (
+              <div
+                key={u.uid}
+                className="admin-row"
+                style={{
+                  background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: '8px',
+                  padding: '0.75rem 1rem', display: 'flex', alignItems: 'center',
+                  gap: '0.75rem', transition: 'background 0.1s',
+                }}
+              >
+                {/* Avatar */}
+                <div style={{
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  background: '#111', border: '1px solid #222',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                }}>
+                  {u.avatarUrl ? (
+                    <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontFamily: 'grovant, sans-serif', fontSize: '0.85rem', fontWeight: 800, color: '#444' }}>
+                      {(u.displayName || u.email || '?')[0].toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: mono, fontSize: '0.82rem', color: '#e5e5e5', textTransform: 'lowercase' }}>
+                      {u.displayName || '(no name)'}
+                    </span>
+                    {/* Verified badge */}
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                    {u.universityFlair && (
+                      <span style={{
+                        background: flairColor + '22', border: `1px solid ${flairColor}55`,
+                        borderRadius: '50px', padding: '0.1rem 0.45rem',
+                        fontFamily: mono, fontSize: '0.58rem', color: flairColor,
+                      }}>
+                        {u.universityFlair}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontFamily: mono, fontSize: '0.68rem', color: '#444', marginTop: '0.1rem' }}>
+                    {u.universityEmail || '(no email)'}
+                  </div>
+                </div>
+
+                {/* Date */}
+                <span style={{ fontFamily: mono, fontSize: '0.62rem', color: '#333', flexShrink: 0, textAlign: 'right' }}>
+                  {verifiedDate}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── University Email Suffixes Tab ─────────────────────────────────────────────
+
+function UniversityEmailSuffixesTab() {
+  const [suffixes, setSuffixes] = useState(null);
+  const [newSuffix, setNewSuffix] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [toast, setToast] = useState('');
+
+  const CONFIG_DOC = doc(db, 'config', 'universityEmailSuffixes');
+
+  const load = async () => {
+    try {
+      const snap = await getDoc(CONFIG_DOC);
+      setSuffixes(snap.exists() ? (snap.data().suffixes || []) : []);
+    } catch (e) { console.error(e); setSuffixes([]); }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const validateSuffix = (s) => {
+    const t = s.trim().toLowerCase();
+    if (!t) return 'enter a suffix';
+    if (!t.startsWith('@')) return 'suffix must start with @';
+    if (!t.includes('.')) return 'suffix must include a domain (e.g. @mdx.ac.ae)';
+    if (t.length < 4) return 'suffix too short';
+    return null;
+  };
+
+  const handleAdd = async () => {
+    const trimmed = newSuffix.trim().toLowerCase();
+    const err = validateSuffix(trimmed);
+    if (err) { setError(err); return; }
+    if (suffixes.includes(trimmed)) { setError('already added'); return; }
+    setSaving(true); setError('');
+    try {
+      const updated = [...suffixes, trimmed];
+      await setDoc(CONFIG_DOC, { suffixes: updated, updatedAt: serverTimestamp() });
+      setSuffixes(updated);
+      setNewSuffix('');
+      showToast(`added ${trimmed}`);
+    } catch (e) { console.error(e); setError('failed to save'); }
+    finally { setSaving(false); }
+  };
+
+  const handleRemove = async (suffix) => {
+    setSaving(true);
+    try {
+      const updated = suffixes.filter(s => s !== suffix);
+      await setDoc(CONFIG_DOC, { suffixes: updated, updatedAt: serverTimestamp() });
+      setSuffixes(updated);
+      showToast(`removed ${suffix}`);
+    } catch (e) { console.error(e); }
+    finally { setSaving(false); }
+  };
+
+  if (suffixes === null) return <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '2rem 0' }}>loading...</div>;
+
+  return (
+    <div>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)',
+          background: '#0d0d0d', border: '1px solid #2a2a2a', borderRadius: '50px',
+          padding: '0.5rem 1.25rem', fontFamily: mono, fontSize: '0.75rem', color: '#aaa',
+          zIndex: 9998, whiteSpace: 'nowrap',
+        }}>
+          {toast}
+        </div>
+      )}
+
+      <SectionHeader title="allowed university email suffixes" count={suffixes.length} onRefresh={load} refreshing={false} />
+
+      <div style={{
+        background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.15)',
+        borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem',
+        display: 'flex', alignItems: 'flex-start', gap: '0.5rem',
+      }}>
+        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', marginTop: '0.35rem', flexShrink: 0 }} />
+        <p style={{ fontFamily: mono, fontSize: '0.72rem', color: '#666', margin: 0, lineHeight: 1.7 }}>
+          {suffixes.length === 0
+            ? 'no restrictions — any email can be used for university verification'
+            : `only these email domains can be used for student verification on the onboarding page.`
+          }
+        </p>
+      </div>
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ fontFamily: mono, fontSize: '0.68rem', color: '#555', marginBottom: '0.4rem', textTransform: 'lowercase' }}>
+          add university email suffix
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <input
+            style={{ ...inputStyle, flex: 1 }}
+            placeholder="@mdx.ac.ae"
+            value={newSuffix}
+            onChange={e => { setNewSuffix(e.target.value); setError(''); }}
+            onKeyDown={e => e.key === 'Enter' && handleAdd()}
+            className="admin-input"
+            disabled={saving}
+          />
+          <button
+            onClick={handleAdd}
+            disabled={saving || !newSuffix.trim()}
+            style={{
+              background: '#FF2D2D', border: 'none', borderRadius: '8px',
+              padding: '0.6rem 1.1rem', color: '#000',
+              fontFamily: mono, fontSize: '0.78rem', fontWeight: 700,
+              cursor: saving || !newSuffix.trim() ? 'not-allowed' : 'pointer',
+              opacity: saving || !newSuffix.trim() ? 0.5 : 1,
+              textTransform: 'lowercase', whiteSpace: 'nowrap', transition: 'opacity 0.15s',
+            }}
+          >
+            {saving ? '...' : '+ add'}
+          </button>
+        </div>
+        {error && <p style={{ fontFamily: mono, fontSize: '0.7rem', color: '#ef4444', margin: '0.35rem 0 0', textTransform: 'lowercase' }}>{error}</p>}
+      </div>
+
+      {suffixes.length === 0 ? (
+        <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '1rem 0' }}>no suffixes added</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          {suffixes.map(suffix => (
+            <div
+              key={suffix}
+              className="admin-row"
+              style={{
+                background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: '8px',
+                padding: '0.65rem 1rem', display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', transition: 'background 0.1s',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
+                <span style={{ fontFamily: mono, fontSize: '0.82rem', color: '#e5e5e5' }}>{suffix}</span>
+              </div>
+              <button
+                style={dangerBtn}
+                onClick={() => handleRemove(suffix)}
+                disabled={saving}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)'; }}
+              >
+                remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Admin Page ───────────────────────────────────────────────────────────
 
 const TABS = [
   { key: 'users', label: 'users' },
   { key: 'events', label: 'events' },
   { key: 'suffixes', label: 'email access' },
+  { key: 'verified', label: 'verified students' },
+  { key: 'uniSuffixes', label: 'uni email suffixes' },
 ];
 
 export default function Admin() {
