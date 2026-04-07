@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
 import TagPill from './TagPill';
+import VerifiedBadge from './VerifiedBadge';
 
 export default function RequestRow({ request, eventId }) {
   const navigate = useNavigate();
