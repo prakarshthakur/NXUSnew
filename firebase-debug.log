@@ -1,0 +1,102 @@
+[debug] [2026-04-07T12:39:06.884Z] ----------------------------------------------------------------------
+[debug] [2026-04-07T12:39:06.885Z] Command:       /Users/prakarshthakur/.nvm/versions/node/v24.11.0/bin/node /Users/prakarshthakur/.nvm/versions/node/v24.11.0/bin/firebase deploy --only hosting
+[debug] [2026-04-07T12:39:06.885Z] CLI Version:   15.12.0
+[debug] [2026-04-07T12:39:06.885Z] Platform:      darwin
+[debug] [2026-04-07T12:39:06.885Z] Node Version:  v24.11.0
+[debug] [2026-04-07T12:39:06.885Z] Time:          Tue Apr 07 2026 18:09:06 GMT+0530 (India Standard Time)
+[debug] [2026-04-07T12:39:06.885Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-07T12:39:07.191Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-07T12:39:07.191Z] > authorizing via signed-in user (nxusglobal@gmail.com)
+[debug] [2026-04-07T12:39:07.191Z] [iam] checking project nxusdxb for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-07T12:39:07.192Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:07.192Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:07.192Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions [none]
+[debug] [2026-04-07T12:39:07.192Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions  x-goog-user-project=nxusdxb
+[debug] [2026-04-07T12:39:07.192Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-07T12:39:08.725Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions 200
+[debug] [2026-04-07T12:39:08.725Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/nxusdxb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-07T12:39:08.726Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:08.727Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:08.728Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb [none]
+[debug] [2026-04-07T12:39:09.319Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb 200
+[debug] [2026-04-07T12:39:09.319Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/nxusdxb {"projectId":"nxusdxb","projectNumber":"518385929367","displayName":"NXUS","name":"projects/nxusdxb","resources":{"hostingSite":"nxusdxb"},"state":"ACTIVE","etag":"1_119adc85-02c5-43a8-82fa-fcc5d9ff90c8"}
+[info] 
+[info] === Deploying to 'nxusdxb'...
+[info] 
+[info] i  deploying hosting 
+[info] Running command: npm run build
+[info] ✔  hosting: Finished running predeploy script. 
+[debug] [2026-04-07T12:39:10.459Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:10.459Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:10.459Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions [none]
+[debug] [2026-04-07T12:39:10.459Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-04-07T12:39:12.060Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions 200
+[debug] [2026-04-07T12:39:12.060Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions {"name":"projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[nxusdxb]: beginning deploy... 
+[info] i  hosting[nxusdxb]: found 8 files in dist 
+[debug] [2026-04-07T12:39:12.074Z] [hosting] uploading with 200 concurrency
+[debug] [2026-04-07T12:39:12.098Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.098Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.099Z] [hosting] hash cache [ZGlzdA] stored for 8 files
+[debug] [2026-04-07T12:39:12.099Z] [hosting][hash queue][FINAL] {"max":22,"min":3,"avg":6,"active":0,"complete":8,"success":8,"errored":0,"retried":0,"total":8,"elapsed":25}
+[debug] [2026-04-07T12:39:12.099Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740:populateFiles [none]
+[debug] [2026-04-07T12:39:12.099Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740:populateFiles {"files":{"/index.html":"4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459","/assets/nxus_logo_icon.svg":"861e3c612e5cc7f0a6afa24f113716c322fb790879e1b0f864848d574534487d","/assets/index-DMEPsF2m.css":"550073cf107dcb49db978101eec6b2b749d4e24530df07d06cf824c6c5d2edaa","/assets/feed_bg.jpg":"ab86a3012c1c4d98944a083fab84d1e0d6b71ae4b47a9d34209f14131b52113a","/fonts/grovant.otf":"05123ec2e3958e693416c7e6cf785591619c67a81f79f97fb46d031569d560f2","/assets/feed_bg_mobile.jpg":"6f7ff374679777f639488b62358bdeb2d01bb98cf71a1a18b0f77528de27859e","/assets/nxus_logo.png":"daa90a9ae90c9de10aa45e35dcbea2540a1c3766b5ea03fbdb5ea5282b202183","/assets/index-CYBq4fU2.js":"49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9"}}
+[debug] [2026-04-07T12:39:12.843Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740:populateFiles 200
+[debug] [2026-04-07T12:39:12.843Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740:populateFiles {"uploadRequiredHashes":["49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9","4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files"}
+[debug] [2026-04-07T12:39:12.843Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.844Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.844Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.844Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:12.844Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9 [none]
+[debug] [2026-04-07T12:39:12.845Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9 [stream]
+[debug] [2026-04-07T12:39:12.846Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459 [none]
+[debug] [2026-04-07T12:39:12.847Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459 [stream]
+[debug] [2026-04-07T12:39:12.848Z] [hosting][populate queue][FINAL] {"max":746,"min":746,"avg":746,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":750}
+[debug] [2026-04-07T12:39:12.849Z] [hosting] uploads queued: 2
+[info] i  hosting: uploading new files [0/2] (0%) 
+[debug] [2026-04-07T12:39:14.883Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459 200
+[debug] [2026-04-07T12:39:14.883Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/4d97c510306f08ad90de09c9bc827dfd30a822f77e48ed1451bee7de2d214459 [stream]
+[debug] [2026-04-07T12:39:15.068Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9 200
+[debug] [2026-04-07T12:39:15.068Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/nxusdxb/versions/ea2094081cca7740/files/49050472f0cd8c4760d1411cb2a43006ef705e51bd6a49d523db725a2d006da9 [stream]
+[debug] [2026-04-07T12:39:15.069Z] [hosting][upload queue][FINAL] {"max":2225,"min":2039,"avg":2132,"active":0,"complete":2,"success":2,"errored":0,"retried":0,"total":2,"elapsed":2226}
+[info] i  hosting: upload complete 
+[info] ✔  hosting[nxusdxb]: file upload complete 
+[debug] [2026-04-07T12:39:15.069Z] [hosting] deploy completed after 3005ms
+[debug] [2026-04-07T12:39:15.070Z] [
+  {
+    "config": {
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "predeploy": [
+        "npm run build"
+      ],
+      "site": "nxusdxb"
+    },
+    "version": "projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740"
+  }
+]
+[info] i  hosting[nxusdxb]: finalizing version... 
+[debug] [2026-04-07T12:39:15.072Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:15.072Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:15.072Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions/ea2094081cca7740 updateMask=status%2Cconfig
+[debug] [2026-04-07T12:39:15.072Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions/ea2094081cca7740 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2026-04-07T12:39:15.821Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions/ea2094081cca7740 200
+[debug] [2026-04-07T12:39:15.821Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/versions/ea2094081cca7740 {"name":"projects/518385929367/sites/nxusdxb/versions/ea2094081cca7740","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-04-07T12:39:11.412791Z","createUser":{"email":"nxusglobal@gmail.com"},"finalizeTime":"2026-04-07T12:39:15.601451Z","finalizeUser":{"email":"nxusglobal@gmail.com"}}
+[debug] [2026-04-07T12:39:15.821Z] [hosting] finalized version for nxusdxb:[object Object]
+[info] ✔  hosting[nxusdxb]: version finalized 
+[info] i  hosting[nxusdxb]: releasing new version... 
+[debug] [2026-04-07T12:39:15.822Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:15.822Z] Checked if tokens are valid: true, expires at: 1775568620527
+[debug] [2026-04-07T12:39:15.822Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/channels/live/releases versionName=projects%2F518385929367%2Fsites%2Fnxusdxb%2Fversions%2Fea2094081cca7740
+[debug] [2026-04-07T12:39:15.822Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/nxusdxb/channels/live/releases {}
