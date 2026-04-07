@@ -55,18 +55,6 @@ export default function ProfileAvatar({ userId, size = 40, editable = false, onU
     >
       {avatar}
 
-      {/* "i" badge */}
-      <div style={{
-        position: 'absolute', bottom: 0, right: 0,
-        width: '16px', height: '16px', borderRadius: '50%',
-        background: '#1a1a1a', border: '1px solid #333',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.55rem',
-        color: '#666', fontWeight: 700, pointerEvents: 'none',
-      }}>
-        i
-      </div>
-
       {showTooltip && (
         <div style={{
           position: 'absolute',
