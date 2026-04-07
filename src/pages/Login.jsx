@@ -98,6 +98,7 @@ export default function Login() {
       if (err.code === 'auth/email-already-in-use') msg = 'email already in use';
       if (err.code === 'auth/weak-password') msg = 'password too weak (min 6 chars)';
       if (err.code === 'auth/invalid-email') msg = 'invalid email address';
+      if (err.code === 'auth/email-not-allowed') msg = 'this email domain is not allowed to sign up';
       setError(msg.toLowerCase());
     } finally {
       setLoading(false);
