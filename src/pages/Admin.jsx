@@ -1184,6 +1184,8 @@ export default function Admin() {
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'events' && <EventsTab />}
         {activeTab === 'suffixes' && <EmailSuffixesTab />}
+        {activeTab === 'verified' && <VerifiedStudentsTab />}
+        {activeTab === 'uniSuffixes' && <UniversityEmailSuffixesTab />}
       </div>
     </div>
   );
