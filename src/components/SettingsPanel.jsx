@@ -88,26 +88,7 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
 
         <Divider />
 
-        <a
-          href="/signout"
-          style={{
-            display: 'flex',
-            width: '100%',
-            padding: '0.6rem 0.85rem',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '0.78rem',
-            color: '#ef4444',
-            textTransform: 'lowercase',
-            textDecoration: 'none',
-            transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-        >
-          log out
-        </a>
+        <LogoutButton />
       </div>
     </div>
   );
