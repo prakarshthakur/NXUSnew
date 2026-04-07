@@ -150,6 +150,7 @@ function SectionHeader({ title, count, onRefresh, refreshing }) {
 // ── Users Tab ─────────────────────────────────────────────────────────────────
 
 function UsersTab() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
