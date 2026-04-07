@@ -4,6 +4,9 @@ import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
 import VerifiedBadge from './VerifiedBadge';
+import FlairBadge from './FlairBadge';
+
+const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
 
 export default function EventCard({ event, style, onTap }) {
   const [hostName, setHostName] = useState('');
