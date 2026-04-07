@@ -63,12 +63,6 @@ function RootRedirect() {
 }
 
 export default function App() {
-  const [unlocked, setUnlocked] = useState(isAlphaUnlocked);
-
-  if (!unlocked) {
-    return <AlphaGate onUnlock={() => setUnlocked(true)} />;
-  }
-
   return (
     <BrowserRouter>
       <Routes>
