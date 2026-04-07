@@ -16,6 +16,7 @@ const MAPS_KEY = 'AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8';
 function DetailModal({ event, onClose, onLike, onPass }) {
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
+  const [hostVerified, setHostVerified] = useState(false);
 
   useEffect(() => {
     if (!event.hostUid) return;
@@ -23,6 +24,7 @@ function DetailModal({ event, onClose, onLike, onPass }) {
       if (snap.exists()) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
+        setHostVerified(snap.data().university_verified || false);
       }
     }).catch(() => {});
   }, [event.hostUid]);
