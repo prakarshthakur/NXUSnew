@@ -115,8 +115,11 @@ export default function EventCard({ event, style, onTap }) {
             fontSize: '0.75rem',
             color: '#FF2D2D',
             textTransform: 'lowercase',
+            display: 'inline-flex',
+            alignItems: 'center',
           }}>
             {hostName || 'host'}
+            <VerifiedBadge verified={hostVerified} size={13} />
           </span>
         </div>
 
