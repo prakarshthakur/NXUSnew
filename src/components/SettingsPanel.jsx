@@ -88,8 +88,7 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
         <Divider />
 
         <a
-          href="/login"
-          onClick={handleLogout}
+          href="/signout"
           style={{
             display: 'flex',
             width: '100%',
