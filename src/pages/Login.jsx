@@ -93,14 +93,6 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
-      
-      if (!isAllowedEmailDomain(cred.user.email)) {
-        await signOut(auth);
-        setError('only approved student emails are allowed.');
-        setLoading(false);
-        return;
-      }
-      
       await createUserDoc(cred.user, cred.user.displayName);
       await claimFoundingStatus(cred.user.uid);
       navigate('/feed');
