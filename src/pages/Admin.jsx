@@ -902,38 +902,28 @@ function StatsBar() {
   const [stats, setStats] = useState({ users: '—', events: '—', requests: '—' });
   const [syncing, setSyncing] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const [u, e, r] = await Promise.all([
-        getDocs(collection(db, 'users')),
-        getDocs(collection(db, 'events')),
-        getDocs(query(collection(db, 'joinRequests'), where('status', '==', 'pending'))),
-      ]);
-      setStats({ users: u.size, events: e.size, requests: r.size });
-      return { userDocs: u.docs };
-    } catch {}
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const syncPublicStats = async () => {
+  const syncPublicStats = useCallback(async () => {
     setSyncing(true);
     try {
-      const [uSnap, foundingSnap] = await Promise.all([
+      const [uSnap, foundingSnap, eSnap, rSnap] = await Promise.all([
         getDocs(collection(db, 'users')),
         getDocs(query(collection(db, 'users'), where('foundingMember', '==', true))),
+        getDocs(collection(db, 'events')),
+        getDocs(query(collection(db, 'joinRequests'), where('status', '==', 'pending'))),
       ]);
       await setDoc(STATS_REF(), {
         totalUsers: uSnap.size,
         foundingUsers: foundingSnap.size,
       });
-      setStats(prev => ({ ...prev, users: uSnap.size }));
+      setStats({ users: uSnap.size, events: eSnap.size, requests: rSnap.size });
     } catch (e) {
       console.error(e);
     } finally {
       setSyncing(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { syncPublicStats(); }, [syncPublicStats]);
 
   const items = [
     { label: 'total users', value: stats.users },
