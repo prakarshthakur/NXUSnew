@@ -942,24 +942,40 @@ function StatsBar() {
   ];
 
   return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: '0.75rem', marginBottom: '1.75rem',
-    }}>
-      {items.map(item => (
-        <div key={item.label} style={{
-          background: '#0a0a0a', border: '1px solid #1a1a1a',
-          borderRadius: '10px', padding: '1rem',
-          display: 'flex', flexDirection: 'column', gap: '0.25rem',
-        }}>
-          <span style={{ fontFamily: 'grovant, sans-serif', fontSize: '1.6rem', fontWeight: 800, color: '#FF2D2D' }}>
-            {item.value}
-          </span>
-          <span style={{ fontFamily: mono, fontSize: '0.65rem', color: '#444', textTransform: 'lowercase' }}>
-            {item.label}
-          </span>
-        </div>
-      ))}
+    <div style={{ marginBottom: '1.75rem' }}>
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '0.75rem', marginBottom: '0.5rem',
+      }}>
+        {items.map(item => (
+          <div key={item.label} style={{
+            background: '#0a0a0a', border: '1px solid #1a1a1a',
+            borderRadius: '10px', padding: '1rem',
+            display: 'flex', flexDirection: 'column', gap: '0.25rem',
+          }}>
+            <span style={{ fontFamily: 'grovant, sans-serif', fontSize: '1.6rem', fontWeight: 800, color: '#FF2D2D' }}>
+              {item.value}
+            </span>
+            <span style={{ fontFamily: mono, fontSize: '0.65rem', color: '#444', textTransform: 'lowercase' }}>
+              {item.label}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={syncPublicStats}
+        disabled={syncing}
+        style={{
+          background: 'transparent', border: '1px solid #1a1a1a', borderRadius: '50px',
+          padding: '0.3rem 0.85rem', fontFamily: mono, fontSize: '0.65rem',
+          color: syncing ? '#444' : '#555', cursor: syncing ? 'not-allowed' : 'pointer',
+          textTransform: 'lowercase', transition: 'color 0.15s, border-color 0.15s',
+        }}
+        onMouseEnter={e => { if (!syncing) { e.currentTarget.style.color = '#aaa'; e.currentTarget.style.borderColor = '#333'; } }}
+        onMouseLeave={e => { e.currentTarget.style.color = '#555'; e.currentTarget.style.borderColor = '#1a1a1a'; }}
+      >
+        {syncing ? 'syncing...' : '↻ sync public member count'}
+      </button>
     </div>
   );
 }
