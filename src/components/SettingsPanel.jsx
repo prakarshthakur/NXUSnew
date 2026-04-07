@@ -27,6 +27,7 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
     onClose();
     try {
       await signOut(auth);
+      window.location.href = '/login';
     } catch (err) {
       console.error('Logout error:', err);
     }
