@@ -9,6 +9,7 @@ import NavBar from '../components/NavBar';
 import TagPill from '../components/TagPill';
 import AvatarComponent from '../components/ProfileAvatar';
 import FlairBadge from '../components/FlairBadge';
+import VerifiedBadge from '../components/VerifiedBadge';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 const FLAIR_COLORS = [
