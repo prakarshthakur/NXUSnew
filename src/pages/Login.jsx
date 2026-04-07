@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
+import SocialLinks from '../components/SocialLinks';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
