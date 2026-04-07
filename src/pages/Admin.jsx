@@ -443,6 +443,35 @@ function EventsTab() {
     setTimeout(() => setToast(''), 3000);
   };
 
+  const openFlairEdit = (ev) => {
+    setFlairEdit({ id: ev.id });
+    setFlairText(ev.flair?.text || '');
+    setFlairColor(ev.flair?.color || FLAIR_COLORS[0]);
+  };
+
+  const handleFlairSave = async (eventId) => {
+    if (!flairText.trim()) return;
+    setFlairSaving(true);
+    try {
+      await updateDoc(doc(db, 'events', eventId), { flair: { text: flairText.trim(), color: flairColor } });
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, flair: { text: flairText.trim(), color: flairColor } } : e));
+      setFlairEdit(null);
+      showToast('flair saved');
+    } catch (e) { console.error(e); showToast('error saving flair'); }
+    finally { setFlairSaving(false); }
+  };
+
+  const handleFlairRemove = async (eventId) => {
+    setFlairSaving(true);
+    try {
+      await updateDoc(doc(db, 'events', eventId), { flair: null });
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, flair: null } : e));
+      setFlairEdit(null);
+      showToast('flair removed');
+    } catch (e) { console.error(e); }
+    finally { setFlairSaving(false); }
+  };
+
   const handleDelete = async () => {
     if (!confirmDelete) return;
     setDeleting(true);
