@@ -348,6 +348,10 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
           {event.title}
         </h2>
 
+        {event.flair?.text && (
+          <FlairBadge flair={event.flair} size="sm" />
+        )}
+
         <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem', color: '#666', textTransform: 'lowercase' }}>
           {event.datetime
             ? (() => {
