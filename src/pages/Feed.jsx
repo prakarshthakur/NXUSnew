@@ -390,6 +390,24 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
           </div>
         )}
 
+        {/* Show description preview for online events (no map to fill space) */}
+        {!event.lat && !event.lng && event.description && (
+          <div style={{
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '0.82rem',
+            color: '#777',
+            lineHeight: 1.6,
+            textTransform: 'lowercase',
+            display: '-webkit-box',
+            WebkitLineClamp: 4,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            flex: 1,
+          }}>
+            {event.description}
+          </div>
+        )}
+
         {event.lat && event.lng && (
           <div style={{
             borderRadius: '8px',
