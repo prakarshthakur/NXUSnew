@@ -3,6 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
+import VerifiedBadge from './VerifiedBadge';
 
 export default function EventCard({ event, style, onTap }) {
   const [hostName, setHostName] = useState('');
