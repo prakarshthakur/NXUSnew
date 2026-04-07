@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
@@ -12,15 +12,24 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
   // Close on outside click
   useEffect(() => {
     const handler = (e) => {
-      if (panelRef.current && !panelRef.current.contains(e.target)) onClose();
+      // Small timeout to allow click events inside to fire first if elements get removed
+      setTimeout(() => {
+        if (panelRef.current && !panelRef.current.contains(e.target)) onClose();
+      }, 0);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const handleLogout = async () => {
-    try { await signOut(auth); } catch (e) { console.error(e); }
-    window.location.href = '/login';
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
 
   return (
