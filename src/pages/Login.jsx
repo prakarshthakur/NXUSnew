@@ -129,7 +129,7 @@ export default function Login() {
       email: toEmail,
       passcode: code,
       time: timeStr,
-    }, EMAILJS_KEY);
+    }, { publicKey: EMAILJS_KEY });
     return expiry;
   };
 
