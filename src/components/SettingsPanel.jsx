@@ -94,13 +94,12 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
 
         <Divider />
 
-        <button
+        <a
+          href="/login"
           onClick={handleLogout}
           style={{
             display: 'flex',
             width: '100%',
-            background: 'transparent',
-            border: 'none',
             padding: '0.6rem 0.85rem',
             borderRadius: '6px',
             cursor: 'pointer',
@@ -108,14 +107,14 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
             fontSize: '0.78rem',
             color: '#ef4444',
             textTransform: 'lowercase',
-            textAlign: 'left',
+            textDecoration: 'none',
             transition: 'background 0.15s',
           }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
           log out
-        </button>
+        </a>
       </div>
     </div>
   );
