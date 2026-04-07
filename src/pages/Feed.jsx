@@ -454,8 +454,11 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
               fontSize: '0.75rem',
               color: '#FF2D2D',
               textTransform: 'lowercase',
+              display: 'inline-flex',
+              alignItems: 'center',
             }}>
               {hostName || 'host'}
+              <VerifiedBadge verified={hostVerified} size={13} />
             </span>
             {hostFlair && <FlairBadge flair={hostFlair} size="xs" />}
           </div>
