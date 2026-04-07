@@ -6,13 +6,10 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   updateProfile,
-  sendEmailVerification,
-  signOut,
 } from 'firebase/auth';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { FOUNDING_STORAGE_KEY } from './AlphaGate';
-import { isAllowedEmailDomain } from '../utils/validation';
 
 const inputStyle = {
   background: '#0d0d0d',
