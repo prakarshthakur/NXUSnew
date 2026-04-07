@@ -733,10 +733,14 @@ export default function Feed() {
         <div style={{
           fontFamily: "grovant, sans-serif",
           fontSize: '1rem',
-          color: '#333',
+          color: '#FF2D2D',
           textTransform: 'lowercase',
           marginBottom: '1.5rem',
           letterSpacing: '0.05em',
+          border: '1px solid #000',
+          borderRadius: '50px',
+          padding: '0.25rem 0.9rem',
+          display: 'inline-block',
         }}>
           swipe to explore
         </div>
