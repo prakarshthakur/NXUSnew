@@ -104,6 +104,8 @@ export default function Login() {
   const createUserDoc = async (user, name) => {
     try {
       const userRef = doc(db, 'users', user.uid);
+      const existing = await getDoc(userRef);
+      const isNew = !existing.exists();
       await setDoc(userRef, {
         displayName: name || user.displayName || '',
         email: user.email,
@@ -112,6 +114,7 @@ export default function Login() {
         keywords: [],
         createdAt: serverTimestamp(),
       }, { merge: true });
+      if (isNew) await setDoc(STATS_REF(), { totalUsers: increment(1) }, { merge: true });
     } catch (e) {
       console.warn('createUserDoc failed (non-critical):', e.message);
     }
