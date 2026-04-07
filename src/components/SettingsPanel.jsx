@@ -90,6 +90,24 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
 
         <Divider />
 
+        <button
+          onClick={() => { onClose(); navigate('/about'); }}
+          style={{
+            display: 'block', width: '100%', textAlign: 'left',
+            background: 'none', border: 'none',
+            padding: '0.5rem 0.85rem',
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '0.75rem', color: '#666',
+            textTransform: 'lowercase', cursor: 'pointer',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#aaa'}
+          onMouseLeave={e => e.currentTarget.style.color = '#666'}
+        >
+          about nxus
+        </button>
+
+        <Divider />
+
         <LogoutButton />
       </div>
     </div>
