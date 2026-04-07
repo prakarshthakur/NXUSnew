@@ -125,6 +125,14 @@ export default function App() {
         />
         <Route path="/event/:eventId" element={<EventPage />} />
         <Route path="/signout" element={<SignOut />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
