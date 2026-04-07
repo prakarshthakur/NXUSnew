@@ -9,28 +9,25 @@ function Divider() {
 export default function SettingsPanel({ user, onClose, mobile = false }) {
   const panelRef = useRef(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e) => {
-      // Small timeout to allow click events inside to fire first if elements get removed
-      setTimeout(() => {
-        if (panelRef.current && !panelRef.current.contains(e.target)) onClose();
-      }, 0);
+      if (panelRef.current && !panelRef.current.contains(e.target)) {
+        onClose();
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const handleLogout = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onClose();
-    try {
-      await signOut(auth);
-      window.location.href = '/login';
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = '/login';
+      })
+      .catch((err) => {
+        console.error('Logout error:', err);
+        alert('Logout failed. Please try again.');
+      });
   };
 
   return (
