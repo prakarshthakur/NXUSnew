@@ -19,15 +19,11 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const handleLogout = () => {
-    // Synchronously wipe Firebase auth from localStorage so the
-    // redirect lands on /login as a logged-out user regardless of
-    // whether the async signOut call succeeds.
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('firebase:')) localStorage.removeItem(key);
-    });
-    signOut(auth).catch(() => {});
-    window.location.replace('/login');
+  const handleLogout = (e) => {
+    // Intentionally NOT calling e.preventDefault() so the href
+    // on the anchor tag navigates regardless of any JS error below.
+    try { Object.keys(localStorage).forEach(k => { if (k.startsWith('firebase:')) localStorage.removeItem(k); }); } catch(_) {}
+    try { signOut(auth).catch(() => {}); } catch(_) {}
   };
 
   return (
