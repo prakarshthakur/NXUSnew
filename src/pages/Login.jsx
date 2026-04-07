@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -15,6 +16,15 @@ import MemberCount from '../components/MemberCount';
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 const STATS_REF = () => doc(db, 'public', 'stats');
 
+const EMAILJS_SERVICE  = 'service_bxm5d9s';
+const EMAILJS_TEMPLATE = 'template_n4cxn9e';
+const EMAILJS_KEY      = 'IyhmkQNdrp88AQRNTWE4-';
+const OTP_EXPIRY_MS    = 15 * 60 * 1000;
+const RESEND_COOLDOWN  = 60;
+const MAX_ATTEMPTS     = 5;
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+
 async function checkEmailAllowed(email) {
   if (email === ADMIN_EMAIL) return true;
   try {
@@ -25,10 +35,15 @@ async function checkEmailAllowed(email) {
     return suffixes.some(s => email.toLowerCase().endsWith(s.toLowerCase()));
   } catch (e) {
     console.error('checkEmailAllowed failed:', e);
-    return false; // fail closed — block signup if config can't be read
+    return false;
   }
 }
 
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// ── shared styles ─────────────────────────────────────────────────────────────
 
 const inputStyle = {
   background: '#0d0d0d',
@@ -43,14 +58,36 @@ const inputStyle = {
   transition: 'border-color 0.2s',
 };
 
+// ── component ─────────────────────────────────────────────────────────────────
+
 export default function Login() {
   const navigate = useNavigate();
+
+  // form state
   const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // OTP state
+  const [otpStep, setOtpStep] = useState(false);
+  const [pendingOtp, setPendingOtp] = useState('');
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const [otpExpiry, setOtpExpiry] = useState(null);
+  const [cooldown, setCooldown] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const otpRefs = useRef([]);
+
+  // cooldown timer
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
+  // ── firebase helpers ─────────────────────────────────────────────────────
 
   const createUserDoc = async (user, name) => {
     try {
@@ -83,32 +120,143 @@ export default function Login() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  // ── OTP helpers ──────────────────────────────────────────────────────────
+
+  const sendOtp = async (toEmail, code) => {
+    const expiry = new Date(Date.now() + OTP_EXPIRY_MS);
+    const timeStr = expiry.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      email: toEmail,
+      passcode: code,
+      time: timeStr,
+    }, EMAILJS_KEY);
+    return expiry;
+  };
+
+  const handleOtpDigit = (index, value) => {
+    const digit = value.replace(/\D/g, '').slice(-1);
+    const next = [...otpDigits];
+    next[index] = digit;
+    setOtpDigits(next);
+    setError('');
+    if (digit && index < 5) otpRefs.current[index + 1]?.focus();
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted.length === 6) {
+      setOtpDigits(pasted.split(''));
+      otpRefs.current[5]?.focus();
+      e.preventDefault();
+    }
+  };
+
+  // ── submit handlers ──────────────────────────────────────────────────────
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      if (mode === 'login') {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        await claimFoundingStatus(cred.user.uid);
-      } else {
-        const allowed = await checkEmailAllowed(email);
-        if (!allowed) throw { code: 'auth/email-not-allowed' };
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(cred.user, { displayName });
-        await createUserDoc(cred.user, displayName);
-        await setDoc(STATS_REF(), { totalUsers: increment(1) }, { merge: true });
-        await claimFoundingStatus(cred.user.uid);
-      }
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      await claimFoundingStatus(cred.user.uid);
       navigate('/feed');
     } catch (err) {
       let msg = err.message || 'something went wrong';
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') msg = 'invalid email or password';
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password'
+          || err.code === 'auth/invalid-credential') msg = 'invalid email or password';
+      if (err.code === 'auth/invalid-email') msg = 'invalid email address';
+      setError(msg.toLowerCase());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 1 — validate + send OTP
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const allowed = await checkEmailAllowed(email);
+      if (!allowed) throw { code: 'auth/email-not-allowed' };
+
+      const code = generateOtp();
+      const expiry = await sendOtp(email, code);
+
+      setPendingOtp(code);
+      setOtpExpiry(expiry);
+      setOtpDigits(['', '', '', '', '', '']);
+      setAttempts(0);
+      setCooldown(RESEND_COOLDOWN);
+      setOtpStep(true);
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    } catch (err) {
+      let msg = 'failed to send code — try again';
+      if (err.code === 'auth/email-not-allowed') msg = 'this email domain is not allowed to sign up';
+      if (err.code === 'auth/invalid-email') msg = 'invalid email address';
+      setError(msg.toLowerCase());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 2 — verify OTP + create account
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    const entered = otpDigits.join('');
+    if (entered.length < 6) { setError('enter all 6 digits'); return; }
+    if (new Date() > otpExpiry) { setError('code expired — click resend'); return; }
+    if (attempts >= MAX_ATTEMPTS) { setError('too many attempts — click resend for a new code'); return; }
+
+    if (entered !== pendingOtp) {
+      const left = MAX_ATTEMPTS - attempts - 1;
+      setAttempts(a => a + 1);
+      setOtpDigits(['', '', '', '', '', '']);
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+      setError(left > 0 ? `wrong code — ${left} attempt${left !== 1 ? 's' : ''} left` : 'too many wrong attempts — request a new code');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName });
+      await createUserDoc(cred.user, displayName);
+      await claimFoundingStatus(cred.user.uid);
+      navigate('/feed');
+    } catch (err) {
+      let msg = err.message || 'something went wrong';
       if (err.code === 'auth/email-already-in-use') msg = 'email already in use';
       if (err.code === 'auth/weak-password') msg = 'password too weak (min 6 chars)';
-      if (err.code === 'auth/invalid-email') msg = 'invalid email address';
-      if (err.code === 'auth/email-not-allowed') msg = 'this email domain is not allowed to sign up';
       setError(msg.toLowerCase());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (cooldown > 0 || loading) return;
+    setError('');
+    setLoading(true);
+    try {
+      const code = generateOtp();
+      const expiry = await sendOtp(email, code);
+      setPendingOtp(code);
+      setOtpExpiry(expiry);
+      setOtpDigits(['', '', '', '', '', '']);
+      setAttempts(0);
+      setCooldown(RESEND_COOLDOWN);
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    } catch {
+      setError('failed to resend — try again');
     } finally {
       setLoading(false);
     }
@@ -125,66 +273,165 @@ export default function Login() {
       navigate('/feed');
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
-        const msg = err.code?.startsWith('auth/') ? err.message : 'google sign in failed';
-        setError(msg.toLowerCase());
+        setError('google sign in failed');
       }
     } finally {
       setLoading(false);
     }
   };
 
+  // ── tab styles ───────────────────────────────────────────────────────────
+
   const tabActive = {
-    background: '#FF2D2D',
-    color: '#000000',
-    border: '1px solid #FF2D2D',
-    fontFamily: "'IBM Plex Mono', monospace",
-    fontSize: '0.82rem',
-    padding: '0.45rem 1.4rem',
-    borderRadius: '50px',
-    cursor: 'pointer',
-    textTransform: 'lowercase',
+    background: '#FF2D2D', color: '#000000', border: '1px solid #FF2D2D',
+    fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.82rem',
+    padding: '0.45rem 1.4rem', borderRadius: '50px', cursor: 'pointer', textTransform: 'lowercase',
   };
-
   const tabInactive = {
-    background: 'transparent',
-    color: '#FF2D2D',
-    border: '1px solid #FF2D2D',
-    fontFamily: "'IBM Plex Mono', monospace",
-    fontSize: '0.82rem',
-    padding: '0.45rem 1.4rem',
-    borderRadius: '50px',
-    cursor: 'pointer',
-    textTransform: 'lowercase',
+    background: 'transparent', color: '#FF2D2D', border: '1px solid #FF2D2D',
+    fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.82rem',
+    padding: '0.45rem 1.4rem', borderRadius: '50px', cursor: 'pointer', textTransform: 'lowercase',
   };
 
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#000000',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem 1rem',
-      animation: 'fadeIn 0.2s ease',
+  // ── render ───────────────────────────────────────────────────────────────
+
+  const cardStyle = {
+    background: '#0d0d0d', border: '1px solid #1a1a1a', borderRadius: '8px',
+    padding: '2.5rem 2rem', width: '100%', maxWidth: '400px',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem',
+  };
+
+  const pageStyle = {
+    minHeight: '100vh', background: '#000000',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    padding: '2rem 1rem', animation: 'fadeIn 0.2s ease',
+  };
+
+  const errorEl = error && (
+    <p style={{
+      color: '#FF2D2D', fontFamily: "'IBM Plex Mono', monospace",
+      fontSize: '0.75rem', textTransform: 'lowercase', margin: '0', textAlign: 'center',
     }}>
+      {error}
+    </p>
+  );
+
+  const submitBtn = (label) => (
+    <button
+      type="submit"
+      disabled={loading}
+      style={{
+        background: '#FF2D2D', color: '#000000', border: 'none', borderRadius: '50px',
+        padding: '0.8rem', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.9rem',
+        fontWeight: 700, textTransform: 'lowercase',
+        cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
+        transition: 'opacity 0.2s', width: '100%',
+      }}
+    >
+      {loading ? '...' : label}
+    </button>
+  );
+
+  // ── OTP verification step ────────────────────────────────────────────────
+  if (otpStep && mode === 'signup') {
+    return (
+      <div style={pageStyle}>
+        <style>{`
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          .otp-box { border: 1px solid #1a1a1a !important; transition: border-color 0.15s; }
+          .otp-box:focus { border-color: #FF2D2D !important; outline: none; }
+        `}</style>
+        <div style={cardStyle}>
+          <img src="/assets/nxus_logo_icon.svg" alt="NXUS" style={{ height: '60px', objectFit: 'contain' }} />
+
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.88rem', color: '#fff', margin: '0 0 0.35rem', textTransform: 'lowercase' }}>
+              check your email
+            </p>
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.7rem', color: '#555', margin: 0, textTransform: 'lowercase' }}>
+              we sent a 6-digit code to
+            </p>
+            <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.72rem', color: '#888', margin: '0.2rem 0 0', wordBreak: 'break-all' }}>
+              {email}
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleVerifyOtp}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}
+          >
+            {/* 6-digit boxes */}
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+              {otpDigits.map((d, i) => (
+                <input
+                  key={i}
+                  ref={el => otpRefs.current[i] = el}
+                  className="otp-box"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={d}
+                  onChange={e => handleOtpDigit(i, e.target.value)}
+                  onKeyDown={e => handleOtpKeyDown(i, e)}
+                  onPaste={handleOtpPaste}
+                  style={{
+                    width: '44px', height: '54px', textAlign: 'center',
+                    background: '#0d0d0d', borderRadius: '8px',
+                    color: '#ffffff', fontSize: '1.4rem', fontWeight: 700,
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    caretColor: '#FF2D2D',
+                  }}
+                />
+              ))}
+            </div>
+
+            {errorEl}
+            {submitBtn('verify →')}
+          </form>
+
+          {/* Resend + back */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+            <button
+              onClick={handleResend}
+              disabled={cooldown > 0 || loading}
+              style={{
+                background: 'none', border: 'none', cursor: cooldown > 0 ? 'default' : 'pointer',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.72rem',
+                color: cooldown > 0 ? '#333' : '#666',
+                textTransform: 'lowercase', transition: 'color 0.15s', padding: 0,
+              }}
+              onMouseEnter={e => { if (cooldown === 0) e.currentTarget.style.color = '#aaa'; }}
+              onMouseLeave={e => e.currentTarget.style.color = cooldown > 0 ? '#333' : '#666'}
+            >
+              {cooldown > 0 ? `resend in ${cooldown}s` : 'resend code'}
+            </button>
+            <button
+              onClick={() => { setOtpStep(false); setError(''); setOtpDigits(['','','','','','']); }}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem',
+                color: '#333', textTransform: 'lowercase', padding: 0,
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#666'}
+              onMouseLeave={e => e.currentTarget.style.color = '#333'}
+            >
+              ← back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── main login / signup form ─────────────────────────────────────────────
+  return (
+    <div style={pageStyle}>
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .login-input:focus { border-color: #FF2D2D !important; }
       `}</style>
 
-      <div className="login-card" style={{
-        background: '#0d0d0d',
-        border: '1px solid #1a1a1a',
-        borderRadius: '8px',
-        padding: '2.5rem 2rem',
-        width: '100%',
-        maxWidth: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '1.25rem',
-      }}>
+      <div className="login-card" style={cardStyle}>
         <img
           className="login-logo"
           src="/assets/nxus_logo_icon.svg"
@@ -193,11 +440,8 @@ export default function Login() {
         />
 
         <p style={{
-          fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: '0.78rem',
-          color: '#666666',
-          textTransform: 'lowercase',
-          margin: '-0.5rem 0 0',
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem',
+          color: '#666666', textTransform: 'lowercase', margin: '-0.5rem 0 0',
         }}>
           ebay for fun.
         </p>
@@ -206,15 +450,18 @@ export default function Login() {
 
         {/* Tab switcher */}
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button style={mode === 'login' ? tabActive : tabInactive} onClick={() => setMode('login')}>
+          <button style={mode === 'login' ? tabActive : tabInactive} onClick={() => { setMode('login'); setError(''); }}>
             log in
           </button>
-          <button style={mode === 'signup' ? tabActive : tabInactive} onClick={() => setMode('signup')}>
+          <button style={mode === 'signup' ? tabActive : tabInactive} onClick={() => { setMode('signup'); setError(''); }}>
             sign up
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <form
+          onSubmit={mode === 'login' ? handleLogin : handleSendOtp}
+          style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+        >
           {mode === 'signup' && (
             <input
               className="login-input"
@@ -222,7 +469,7 @@ export default function Login() {
               placeholder="display name"
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
-              required={mode === 'signup'}
+              required
               style={inputStyle}
             />
           )}
@@ -245,39 +492,8 @@ export default function Login() {
             style={inputStyle}
           />
 
-          {error && (
-            <p style={{
-              color: '#FF2D2D',
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: '0.75rem',
-              textTransform: 'lowercase',
-              margin: '0',
-            }}>
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              background: '#FF2D2D',
-              color: '#000000',
-              border: 'none',
-              borderRadius: '50px',
-              padding: '0.8rem',
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: '0.9rem',
-              fontWeight: 700,
-              textTransform: 'lowercase',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-              transition: 'opacity 0.2s',
-              width: '100%',
-            }}
-          >
-            {loading ? '...' : mode === 'login' ? "let's go →" : 'create account →'}
-          </button>
+          {errorEl}
+          {submitBtn(mode === 'login' ? "let's go →" : 'send verification code →')}
         </form>
 
         {/* Divider */}
@@ -292,22 +508,12 @@ export default function Login() {
           onClick={handleGoogle}
           disabled={loading}
           style={{
-            background: 'transparent',
-            border: '1px solid #333',
-            borderRadius: '50px',
-            padding: '0.7rem 1.5rem',
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '0.82rem',
-            color: '#ffffff',
-            textTransform: 'lowercase',
+            background: 'transparent', border: '1px solid #333', borderRadius: '50px',
+            padding: '0.7rem 1.5rem', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.82rem',
+            color: '#ffffff', textTransform: 'lowercase',
             cursor: loading ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.6rem',
-            width: '100%',
-            opacity: loading ? 0.7 : 1,
-            transition: 'border-color 0.2s',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem',
+            width: '100%', opacity: loading ? 0.7 : 1, transition: 'border-color 0.2s',
           }}
           onMouseEnter={e => e.currentTarget.style.borderColor = '#555'}
           onMouseLeave={e => e.currentTarget.style.borderColor = '#333'}
