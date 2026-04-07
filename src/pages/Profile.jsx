@@ -238,8 +238,11 @@ export default function Profile() {
                 color: '#FF2D2D',
                 textTransform: 'lowercase',
                 marginBottom: '0.4rem',
+                display: 'flex',
+                alignItems: 'center',
               }}>
                 {displayName}
+                <VerifiedBadge verified={userDoc?.university_verified} size={18} />
               </h1>
             )}
             {userDoc?.flair && !editing && (
