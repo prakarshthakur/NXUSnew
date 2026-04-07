@@ -80,12 +80,15 @@ export default function NavBar() {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <img
-          src="/assets/nxus_logo_icon.svg"
-          alt="NXUS"
-          style={{ height: '28px', cursor: 'pointer', objectFit: 'contain' }}
-          onClick={() => navigate('/feed')}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <img
+            src="/assets/nxus_logo_icon.svg"
+            alt="NXUS"
+            style={{ height: '28px', cursor: 'pointer', objectFit: 'contain' }}
+            onClick={() => navigate('/feed')}
+          />
+          <MemberCount />
+        </div>
 
         {/* Desktop links */}
         <div style={{
