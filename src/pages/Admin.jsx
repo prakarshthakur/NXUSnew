@@ -392,6 +392,11 @@ function UsersTab() {
 
 // ── Events Tab ────────────────────────────────────────────────────────────────
 
+const FLAIR_COLORS = [
+  '#FF2D2D', '#fb923c', '#f59e0b', '#4ade80',
+  '#2dd4bf', '#60a5fa', '#a78bfa', '#f472b6', '#e5e5e5',
+];
+
 function EventsTab() {
   const [events, setEvents] = useState([]);
   const [hostNames, setHostNames] = useState({});
@@ -401,6 +406,10 @@ function EventsTab() {
   const [deleting, setDeleting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState('');
+  const [flairEdit, setFlairEdit] = useState(null); // { id } — which row is open
+  const [flairText, setFlairText] = useState('');
+  const [flairColor, setFlairColor] = useState(FLAIR_COLORS[0]);
+  const [flairSaving, setFlairSaving] = useState(false);
 
   const load = useCallback(async () => {
     setRefreshing(true);
