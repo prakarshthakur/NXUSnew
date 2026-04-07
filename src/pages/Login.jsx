@@ -201,7 +201,7 @@ export default function Login() {
           ebay for fun.
         </p>
 
-        <MemberCount />
+        <MemberCount style={{ margin: '-0.35rem 0 0' }} />
 
         {/* Tab switcher */}
         <div style={{ display: 'flex', gap: '0.5rem' }}>
