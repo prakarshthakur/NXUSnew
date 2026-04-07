@@ -17,11 +17,6 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
     return () => document.removeEventListener('mousedown', handler);
   }, [onClose]);
 
-  const handleLogout = () => {
-    // href on the <a> tag handles navigation — this just cleans up auth state.
-    try { Object.keys(localStorage).forEach(k => { if (k.startsWith('firebase:')) localStorage.removeItem(k); }); } catch(_) {}
-    try { signOut(auth).catch(() => {}); } catch(_) {}
-  };
 
   return (
     <div
