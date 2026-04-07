@@ -20,9 +20,14 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
   }, [onClose]);
 
   const handleLogout = () => {
-    signOut(auth).finally(() => {
-      window.location.replace('/login');
+    // Synchronously wipe Firebase auth from localStorage so the
+    // redirect lands on /login as a logged-out user regardless of
+    // whether the async signOut call succeeds.
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('firebase:')) localStorage.removeItem(key);
     });
+    signOut(auth).catch(() => {});
+    window.location.replace('/login');
   };
 
   return (
