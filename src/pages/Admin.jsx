@@ -945,7 +945,7 @@ function VerifiedStudentsTab() {
   const [sortAsc, setSortAsc] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
+  const FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8' };
 
   const load = useCallback(async () => {
     setRefreshing(true);
