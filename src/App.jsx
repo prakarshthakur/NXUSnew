@@ -9,7 +9,6 @@ import MyFun from './pages/MyFun';
 import Profile from './pages/Profile';
 import AlphaGate, { isAlphaUnlocked } from './pages/AlphaGate';
 import EventPage from './pages/EventPage';
-import VerifyEmail from './pages/VerifyEmail';
 
 function LoadingScreen() {
   return (
