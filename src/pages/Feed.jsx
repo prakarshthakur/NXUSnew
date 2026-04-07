@@ -17,6 +17,8 @@ function DetailModal({ event, onClose, onLike, onPass }) {
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
   const [hostVerified, setHostVerified] = useState(false);
+  const [hostUniFlair, setHostUniFlair] = useState(null);
+  const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', UOWD: '#059669' };
 
   useEffect(() => {
     if (!event.hostUid) return;
@@ -25,6 +27,7 @@ function DetailModal({ event, onClose, onLike, onPass }) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
         setHostVerified(snap.data().university_verified || false);
+        setHostUniFlair(snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [event.hostUid]);
