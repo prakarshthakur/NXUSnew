@@ -141,8 +141,9 @@ export default function Onboarding() {
       setOtpInput('');
       setCooldown(RESEND_COOLDOWN);
     } catch (e) {
-      console.error(e);
-      setOtpError('failed to send code — check your email and try again');
+      console.error('EmailJS error:', e);
+      const detail = e?.text || e?.message || JSON.stringify(e);
+      setOtpError(`send failed: ${detail}`);
     } finally {
       setOtpLoading(false);
     }
