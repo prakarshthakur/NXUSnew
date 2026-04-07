@@ -10,7 +10,6 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, updateDoc, getDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { FOUNDING_STORAGE_KEY } from './AlphaGate';
 import MemberCount from '../components/MemberCount';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
