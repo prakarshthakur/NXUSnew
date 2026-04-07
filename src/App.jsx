@@ -64,14 +64,6 @@ export default function App() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route
-          path="/verify"
-          element={
-            <ProtectedRoute allowUnverified={true}>
-              <VerifyEmail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/feed"
           element={
             <ProtectedRoute>
