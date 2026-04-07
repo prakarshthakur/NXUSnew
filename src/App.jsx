@@ -11,6 +11,7 @@ import EventPage from './pages/EventPage';
 import SignOut from './pages/SignOut';
 import Admin from './pages/Admin';
 import Onboarding from './pages/Onboarding';
+import About from './pages/About';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 
