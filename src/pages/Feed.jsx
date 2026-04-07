@@ -125,15 +125,27 @@ function DetailModal({ event, onClose, onLike, onPass }) {
         </div>
 
         {event.description && (
-          <p style={{
+          <div style={{
             fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '0.88rem',
             color: '#aaa',
             lineHeight: 1.7,
             textTransform: 'lowercase',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.6rem',
           }}>
-            {event.description}
-          </p>
+            {event.description.split(/\n\n+/).map((para, i) => (
+              <p key={i} style={{ margin: 0 }}>
+                {para.split('\n').map((line, j, arr) => (
+                  <span key={j}>
+                    {line}
+                    {j < arr.length - 1 && <br />}
+                  </span>
+                ))}
+              </p>
+            ))}
+          </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
