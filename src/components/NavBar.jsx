@@ -23,11 +23,14 @@ export default function NavBar() {
 
   const isActive = (path) => location.pathname === path;
 
+  const isAdmin = user?.email === 'prakarshthakur1@gmail.com';
+
   const navLinks = [
     { label: 'feed', path: '/feed' },
     { label: 'my fun', path: '/my-fun' },
     { label: 'host +', path: '/host' },
     { label: 'my events', path: '/my-events' },
+    ...(isAdmin ? [{ label: 'admin', path: '/admin' }] : []),
   ];
 
   const pillStyle = (active) => ({
