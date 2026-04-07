@@ -924,7 +924,9 @@ export default function Feed() {
           </div>
         )}
 
-        <SocialLinks variant="feed" />
+        <div style={{ marginTop: '1.5rem' }}>
+          <SocialLinks variant="feed" />
+        </div>
       </div>
 
       {detailEvent && (
