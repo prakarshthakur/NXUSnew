@@ -52,7 +52,7 @@ export default function EventPage() {
     <div style={{ minHeight: '100vh', background: '#000', animation: 'fadeIn 0.2s ease' }}>
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
       <NavBar />
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
 
         {loading && (
           <div style={{ color: '#333', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem' }}>loading...</div>

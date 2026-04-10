@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  collection, query, where, getDocs, getDocsFromServer, addDoc, updateDoc, serverTimestamp, doc, getDoc,
+  collection, query, where, getDocs, getDocsFromServer, setDoc, serverTimestamp, doc, getDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
@@ -10,17 +10,16 @@ import { useNavigate } from 'react-router-dom';
 import ShareButton from '../components/ShareButton';
 import FlairBadge from '../components/FlairBadge';
 import VerifiedBadge from '../components/VerifiedBadge';
-import SocialLinks from '../components/SocialLinks';
+import { useUniversityFlairs } from '../contexts/UniversityFlairsContext';
 
 const MAPS_KEY = 'AIzaSyAf9mNqgec3VKLVoa9xs9GBcTIXdiCrpD8';
 
 function DetailModal({ event, onClose, onLike, onPass }) {
+  const { universityFlairColors } = useUniversityFlairs();
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
   const [hostVerified, setHostVerified] = useState(false);
   const [hostUniFlair, setHostUniFlair] = useState(null);
-  const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', MAHE: '#EA580C' };
-
   useEffect(() => {
     if (!event.hostUid) return;
     getDoc(doc(db, 'users', event.hostUid)).then(snap => {
@@ -28,7 +27,7 @@ function DetailModal({ event, onClose, onLike, onPass }) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
         setHostVerified(snap.data().university_verified || false);
-        setHostUniFlair(snap.data().universityFlair || null);
+        setHostUniFlair(snap.data().university || snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [event.hostUid]);
@@ -160,17 +159,17 @@ function DetailModal({ event, onClose, onLike, onPass }) {
             }}>
               hosted by {hostName || 'unknown'}
               <VerifiedBadge verified={hostVerified} size={13} />
-              {hostVerified && hostUniFlair && UNI_FLAIR_COLORS[hostUniFlair] && (
+              {hostVerified && hostUniFlair && universityFlairColors[hostUniFlair] && (
                 <span style={{
                   marginLeft: '0.25rem',
-                  background: UNI_FLAIR_COLORS[hostUniFlair] + '22',
-                  border: `1px solid ${UNI_FLAIR_COLORS[hostUniFlair]}55`,
+                  background: universityFlairColors[hostUniFlair] + '22',
+                  border: `1px solid ${universityFlairColors[hostUniFlair]}55`,
                   borderRadius: '50px',
                   padding: '0.05rem 0.4rem',
                   fontFamily: "'IBM Plex Mono', monospace",
                   fontSize: '0.58rem',
                   fontWeight: 700,
-                  color: UNI_FLAIR_COLORS[hostUniFlair],
+                  color: universityFlairColors[hostUniFlair],
                 }}>
                   {hostUniFlair}
                 </span>
@@ -249,6 +248,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
   const [isDragging, setIsDragging] = useState(false);
   const [stamp, setStamp] = useState(null); // 'like' | 'nope' | null
   const [swiped, setSwiped] = useState(false); // committed swipe — keep position
+  const isMobile = window.innerWidth <= 768;
 
   const threshold = window.innerWidth * 0.25;
 
@@ -311,6 +311,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
       style={{
         position: 'absolute',
         width: '100%',
+        height: '100%',
         touchAction: 'none',
         zIndex,
         transform: `translateX(${finalDragX}px) rotate(${finalRotation}deg) translateY(${offsetY}px) scale(${scale})`,
@@ -325,11 +326,12 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
         WebkitBackdropFilter: 'blur(40px)',
         border: '1px solid rgba(255,45,45,0.2)',
         borderRadius: '20px',
-        padding: '2rem',
-        minHeight: '420px',
+        padding: isMobile ? '1.15rem' : '2rem',
+        minHeight: isMobile ? '100%' : '420px',
+        height: isMobile ? '100%' : 'auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.75rem',
+        gap: isMobile ? '0.5rem' : '0.75rem',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -374,7 +376,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
 
         <h2 style={{
           fontFamily: "grovant, sans-serif",
-          fontSize: '2rem',
+          fontSize: isMobile ? '1.45rem' : '2rem',
           fontWeight: 800,
           color: '#FF2D2D',
           textTransform: 'lowercase',
@@ -387,7 +389,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
           <FlairBadge flair={event.flair} size="sm" />
         )}
 
-        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem', color: '#666', textTransform: 'lowercase' }}>
+        <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: isMobile ? '0.72rem' : '0.8rem', color: '#666', textTransform: 'lowercase' }}>
           {event.datetime
             ? (() => {
               const d = event.datetime.toDate ? event.datetime.toDate() : new Date(event.datetime);
@@ -398,7 +400,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
         </div>
 
         {event.locationName && (
-          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.78rem', color: '#666', textTransform: 'lowercase' }}>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: isMobile ? '0.72rem' : '0.78rem', color: '#666', textTransform: 'lowercase' }}>
             📍 {event.locationName}
           </div>
         )}
@@ -407,12 +409,12 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
         {!event.lat && !event.lng && event.description && (
           <div style={{
             fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: '0.82rem',
+            fontSize: isMobile ? '0.74rem' : '0.82rem',
             color: '#777',
             lineHeight: 1.6,
             textTransform: 'lowercase',
             display: '-webkit-box',
-            WebkitLineClamp: 4,
+            WebkitLineClamp: isMobile ? 3 : 4,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             flex: 1,
@@ -427,14 +429,14 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
             overflow: 'hidden',
             border: '1px solid #1a1a1a',
             flex: 1,
-            minHeight: '160px',
+            minHeight: isMobile ? '118px' : '160px',
             pointerEvents: 'none',
           }}>
             <iframe
               title="card-map"
               width="100%"
               height="100%"
-              style={{ display: 'block', minHeight: '160px', filter: 'invert(0.92) hue-rotate(180deg) brightness(0.9)' }}
+              style={{ display: 'block', minHeight: isMobile ? '118px' : '160px', filter: 'invert(0.92) hue-rotate(180deg) brightness(0.9)' }}
               frameBorder="0"
               src={`https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${event.lat},${event.lng}&zoom=15`}
               allowFullScreen
@@ -446,7 +448,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
 
         <div style={{
           fontFamily: "'IBM Plex Mono', monospace",
-          fontSize: '0.7rem',
+          fontSize: isMobile ? '0.64rem' : '0.7rem',
           color: '#444',
           textAlign: 'right',
           textTransform: 'lowercase',
@@ -459,6 +461,7 @@ function SwipeCard({ event, onLike, onPass, onTap, zIndex, scale, offsetY, flyOu
 }
 
 function HostRow({ hostUid, attendeeCount, eventId }) {
+  const { universityFlairColors } = useUniversityFlairs();
   const [hostName, setHostName] = useState('');
   const [hostFlair, setHostFlair] = useState(null);
   const [hostVerified, setHostVerified] = useState(false);
@@ -467,8 +470,6 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
   const [attendeeNames, setAttendeeNames] = useState([]);
   const navigate = useNavigate();
 
-  const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', MAHE: '#EA580C' };
-
   useEffect(() => {
     if (!hostUid) return;
     getDoc(doc(db, 'users', hostUid)).then(snap => {
@@ -476,7 +477,7 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostFlair(snap.data().flair || null);
         setHostVerified(snap.data().university_verified || false);
-        setHostUniFlair(snap.data().universityFlair || null);
+        setHostUniFlair(snap.data().university || snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [hostUid]);
@@ -520,17 +521,17 @@ function HostRow({ hostUid, attendeeCount, eventId }) {
             }}>
               {hostName || 'host'}
               <VerifiedBadge verified={hostVerified} size={13} />
-              {hostVerified && hostUniFlair && UNI_FLAIR_COLORS[hostUniFlair] && (
+              {hostVerified && hostUniFlair && universityFlairColors[hostUniFlair] && (
                 <span style={{
                   marginLeft: '0.25rem',
-                  background: UNI_FLAIR_COLORS[hostUniFlair] + '22',
-                  border: `1px solid ${UNI_FLAIR_COLORS[hostUniFlair]}55`,
+                  background: universityFlairColors[hostUniFlair] + '22',
+                  border: `1px solid ${universityFlairColors[hostUniFlair]}55`,
                   borderRadius: '50px',
                   padding: '0.05rem 0.4rem',
                   fontFamily: "'IBM Plex Mono', monospace",
                   fontSize: '0.58rem',
                   fontWeight: 700,
-                  color: UNI_FLAIR_COLORS[hostUniFlair],
+                  color: universityFlairColors[hostUniFlair],
                 }}>
                   {hostUniFlair}
                 </span>
@@ -588,8 +589,28 @@ export default function Feed() {
   const [detailEvent, setDetailEvent] = useState(null);
   const [flyDirection, setFlyDirection] = useState(null);
   const [passedMode, setPassedMode] = useState(false);
-  // passedRequestMap: eventId → joinRequest doc id (for updating instead of re-creating)
-  const passedRequestMap = useRef({});
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return undefined;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, [isMobile]);
 
   const loadFreshEvents = useCallback(async () => {
     if (!user?.uid) return;
@@ -621,12 +642,7 @@ export default function Feed() {
       const passedSnap = await getDocs(
         query(collection(db, 'joinRequests'), where('userId', '==', user.uid), where('status', '==', 'passed'))
       );
-      // Build a map of eventId → request doc id so we can update instead of duplicate
-      const reqMap = {};
-      passedSnap.docs.forEach(d => { reqMap[d.data().eventId] = d.id; });
-      passedRequestMap.current = reqMap;
-
-      const eventIds = Object.keys(reqMap);
+      const eventIds = passedSnap.docs.map(d => d.data().eventId);
       const eventsWithData = [];
       for (const eid of eventIds) {
         const evSnap = await getDoc(doc(db, 'events', eid));
@@ -650,22 +666,14 @@ export default function Feed() {
     if (!user?.uid || !event) return;
     setFlyDirection('like');
     try {
-      const existingReqId = passedRequestMap.current[event.id];
-      if (existingReqId) {
-        // Re-liking a passed event — update existing request to pending
-        await updateDoc(doc(db, 'joinRequests', existingReqId), {
-          status: 'pending',
-          requestedAt: serverTimestamp(),
-        });
-      } else {
-        await addDoc(collection(db, 'joinRequests'), {
-          eventId: event.id,
-          userId: user.uid,
-          hostUid: event.hostUid,
-          status: 'pending',
-          requestedAt: serverTimestamp(),
-        });
-      }
+      const requestId = `${event.id}_${user.uid}`;
+      await setDoc(doc(db, 'joinRequests', requestId), {
+        eventId: event.id,
+        userId: user.uid,
+        hostUid: event.hostUid,
+        status: 'pending',
+        requestedAt: serverTimestamp(),
+      }, { merge: true });
     } catch (err) {
       console.error(err);
     }
@@ -681,13 +689,14 @@ export default function Feed() {
     // In passed mode just skip — no need to re-write the same status
     if (!passedMode) {
       try {
-        await addDoc(collection(db, 'joinRequests'), {
+        const requestId = `${event.id}_${user.uid}`;
+        await setDoc(doc(db, 'joinRequests', requestId), {
           eventId: event.id,
           userId: user.uid,
           hostUid: event.hostUid,
           status: 'passed',
           requestedAt: serverTimestamp(),
-        });
+        }, { merge: true });
       } catch (err) {
         console.error(err);
       }
@@ -701,8 +710,19 @@ export default function Feed() {
   const visibleEvents = events.slice(currentIndex, currentIndex + 3);
   const isDone = !loading && currentIndex >= events.length;
 
+  const mobileViewportHeight = 'calc(100dvh - 100px)';
+
   return (
-    <div className="feed-container" style={{ minHeight: '100vh', position: 'relative', animation: 'fadeIn 0.2s ease' }}>
+    <div
+      className="feed-container"
+      style={{
+        minHeight: isMobile ? '100dvh' : '100vh',
+        height: isMobile ? '100dvh' : 'auto',
+        overflow: isMobile ? 'hidden' : 'visible',
+        position: 'relative',
+        animation: 'fadeIn 0.2s ease',
+      }}
+    >
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .feed-container::before {
@@ -725,17 +745,22 @@ export default function Feed() {
       <div style={{
         maxWidth: '480px',
         margin: '0 auto',
-        padding: '1.5rem 1rem',
+        marginTop: isMobile ? '-0.35rem' : 0,
+        padding: isMobile ? '0.02rem 0.9rem 0.2rem' : '1.5rem 1rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: isMobile && !isDone ? 'space-between' : 'flex-start',
+        minHeight: isMobile ? mobileViewportHeight : 'auto',
+        height: isMobile ? mobileViewportHeight : 'auto',
+        gap: isMobile ? '0.45rem' : 0,
       }}>
         <div style={{
           fontFamily: "grovant, sans-serif",
-          fontSize: '1rem',
+          fontSize: isMobile ? '0.82rem' : '1rem',
           color: '#FF2D2D',
           textTransform: 'lowercase',
-          marginBottom: '1.5rem',
+          marginBottom: isMobile ? '0.1rem' : '1.5rem',
           letterSpacing: '0.05em',
           textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
         }}>
@@ -743,7 +768,7 @@ export default function Feed() {
         </div>
 
         {loading && (
-          <div style={{ color: '#333', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem', marginTop: '4rem' }}>
+          <div style={{ color: '#333', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem', marginTop: isMobile ? '1.25rem' : '4rem' }}>
             loading...
           </div>
         )}
@@ -751,16 +776,16 @@ export default function Feed() {
         {!loading && isDone && (
           <div style={{
             textAlign: 'center',
-            marginTop: '5rem',
+            marginTop: isMobile ? '1rem' : '5rem',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '1.25rem',
+            gap: isMobile ? '0.85rem' : '1.25rem',
             animation: 'fadeIn 0.3s ease',
           }}>
             <div style={{
               fontFamily: "grovant, sans-serif",
-              fontSize: '1.5rem',
+              fontSize: isMobile ? '1.2rem' : '1.5rem',
               fontWeight: 800,
               color: '#FF2D2D',
               textTransform: 'lowercase',
@@ -771,7 +796,7 @@ export default function Feed() {
             {!passedMode && (
               <p style={{
                 fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: '0.8rem',
+                fontSize: isMobile ? '0.74rem' : '0.8rem',
                 color: '#444',
                 textTransform: 'lowercase',
                 maxWidth: '280px',
@@ -862,7 +887,15 @@ export default function Feed() {
         )}
 
         {!loading && !isDone && (
-          <div className="feed-card-stack" style={{ position: 'relative', width: '100%', height: '480px' }}>
+          <div
+            className="feed-card-stack"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: isMobile ? 'min(48vh, 390px)' : '480px',
+              flex: isMobile ? 1 : 'none',
+            }}
+          >
             {[...visibleEvents].reverse().map((event, revIdx) => {
               const idx = visibleEvents.length - 1 - revIdx;
               const isTop = idx === 0;
@@ -888,17 +921,17 @@ export default function Feed() {
         )}
 
         {!loading && !isDone && (
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', gap: isMobile ? '0.7rem' : '1rem', marginTop: isMobile ? '0.2rem' : '1rem' }}>
             <button
               onClick={() => handlePass(visibleEvents[0])}
               style={{
                 background: 'transparent',
                 border: '1px solid #333',
                 borderRadius: '50px',
-                padding: '0.6rem 1.8rem',
+                padding: isMobile ? '0.52rem 1.4rem' : '0.6rem 1.8rem',
                 color: '#666',
                 fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: '0.85rem',
+                fontSize: isMobile ? '0.8rem' : '0.85rem',
                 textTransform: 'lowercase',
                 cursor: 'pointer',
               }}
@@ -911,10 +944,10 @@ export default function Feed() {
                 background: '#FF2D2D',
                 border: 'none',
                 borderRadius: '50px',
-                padding: '0.6rem 1.8rem',
+                padding: isMobile ? '0.52rem 1.4rem' : '0.6rem 1.8rem',
                 color: '#000',
                 fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: '0.85rem',
+                fontSize: isMobile ? '0.8rem' : '0.85rem',
                 fontWeight: 700,
                 textTransform: 'lowercase',
                 cursor: 'pointer',
@@ -924,10 +957,6 @@ export default function Feed() {
             </button>
           </div>
         )}
-
-        <div style={{ marginTop: '1.5rem' }}>
-          <SocialLinks variant="feed" />
-        </div>
       </div>
 
       {detailEvent && (

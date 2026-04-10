@@ -19,12 +19,14 @@ export default function MyEvents() {
   const [pendingRequests, setPendingRequests] = useState({});
   const [deleteConfirm, setDeleteConfirm] = useState(null); // eventId pending delete
   const [deleting, setDeleting] = useState(false);
+  const [pageError, setPageError] = useState('');
   const unsubscribers = React.useRef({});
 
   useEffect(() => {
     if (!user?.uid) return;
     const loadEvents = async () => {
       setLoading(true);
+      setPageError('');
       try {
         const q = query(
           collection(db, 'events'),
@@ -35,7 +37,8 @@ export default function MyEvents() {
         evts.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
         setEvents(evts);
       } catch (err) {
-        console.error(err);
+        console.error('failed to load hosted events', err?.code);
+        setPageError('unable to load your events right now');
       } finally {
         setLoading(false);
       }
@@ -66,6 +69,7 @@ export default function MyEvents() {
 
   const handleDeleteEvent = async (eventId) => {
     setDeleting(true);
+    setPageError('');
     try {
       // Delete all joinRequests for this event
       const reqSnap = await getDocs(
@@ -80,7 +84,8 @@ export default function MyEvents() {
       setEvents(prev => prev.filter(e => e.id !== eventId));
       setDeleteConfirm(null);
     } catch (err) {
-      console.error(err);
+      console.error('failed to delete event', err?.code);
+      setPageError('unable to delete that event right now');
     }
     setDeleting(false);
   };
@@ -103,7 +108,7 @@ export default function MyEvents() {
         @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
       <NavBar />
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
           fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',
@@ -126,6 +131,12 @@ export default function MyEvents() {
 
         {loading && (
           <div style={{ color: '#333', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem' }}>loading...</div>
+        )}
+
+        {pageError && (
+          <div style={{ color: '#ef4444', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.75rem', marginBottom: '1rem', textTransform: 'lowercase' }}>
+            {pageError}
+          </div>
         )}
 
         {!loading && events.length === 0 && (

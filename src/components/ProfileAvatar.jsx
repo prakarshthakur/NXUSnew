@@ -12,7 +12,7 @@ export default function ProfileAvatar({ userId, size = 40, editable = false, onU
     getDoc(doc(db, 'users', userId)).then(snap => {
       if (snap.exists()) {
         const data = snap.data();
-        setAvatarUrl(data.avatarUrl || null);
+        setAvatarUrl(data.photoURL || data.avatarUrl || null);
         setDisplayName(data.displayName || '');
       }
     }).catch(() => {});

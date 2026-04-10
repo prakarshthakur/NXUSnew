@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
+import { useUserDoc } from '../contexts/UserDocContext';
+import { useUniversityFlairs } from '../contexts/UniversityFlairsContext';
 import NavBar from '../components/NavBar';
 import TagPill from '../components/TagPill';
 import AvatarComponent from '../components/ProfileAvatar';
@@ -20,6 +22,8 @@ const FLAIR_COLORS = [
 export default function Profile() {
   const { userId } = useParams();
   const authUser = useAuth();
+  const { setUserDoc: setGlobalUserDoc } = useUserDoc();
+  const { universityFlairColors } = useUniversityFlairs();
   const navigate = useNavigate();
 
   const targetUserId = userId || authUser?.uid;
@@ -64,17 +68,18 @@ export default function Profile() {
           const skeleton = {
             displayName: authUser.displayName || '',
             email: authUser.email || '',
-            avatarUrl: authUser.photoURL || '',
+            photoURL: authUser.photoURL || '',
             bio: '',
             keywords: [],
             createdAt: serverTimestamp(),
+            university_verified: true,
           };
           await setDoc(doc(db, 'users', targetUserId), skeleton);
           setUserDoc(skeleton);
           setEditName(skeleton.displayName);
         }
       } catch (err) {
-        console.error(err);
+        console.error('failed to load profile', err?.code);
       } finally {
         setLoading(false);
       }
@@ -93,8 +98,8 @@ export default function Profile() {
         const events = hostedSnap.docs
           .map(d => ({ id: d.id, ...d.data() }))
           .sort((a, b) => {
-            const ta = a.dateTime?.toDate?.() || new Date(a.dateTime || 0);
-            const tb = b.dateTime?.toDate?.() || new Date(b.dateTime || 0);
+            const ta = a.datetime?.toDate?.() || new Date(a.datetime || 0);
+            const tb = b.datetime?.toDate?.() || new Date(b.datetime || 0);
             return tb - ta;
           });
         setHostedEventsList(events);
@@ -112,6 +117,13 @@ export default function Profile() {
     loadStats();
   }, [targetUserId]);
 
+  const mergeUserState = (updates) => {
+    setUserDoc(prev => (prev ? { ...prev, ...updates } : updates));
+    if (isOwn) {
+      setGlobalUserDoc(prev => (prev ? { ...prev, ...updates } : updates));
+    }
+  };
+
   const handleFlairSave = async () => {
     if (!flairText.trim()) return;
     setFlairSaving(true);
@@ -119,9 +131,9 @@ export default function Profile() {
       await updateDoc(doc(db, 'users', targetUserId), {
         flair: { text: flairText.trim(), color: flairColor },
       });
-      setUserDoc(prev => ({ ...prev, flair: { text: flairText.trim(), color: flairColor } }));
+      mergeUserState({ flair: { text: flairText.trim(), color: flairColor } });
       setFlairEditing(false);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error('failed to save profile flair', e?.code); }
     setFlairSaving(false);
   };
 
@@ -129,10 +141,10 @@ export default function Profile() {
     setFlairSaving(true);
     try {
       await updateDoc(doc(db, 'users', targetUserId), { flair: null });
-      setUserDoc(prev => ({ ...prev, flair: null }));
+      mergeUserState({ flair: null });
       setFlairEditing(false);
       setFlairText('');
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error('failed to remove profile flair', e?.code); }
     setFlairSaving(false);
   };
 
@@ -146,16 +158,15 @@ export default function Profile() {
         keywords: editKeywords,
         instagram: igHandle,
       });
-      setUserDoc(prev => ({
-        ...prev,
+      mergeUserState({
         displayName: editName.trim(),
         bio: editBio.trim(),
         keywords: editKeywords,
         instagram: igHandle,
-      }));
+      });
       setEditing(false);
     } catch (err) {
-      console.error(err);
+      console.error('failed to save profile', err?.code);
     } finally {
       setSaving(false);
     }
@@ -190,11 +201,13 @@ export default function Profile() {
     transition: 'border-color 0.2s',
   };
 
+  const savedUniversityFlair = userDoc?.university || userDoc?.universityFlair || null;
+
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: '#000' }}>
         <NavBar />
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 1rem' }}>
+        <div className="mobile-page-loading" style={{ display: 'flex', justifyContent: 'center', padding: '4rem 1rem' }}>
           <div style={{ color: '#333', fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.8rem' }}>loading...</div>
         </div>
       </div>
@@ -204,6 +217,9 @@ export default function Profile() {
   const displayName = editing ? editName : (userDoc?.displayName || 'anonymous');
   const bio = editing ? editBio : (userDoc?.bio || '');
   const keywords = editing ? editKeywords : (userDoc?.keywords || []);
+  const savedUniversityFlairColor = savedUniversityFlair
+    ? (universityFlairColors[savedUniversityFlair] || '#555555')
+    : '#555555';
 
   return (
     <div style={{ minHeight: '100vh', background: '#000', animation: 'fadeIn 0.2s ease' }}>
@@ -213,13 +229,13 @@ export default function Profile() {
         .profile-textarea:focus { border-color: #FF2D2D !important; }
       `}</style>
       <NavBar />
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <AvatarComponent
             userId={targetUserId}
             size={96}
             editable={isOwn}
-            onUpload={(url) => setUserDoc(prev => ({ ...prev, avatarUrl: url }))}
+            onUpload={(url) => mergeUserState({ photoURL: url })}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
             {editing ? (
@@ -248,6 +264,25 @@ export default function Profile() {
             {userDoc?.flair && !editing && (
               <div style={{ marginBottom: '0.25rem' }}>
                 <FlairBadge flair={userDoc.flair} />
+              </div>
+            )}
+            {savedUniversityFlair && !editing && (
+              <div style={{ marginBottom: '0.3rem' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  borderRadius: '50px',
+                  padding: '0.12rem 0.5rem',
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  textTransform: 'lowercase',
+                  border: `1px solid ${savedUniversityFlairColor}55`,
+                  color: savedUniversityFlairColor,
+                  background: `${savedUniversityFlairColor}18`,
+                }}>
+                  {savedUniversityFlair}
+                </span>
               </div>
             )}
             {userDoc?.foundingMember && !editing && (
@@ -644,7 +679,7 @@ export default function Profile() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {hostedEventsList.map(event => {
-                const dt = event.dateTime?.toDate?.() || (event.dateTime ? new Date(event.dateTime) : null);
+                const dt = event.datetime?.toDate?.() || (event.datetime ? new Date(event.datetime) : null);
                 const isPast = dt && dt < new Date();
                 return (
                   <div
@@ -678,9 +713,9 @@ export default function Profile() {
                           {dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       )}
-                      {event.location && (
+                      {(event.location || event.locationName) && (
                         <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', color: '#555' }}>
-                          {event.location}
+                          {event.location || event.locationName}
                         </span>
                       )}
                       {isPast && (

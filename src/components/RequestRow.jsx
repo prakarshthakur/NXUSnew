@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, runTransaction, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
@@ -15,6 +15,7 @@ export default function RequestRow({ request, eventId }) {
   const [question, setQuestion] = useState('');
   const [sending, setSending] = useState(false);
   const [questionSent, setQuestionSent] = useState(!!request.hostQuestion);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     if (!request.userId) return;
@@ -25,24 +26,61 @@ export default function RequestRow({ request, eventId }) {
 
   const handleAccept = async () => {
     setFading(true);
+    setActionError('');
     try {
-      await updateDoc(doc(db, 'joinRequests', request.id), { status: 'accepted' });
-      await updateDoc(doc(db, 'events', eventId), { attendeeCount: increment(1) });
-    } catch (e) { console.error(e); }
+      await runTransaction(db, async (transaction) => {
+        const requestRef = doc(db, 'joinRequests', request.id);
+        const eventRef = doc(db, 'events', eventId);
+        const requestSnap = await transaction.get(requestRef);
+        const eventSnap = await transaction.get(eventRef);
+
+        if (!requestSnap.exists() || !eventSnap.exists()) {
+          throw new Error('missing-data');
+        }
+
+        const currentRequest = requestSnap.data();
+        const currentEvent = eventSnap.data();
+        const currentCount = currentEvent.attendeeCount || 0;
+        const maxAttendees = currentEvent.maxAttendees || null;
+
+        if (currentRequest.status === 'accepted') {
+          return;
+        }
+
+        if (typeof maxAttendees === 'number' && currentCount >= maxAttendees) {
+          throw new Error('event-full');
+        }
+
+        transaction.update(requestRef, { status: 'accepted' });
+        transaction.update(eventRef, { attendeeCount: currentCount + 1 });
+      });
+    } catch (e) {
+      console.error('failed to accept join request', e?.code || e?.message);
+      setFading(false);
+      setActionError(e?.message === 'event-full' ? 'this event is already at capacity' : 'something went wrong');
+      return;
+    }
     setTimeout(() => setActionDone(true), 300);
   };
 
   const handleDecline = async () => {
     setFading(true);
+    setActionError('');
     try {
       await updateDoc(doc(db, 'joinRequests', request.id), { status: 'declined' });
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('failed to decline join request', e?.code);
+      setFading(false);
+      setActionError('something went wrong');
+      return;
+    }
     setTimeout(() => setActionDone(true), 300);
   };
 
   const handleAsk = async () => {
     if (!question.trim()) return;
     setSending(true);
+    setActionError('');
     try {
       await updateDoc(doc(db, 'joinRequests', request.id), {
         status: 'info_requested',
@@ -51,7 +89,10 @@ export default function RequestRow({ request, eventId }) {
       });
       setQuestionSent(true);
       setAskMode(false);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('failed to send host question', e?.code);
+      setActionError('unable to send your question right now');
+    }
     setSending(false);
   };
 
@@ -216,7 +257,7 @@ export default function RequestRow({ request, eventId }) {
           }}>
             asked: "{request.hostQuestion}"
           </div>
-          {request.userReply ? (
+          {request.reply ? (
             <div style={{
               padding: '0.5rem 0.75rem',
               background: 'rgba(245,158,11,0.03)',
@@ -226,7 +267,7 @@ export default function RequestRow({ request, eventId }) {
               color: '#888',
             }}>
               <span style={{ color: '#555', fontSize: '0.68rem' }}>their reply: </span>
-              "{request.userReply}"
+              "{request.reply}"
             </div>
           ) : (
             <div style={{
@@ -313,6 +354,18 @@ export default function RequestRow({ request, eventId }) {
               {question.length}/200
             </span>
           </div>
+        </div>
+      )}
+
+      {actionError && (
+        <div style={{
+          marginTop: '0.55rem',
+          color: '#ef4444',
+          fontFamily: "'IBM Plex Mono', monospace",
+          fontSize: '0.68rem',
+          textTransform: 'lowercase',
+        }}>
+          {actionError}
         </div>
       )}
     </div>

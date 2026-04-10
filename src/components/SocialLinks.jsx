@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LINKS = [
+export const SOCIAL_LINKS = [
   {
     key: 'whatsapp',
     label: 'whatsapp',
@@ -37,7 +37,7 @@ const LINKS = [
  * variant="feed"  — frosted glass, red tint, for the feed page
  * variant="login" — solid red outline buttons, for the login page
  */
-export default function SocialLinks({ variant = 'feed' }) {
+export default function SocialLinks({ variant = 'feed', iconOnly = false, onLinkClick }) {
   const mono = "'IBM Plex Mono', monospace";
 
   const feedBtn = {
@@ -89,13 +89,27 @@ export default function SocialLinks({ variant = 'feed' }) {
       justifyContent: 'center',
       flexWrap: 'wrap',
     }}>
-      {LINKS.map(link => (
+      {SOCIAL_LINKS.map(link => (
         <a
           key={link.key}
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          style={btn}
+          aria-label={link.label}
+          title={link.label}
+          onMouseDown={e => e.stopPropagation()}
+          onClick={onLinkClick}
+          style={{
+            ...btn,
+            ...(iconOnly ? {
+              gap: 0,
+              width: '36px',
+              height: '36px',
+              padding: 0,
+              justifyContent: 'center',
+              borderRadius: '50%',
+            } : {}),
+          }}
           onMouseEnter={e => {
             e.currentTarget.style.background = 'rgba(255,45,45,0.15)';
             e.currentTarget.style.borderColor = 'rgba(255,45,45,0.5)';
@@ -106,7 +120,7 @@ export default function SocialLinks({ variant = 'feed' }) {
           }}
         >
           {link.icon}
-          {link.label}
+          {!iconOnly && link.label}
         </a>
       ))}
     </div>

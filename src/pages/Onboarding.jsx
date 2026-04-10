@@ -1,24 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import emailjs from '@emailjs/browser';
-import {
-  doc, getDoc, updateDoc, setDoc, serverTimestamp,
-} from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDoc } from '../contexts/UserDocContext';
-
-const EMAILJS_SERVICE  = 'service_bxm5d9s';
-const EMAILJS_TEMPLATE = 'template_imic976';
-const EMAILJS_KEY      = '0PpBz8KikvlE81sVG';
-const OTP_EXPIRY_MS    = 10 * 60 * 1000;
-const RESEND_COOLDOWN  = 60;
-
-const UNIVERSITY_FLAIRS = [
-  { key: 'MDX',  label: 'MDX',  bg: '#7C3AED', color: '#ffffff' },
-  { key: 'HWUD', label: 'HWUD', bg: '#1D4ED8', color: '#ffffff' },
-  { key: 'MAHE', label: 'MAHE', bg: '#EA580C', color: '#ffffff' },
-];
+import { useUniversityFlairs } from '../contexts/UniversityFlairsContext';
 
 const mono = "'IBM Plex Mono', monospace";
 
@@ -36,26 +22,10 @@ const inputStyle = {
   transition: 'border-color 0.2s',
 };
 
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-async function checkUniversityEmailAllowed(email) {
-  try {
-    const snap = await getDoc(doc(db, 'config', 'universityEmailSuffixes'));
-    if (!snap.exists()) return true;
-    const suffixes = snap.data().suffixes || [];
-    if (suffixes.length === 0) return true;
-    return suffixes.some(s => email.toLowerCase().endsWith(s.toLowerCase()));
-  } catch (e) {
-    console.error('checkUniversityEmailAllowed failed:', e);
-    return false;
-  }
-}
-
 export default function Onboarding() {
   const authUser = useAuth();
   const { userDoc, setUserDoc } = useUserDoc();
+  const { universityFlairs } = useUniversityFlairs();
   const navigate = useNavigate();
 
   // If already completed onboarding, go to feed
@@ -66,24 +36,13 @@ export default function Onboarding() {
   // Form state
   const [displayName, setDisplayName] = useState('');
   const [selectedFlair, setSelectedFlair] = useState(null);
+  const [instagram, setInstagram] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
   // Info tooltip state
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef(null);
-
-  // Verification state
-  const [uniEmail, setUniEmail] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [pendingOtp, setPendingOtp] = useState('');
-  const [otpExpiry, setOtpExpiry] = useState(null);
-  const [otpInput, setOtpInput] = useState('');
-  const [verified, setVerified] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
-  const [otpError, setOtpError] = useState('');
-  const [verifyLoading, setVerifyLoading] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
 
   // Prefill display name from auth
   useEffect(() => {
@@ -92,12 +51,14 @@ export default function Onboarding() {
     }
   }, [authUser]);
 
-  // Cooldown timer
   useEffect(() => {
-    if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [cooldown]);
+    if (!userDoc) return;
+    if (userDoc.displayName && !displayName) setDisplayName(userDoc.displayName);
+    if ((userDoc.university || userDoc.universityFlair) && !selectedFlair) {
+      setSelectedFlair(userDoc.university || userDoc.universityFlair);
+    }
+    if (userDoc.instagram && !instagram) setInstagram(userDoc.instagram);
+  }, [userDoc]);
 
   // Close tooltip on outside click
   useEffect(() => {
@@ -110,97 +71,23 @@ export default function Onboarding() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const handleSendOtp = async () => {
-    setOtpError('');
-    const email = uniEmail.trim().toLowerCase();
-    if (!email || !email.includes('@')) {
-      setOtpError('enter a valid university email address');
-      return;
-    }
-    setOtpLoading(true);
-    try {
-      const allowed = await checkUniversityEmailAllowed(email);
-      if (!allowed) {
-        setOtpError("this email domain isn't on the verified list yet.");
-        return;
-      }
-      const code = generateOtp();
-      await emailjs.send(
-        EMAILJS_SERVICE,
-        EMAILJS_TEMPLATE,
-        {
-          to_email: email,
-          email,               // covers templates with recipient field set to {{email}}
-          otp_code: code,
-          passcode: code,      // covers templates using {{passcode}}
-          user_name: displayName || authUser?.displayName || 'student',
-        },
-        { publicKey: EMAILJS_KEY }
-      );
-      setPendingOtp(code);
-      setOtpExpiry(Date.now() + OTP_EXPIRY_MS);
-      setOtpSent(true);
-      setOtpInput('');
-      setCooldown(RESEND_COOLDOWN);
-    } catch (e) {
-      console.error('EmailJS error:', e);
-      setOtpError('failed to send code — try again');
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    setOtpError('');
-    if (!otpInput.trim()) { setOtpError('enter the 6-digit code'); return; }
-    if (Date.now() > otpExpiry) {
-      setOtpError('code expired — request a new one');
-      setOtpSent(false);
-      return;
-    }
-    if (otpInput.trim() !== pendingOtp) {
-      setOtpError('incorrect code — try again');
-      return;
-    }
-    setVerifyLoading(true);
-    try {
-      // Mark verified in Firestore immediately
-      await updateDoc(doc(db, 'users', authUser.uid), {
-        university_verified: true,
-        universityEmail: uniEmail.trim().toLowerCase(),
-        universityVerifiedAt: serverTimestamp(),
-      });
-      setVerified(true);
-      setPendingOtp(''); // invalidate OTP
-      setOtpError('');
-      setUserDoc(prev => ({
-        ...prev,
-        university_verified: true,
-        universityEmail: uniEmail.trim().toLowerCase(),
-      }));
-    } catch (e) {
-      console.error(e);
-      setOtpError('verification failed — try again');
-    } finally {
-      setVerifyLoading(false);
-    }
-  };
-
   const handleSave = async () => {
     if (!displayName.trim()) { setSaveError('please enter a display name'); return; }
     setSaving(true);
     setSaveError('');
     try {
+      const instagramHandle = instagram.trim().replace(/^@+/, '');
       const updates = {
         displayName: displayName.trim(),
+        instagram: instagramHandle,
         onboardingComplete: true,
       };
-      if (selectedFlair) updates.universityFlair = selectedFlair;
-      await updateDoc(doc(db, 'users', authUser.uid), updates);
+      if (selectedFlair) updates.university = selectedFlair;
+      await setDoc(doc(db, 'users', authUser.uid), updates, { merge: true });
       setUserDoc(prev => ({ ...prev, ...updates }));
       navigate('/feed', { replace: true });
     } catch (e) {
-      console.error(e);
+      console.error('failed to save onboarding', e?.code);
       setSaveError('something went wrong — try again');
     } finally {
       setSaving(false);
@@ -307,7 +194,7 @@ export default function Onboarding() {
           </label>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {UNIVERSITY_FLAIRS.map(f => {
+            {universityFlairs.map(f => {
               const isSelected = selectedFlair === f.key;
               return (
                 <button
@@ -404,147 +291,42 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {/* ── University email verification ── */}
-        <div style={{
-          background: '#0a0a0a',
-          border: '1px solid #1a1a1a',
-          borderRadius: '12px',
-          padding: '1.25rem',
-          marginBottom: '2rem',
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            marginBottom: '0.9rem',
+        {/* ── Instagram ── */}
+        <div style={{ marginBottom: '2rem' }}>
+          <label style={{
+            display: 'block',
+            fontFamily: mono,
+            fontSize: '0.7rem',
+            color: '#888',
+            textTransform: 'lowercase',
+            marginBottom: '0.45rem',
+            letterSpacing: '0.04em',
           }}>
-            {verified ? (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            ) : (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            )}
+            instagram
+          </label>
+          <div style={{ position: 'relative' }}>
             <span style={{
+              position: 'absolute',
+              left: '1rem',
+              top: '50%',
+              transform: 'translateY(-50%)',
               fontFamily: mono,
-              fontSize: '0.72rem',
-              color: verified ? '#4ade80' : '#888',
-              textTransform: 'lowercase',
-              fontWeight: verified ? 700 : 400,
+              fontSize: '0.9rem',
+              color: '#555',
+              pointerEvents: 'none',
             }}>
-              {verified ? 'student status verified ✓' : 'verify your student status'}
+              @
             </span>
-            <span style={{
-              fontFamily: mono,
-              fontSize: '0.62rem',
-              color: '#2a2a2a',
-              marginLeft: 'auto',
-              textTransform: 'lowercase',
-            }}>
-              optional
-            </span>
+            <input
+              className="onb-input"
+              style={{ ...inputStyle, paddingLeft: '1.9rem' }}
+              placeholder="yourhandle"
+              value={instagram}
+              onChange={e => setInstagram(e.target.value.replace(/^@+/, ''))}
+              maxLength={30}
+              autoComplete="off"
+            />
           </div>
-
-          {!verified && (
-            <>
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: otpSent ? '0.75rem' : '0' }}>
-                <input
-                  className="onb-input"
-                  style={{ ...inputStyle, flex: 1, fontSize: '0.85rem', padding: '0.6rem 0.9rem' }}
-                  type="email"
-                  placeholder="your university email"
-                  value={uniEmail}
-                  onChange={e => { setUniEmail(e.target.value); setOtpError(''); }}
-                  disabled={otpSent && !otpError.includes('expired')}
-                />
-                <button
-                  onClick={handleSendOtp}
-                  disabled={otpLoading || cooldown > 0 || !uniEmail.trim()}
-                  style={{
-                    background: '#FF2D2D',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '0.6rem 1rem',
-                    color: '#000',
-                    fontFamily: mono,
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    cursor: (otpLoading || cooldown > 0 || !uniEmail.trim()) ? 'not-allowed' : 'pointer',
-                    opacity: (otpLoading || cooldown > 0 || !uniEmail.trim()) ? 0.5 : 1,
-                    textTransform: 'lowercase',
-                    whiteSpace: 'nowrap',
-                    transition: 'opacity 0.15s',
-                  }}
-                >
-                  {otpLoading ? '...' : cooldown > 0 ? `${cooldown}s` : otpSent ? 'resend' : 'send otp'}
-                </button>
-              </div>
-
-              {otpSent && (
-                <div style={{ animation: 'fadeIn 0.2s ease' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <input
-                      className="onb-input"
-                      style={{ ...inputStyle, flex: 1, fontSize: '0.85rem', padding: '0.6rem 0.9rem', letterSpacing: '0.15em' }}
-                      placeholder="6-digit code"
-                      value={otpInput}
-                      onChange={e => { setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6)); setOtpError(''); }}
-                      maxLength={6}
-                    />
-                    <button
-                      onClick={handleVerifyOtp}
-                      disabled={verifyLoading || otpInput.length < 6}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid rgba(74,222,128,0.4)',
-                        borderRadius: '8px',
-                        padding: '0.6rem 1rem',
-                        color: '#4ade80',
-                        fontFamily: mono,
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        cursor: (verifyLoading || otpInput.length < 6) ? 'not-allowed' : 'pointer',
-                        opacity: (verifyLoading || otpInput.length < 6) ? 0.5 : 1,
-                        textTransform: 'lowercase',
-                        whiteSpace: 'nowrap',
-                        transition: 'opacity 0.15s, background 0.15s',
-                      }}
-                      onMouseEnter={e => { if (otpInput.length === 6 && !verifyLoading) e.currentTarget.style.background = 'rgba(74,222,128,0.08)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                    >
-                      {verifyLoading ? '...' : 'verify'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {otpError && (
-                <p style={{
-                  fontFamily: mono,
-                  fontSize: '0.72rem',
-                  color: '#ef4444',
-                  margin: '0.5rem 0 0',
-                  textTransform: 'lowercase',
-                }}>
-                  {otpError}
-                </p>
-              )}
-            </>
-          )}
-
-          {verified && (
-            <div style={{
-              fontFamily: mono,
-              fontSize: '0.75rem',
-              color: '#4ade80',
-              textTransform: 'lowercase',
-            }}>
-              verified: {uniEmail}
-            </div>
-          )}
         </div>
 
         {/* ── Save button ── */}
@@ -592,7 +374,7 @@ export default function Onboarding() {
           marginTop: '1rem',
           textTransform: 'lowercase',
         }}>
-          you can verify your student email later from your profile
+          you can update the rest of your profile later
         </p>
       </div>
     </div>

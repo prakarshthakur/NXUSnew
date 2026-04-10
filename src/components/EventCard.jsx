@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import ProfileAvatar from './ProfileAvatar';
 import VerifiedBadge from './VerifiedBadge';
 import FlairBadge from './FlairBadge';
-
-const UNI_FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', MAHE: '#EA580C' };
+import { useUniversityFlairs } from '../contexts/UniversityFlairsContext';
 
 export default function EventCard({ event, style, onTap }) {
+  const { universityFlairColors } = useUniversityFlairs();
   const [hostName, setHostName] = useState('');
   const [hostVerified, setHostVerified] = useState(false);
   const [hostUniFlair, setHostUniFlair] = useState(null);
@@ -20,7 +20,7 @@ export default function EventCard({ event, style, onTap }) {
       if (snap.exists()) {
         setHostName(snap.data().displayName || 'anonymous');
         setHostVerified(snap.data().university_verified || false);
-        setHostUniFlair(snap.data().universityFlair || null);
+        setHostUniFlair(snap.data().university || snap.data().universityFlair || null);
       }
     }).catch(() => {});
   }, [event.hostUid]);
@@ -130,17 +130,17 @@ export default function EventCard({ event, style, onTap }) {
           }}>
             {hostName || 'host'}
             <VerifiedBadge verified={hostVerified} size={13} />
-            {hostVerified && hostUniFlair && UNI_FLAIR_COLORS[hostUniFlair] && (
+            {hostVerified && hostUniFlair && universityFlairColors[hostUniFlair] && (
               <span style={{
                 marginLeft: '0.25rem',
-                background: UNI_FLAIR_COLORS[hostUniFlair] + '22',
-                border: `1px solid ${UNI_FLAIR_COLORS[hostUniFlair]}55`,
+                background: universityFlairColors[hostUniFlair] + '22',
+                border: `1px solid ${universityFlairColors[hostUniFlair]}55`,
                 borderRadius: '50px',
                 padding: '0.05rem 0.4rem',
                 fontFamily: "'IBM Plex Mono', monospace",
                 fontSize: '0.58rem',
                 fontWeight: 700,
-                color: UNI_FLAIR_COLORS[hostUniFlair],
+                color: universityFlairColors[hostUniFlair],
               }}>
                 {hostUniFlair}
               </span>

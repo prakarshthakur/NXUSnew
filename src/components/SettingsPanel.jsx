@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
+import SocialLinks from './SocialLinks';
 
 function Divider() {
   return <div style={{ height: '1px', background: '#1a1a1a', margin: '0.25rem 0' }} />;
@@ -8,7 +8,6 @@ function Divider() {
 
 export default function SettingsPanel({ user, onClose, mobile = false }) {
   const panelRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = (e) => {
@@ -90,8 +89,10 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
 
         <Divider />
 
-        <button
-          onClick={() => { onClose(); navigate('/about'); }}
+        <a
+          href="https://nxus.fun/about"
+          onClick={onClose}
+          onMouseDown={e => e.stopPropagation()}
           style={{
             display: 'block', width: '100%', textAlign: 'left',
             background: 'none', border: 'none',
@@ -99,12 +100,28 @@ export default function SettingsPanel({ user, onClose, mobile = false }) {
             fontFamily: "'IBM Plex Mono', monospace",
             fontSize: '0.75rem', color: '#666',
             textTransform: 'lowercase', cursor: 'pointer',
+            textDecoration: 'none',
           }}
           onMouseEnter={e => e.currentTarget.style.color = '#aaa'}
           onMouseLeave={e => e.currentTarget.style.color = '#666'}
         >
           about nxus
-        </button>
+        </a>
+
+        <Divider />
+
+        <div style={{ padding: '0.55rem 0.85rem 0.7rem' }}>
+          <div style={{
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: '0.62rem',
+            color: '#444',
+            textTransform: 'lowercase',
+            marginBottom: '0.55rem',
+          }}>
+            community
+          </div>
+          <SocialLinks variant="feed" iconOnly onLinkClick={onClose} />
+        </div>
 
         <Divider />
 

@@ -11,6 +11,7 @@ const STATS_REF = () => doc(db, 'public', 'stats');
 import { db } from '../firebase';
 import { useAuth } from '../hooks/useAuth';
 import NavBar from '../components/NavBar';
+import { useUniversityFlairs } from '../contexts/UniversityFlairsContext';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 
@@ -165,7 +166,7 @@ function UsersTab() {
       const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
       setUsers(snap.docs.map(d => ({ uid: d.id, ...d.data() })));
     } catch (e) {
-      console.error(e);
+      console.error('failed to load admin users', e?.code);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -219,7 +220,7 @@ function UsersTab() {
       setConfirmDelete(null);
       showToast(`deleted user and all their content`);
     } catch (e) {
-      console.error(e);
+      console.error('failed to delete admin user', e?.code);
       showToast('error deleting user');
     } finally {
       setDeleting(false);
@@ -308,8 +309,8 @@ function UsersTab() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                 }}>
-                  {u.avatarUrl ? (
-                    <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  {u.photoURL || u.avatarUrl ? (
+                    <img src={u.photoURL || u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
                     <span style={{
                       fontFamily: 'grovant, sans-serif', fontSize: '0.85rem', fontWeight: 800,
@@ -439,7 +440,7 @@ function EventsTab() {
       }));
       setHostNames(names);
     } catch (e) {
-      console.error(e);
+      console.error('failed to load admin events', e?.code);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -467,7 +468,7 @@ function EventsTab() {
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, flair: { text: flairText.trim(), color: flairColor } } : e));
       setFlairEdit(null);
       showToast('flair saved');
-    } catch (e) { console.error(e); showToast('error saving flair'); }
+    } catch (e) { console.error('failed to save admin event flair', e?.code); showToast('error saving flair'); }
     finally { setFlairSaving(false); }
   };
 
@@ -478,7 +479,7 @@ function EventsTab() {
       setEvents(prev => prev.map(e => e.id === eventId ? { ...e, flair: null } : e));
       setFlairEdit(null);
       showToast('flair removed');
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error('failed to remove admin event flair', e?.code); }
     finally { setFlairSaving(false); }
   };
 
@@ -501,7 +502,7 @@ function EventsTab() {
       setConfirmDelete(null);
       showToast('event deleted');
     } catch (e) {
-      console.error(e);
+      console.error('failed to delete admin event', e?.code);
       showToast('error deleting event');
     } finally {
       setDeleting(false);
@@ -561,7 +562,7 @@ function EventsTab() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
           {filtered.map(ev => {
-            const dt = ev.dateTime?.toDate?.() || (ev.datetime?.toDate?.()) || null;
+            const dt = ev.datetime?.toDate?.() || (ev.datetime ? new Date(ev.datetime) : null);
             const isPast = dt && dt < new Date();
             const dateStr = dt ? dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
@@ -755,7 +756,7 @@ function EmailSuffixesTab() {
       const snap = await getDoc(CONFIG_DOC);
       setSuffixes(snap.exists() ? (snap.data().suffixes || []) : []);
     } catch (e) {
-      console.error(e);
+      console.error('failed to load email suffix config', e?.code);
       setSuffixes([]);
     }
   };
@@ -791,7 +792,7 @@ function EmailSuffixesTab() {
       setNewSuffix('');
       showToast(`added ${trimmed}`);
     } catch (e) {
-      console.error(e);
+      console.error('failed to save email suffix config', e?.code);
       setError('failed to save');
     } finally {
       setSaving(false);
@@ -806,7 +807,7 @@ function EmailSuffixesTab() {
       setSuffixes(updated);
       showToast(`removed ${suffix}`);
     } catch (e) {
-      console.error(e);
+      console.error('failed to remove email suffix config entry', e?.code);
     } finally {
       setSaving(false);
     }
@@ -829,7 +830,7 @@ function EmailSuffixesTab() {
         </div>
       )}
 
-      <SectionHeader title="allowed email suffixes" count={suffixes.length} onRefresh={load} refreshing={false} />
+      <SectionHeader title="allowed university email suffixes" count={suffixes.length} onRefresh={load} refreshing={false} />
 
       {/* Status notice */}
       <div style={{
@@ -849,8 +850,8 @@ function EmailSuffixesTab() {
         }} />
         <p style={{ fontFamily: mono, fontSize: '0.72rem', color: '#666', margin: 0, lineHeight: 1.7 }}>
           {suffixes.length === 0
-            ? 'no restrictions set — all email addresses can sign up'
-            : `only emails ending with the listed suffixes can create accounts. admin (${ADMIN_EMAIL}) is always allowed.`
+            ? 'no restrictions set — any email can request a signup otp from the login page'
+            : 'only emails ending with the listed suffixes can request a signup otp from the login page.'
           }
         </p>
       </div>
@@ -858,7 +859,7 @@ function EmailSuffixesTab() {
       {/* Add suffix */}
       <div style={{ marginBottom: '1.5rem' }}>
         <div style={{ fontFamily: mono, fontSize: '0.68rem', color: '#555', marginBottom: '0.4rem', textTransform: 'lowercase' }}>
-          add email suffix
+          add university email suffix
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <input
@@ -896,7 +897,7 @@ function EmailSuffixesTab() {
       {/* Suffix list */}
       {suffixes.length === 0 ? (
         <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '1rem 0' }}>
-          no suffixes added — open registration
+          no suffixes added
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -949,13 +950,12 @@ function EmailSuffixesTab() {
 // ── Verified Students Tab ─────────────────────────────────────────────────────
 
 function VerifiedStudentsTab() {
+  const { universityFlairColors } = useUniversityFlairs();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sortAsc, setSortAsc] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
-  const FLAIR_COLORS = { MDX: '#7C3AED', HWUD: '#1D4ED8', MAHE: '#EA580C' };
 
   const load = useCallback(async () => {
     setRefreshing(true);
@@ -964,7 +964,7 @@ function VerifiedStudentsTab() {
         query(collection(db, 'users'), where('university_verified', '==', true))
       );
       setStudents(snap.docs.map(d => ({ uid: d.id, ...d.data() })));
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error('failed to load verified students', e?.code); }
     finally { setLoading(false); setRefreshing(false); }
   }, []);
 
@@ -975,7 +975,7 @@ function VerifiedStudentsTab() {
       const q = search.toLowerCase();
       return (
         (u.displayName || '').toLowerCase().includes(q) ||
-        (u.universityEmail || '').toLowerCase().includes(q)
+        (u.email || '').toLowerCase().includes(q)
       );
     })
     .sort((a, b) => {
@@ -1013,7 +1013,7 @@ function VerifiedStudentsTab() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
           {filtered.map(u => {
-            const flairColor = FLAIR_COLORS[u.universityFlair] || '#555';
+            const flairColor = universityFlairColors[u.university || u.universityFlair] || '#555';
             const verifiedDate = u.universityVerifiedAt?.toDate?.()?.toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric',
             }) || '—';
@@ -1033,8 +1033,8 @@ function VerifiedStudentsTab() {
                   background: '#111', border: '1px solid #222',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
-                  {u.avatarUrl ? (
-                    <img src={u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  {u.photoURL || u.avatarUrl ? (
+                    <img src={u.photoURL || u.avatarUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
                     <span style={{ fontFamily: 'grovant, sans-serif', fontSize: '0.85rem', fontWeight: 800, color: '#444' }}>
                       {(u.displayName || u.email || '?')[0].toUpperCase()}
@@ -1053,18 +1053,18 @@ function VerifiedStudentsTab() {
                       <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                       <path d="M6 12v5c3 3 9 3 12 0v-5" />
                     </svg>
-                    {u.universityFlair && (
+                    {(u.university || u.universityFlair) && (
                       <span style={{
                         background: flairColor + '22', border: `1px solid ${flairColor}55`,
                         borderRadius: '50px', padding: '0.1rem 0.45rem',
                         fontFamily: mono, fontSize: '0.58rem', color: flairColor,
                       }}>
-                        {u.universityFlair}
+                        {u.university || u.universityFlair}
                       </span>
                     )}
                   </div>
                   <div style={{ fontFamily: mono, fontSize: '0.68rem', color: '#444', marginTop: '0.1rem' }}>
-                    {u.universityEmail || '(no email)'}
+                    {u.email || '(no email)'}
                   </div>
                 </div>
 
@@ -1081,65 +1081,88 @@ function VerifiedStudentsTab() {
   );
 }
 
-// ── University Email Suffixes Tab ─────────────────────────────────────────────
+// ── University Flairs Tab ─────────────────────────────────────────────────────
 
-function UniversityEmailSuffixesTab() {
-  const [suffixes, setSuffixes] = useState(null);
-  const [newSuffix, setNewSuffix] = useState('');
+function UniversityFlairsTab() {
+  const {
+    universityFlairs,
+    loadingUniversityFlairs,
+    setUniversityFlairs,
+    reloadUniversityFlairs,
+  } = useUniversityFlairs();
+  const [newFlairKey, setNewFlairKey] = useState('');
+  const [newFlairColor, setNewFlairColor] = useState(FLAIR_COLORS[0]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
 
-  const CONFIG_DOC = doc(db, 'config', 'universityEmailSuffixes');
+  const CONFIG_DOC = doc(db, 'config', 'universityFlairs');
 
-  const load = async () => {
-    try {
-      const snap = await getDoc(CONFIG_DOC);
-      setSuffixes(snap.exists() ? (snap.data().suffixes || []) : []);
-    } catch (e) { console.error(e); setSuffixes([]); }
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 3000);
   };
 
-  useEffect(() => { load(); }, []);
-
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
-
-  const validateSuffix = (s) => {
-    const t = s.trim().toLowerCase();
-    if (!t) return 'enter a suffix';
-    if (!t.startsWith('@')) return 'suffix must start with @';
-    if (!t.includes('.')) return 'suffix must include a domain (e.g. @mdx.ac.ae)';
-    if (t.length < 4) return 'suffix too short';
+  const validateFlairKey = (value) => {
+    const trimmed = value.trim().toUpperCase();
+    if (!trimmed) return 'enter a flair code';
+    if (trimmed.length < 2) return 'flair code is too short';
+    if (trimmed.length > 16) return 'flair code is too long';
+    if (!/^[A-Z0-9]+$/.test(trimmed)) return 'use letters and numbers only';
     return null;
   };
 
   const handleAdd = async () => {
-    const trimmed = newSuffix.trim().toLowerCase();
-    const err = validateSuffix(trimmed);
-    if (err) { setError(err); return; }
-    if (suffixes.includes(trimmed)) { setError('already added'); return; }
-    setSaving(true); setError('');
+    const key = newFlairKey.trim().toUpperCase();
+    const validationError = validateFlairKey(key);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    if (universityFlairs.some((flair) => flair.key === key)) {
+      setError('that flair already exists');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
     try {
-      const updated = [...suffixes, trimmed];
-      await setDoc(CONFIG_DOC, { suffixes: updated, updatedAt: serverTimestamp() });
-      setSuffixes(updated);
-      setNewSuffix('');
-      showToast(`added ${trimmed}`);
-    } catch (e) { console.error(e); setError('failed to save'); }
-    finally { setSaving(false); }
+      const updated = [
+        ...universityFlairs,
+        { key, label: key, bg: newFlairColor, color: '#ffffff' },
+      ];
+      await setDoc(CONFIG_DOC, { flairs: updated, updatedAt: serverTimestamp() });
+      setUniversityFlairs(updated);
+      setNewFlairKey('');
+      setNewFlairColor(FLAIR_COLORS[0]);
+      showToast(`added ${key}`);
+    } catch (e) {
+      console.error('failed to save university flair config', e?.code);
+      setError('failed to save flair');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleRemove = async (suffix) => {
+  const handleRemove = async (key) => {
     setSaving(true);
     try {
-      const updated = suffixes.filter(s => s !== suffix);
-      await setDoc(CONFIG_DOC, { suffixes: updated, updatedAt: serverTimestamp() });
-      setSuffixes(updated);
-      showToast(`removed ${suffix}`);
-    } catch (e) { console.error(e); }
-    finally { setSaving(false); }
+      const updated = universityFlairs.filter((flair) => flair.key !== key);
+      await setDoc(CONFIG_DOC, { flairs: updated, updatedAt: serverTimestamp() });
+      setUniversityFlairs(updated);
+      showToast(`removed ${key}`);
+    } catch (e) {
+      console.error('failed to remove university flair config entry', e?.code);
+      setError('failed to remove flair');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  if (suffixes === null) return <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '2rem 0' }}>loading...</div>;
+  if (loadingUniversityFlairs) {
+    return <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '2rem 0' }}>loading...</div>;
+  }
 
   return (
     <div>
@@ -1154,78 +1177,157 @@ function UniversityEmailSuffixesTab() {
         </div>
       )}
 
-      <SectionHeader title="allowed university email suffixes" count={suffixes.length} onRefresh={load} refreshing={false} />
+      <SectionHeader
+        title="university flairs"
+        count={universityFlairs.length}
+        onRefresh={reloadUniversityFlairs}
+        refreshing={loadingUniversityFlairs}
+      />
 
       <div style={{
-        background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.15)',
-        borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem',
-        display: 'flex', alignItems: 'flex-start', gap: '0.5rem',
+        background: 'rgba(74,222,128,0.05)',
+        border: '1px solid rgba(74,222,128,0.15)',
+        borderRadius: '8px',
+        padding: '0.75rem 1rem',
+        marginBottom: '1.25rem',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '0.5rem',
       }}>
         <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', marginTop: '0.35rem', flexShrink: 0 }} />
         <p style={{ fontFamily: mono, fontSize: '0.72rem', color: '#666', margin: 0, lineHeight: 1.7 }}>
-          {suffixes.length === 0
-            ? 'no restrictions — any email can be used for university verification'
-            : `only these email domains can be used for student verification on the onboarding page.`
-          }
+          add or remove the university flair chips shown across onboarding, profiles, and verified student labels. removing one will not rewrite flair values already saved on older profiles.
         </p>
       </div>
 
       <div style={{ marginBottom: '1.5rem' }}>
         <div style={{ fontFamily: mono, fontSize: '0.68rem', color: '#555', marginBottom: '0.4rem', textTransform: 'lowercase' }}>
-          add university email suffix
+          add university flair
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <input
-            style={{ ...inputStyle, flex: 1 }}
-            placeholder="@mdx.ac.ae"
-            value={newSuffix}
-            onChange={e => { setNewSuffix(e.target.value); setError(''); }}
+            style={{ ...inputStyle, flex: '1 1 220px' }}
+            placeholder="e.g. nyuad"
+            value={newFlairKey}
+            onChange={e => { setNewFlairKey(e.target.value.toUpperCase()); setError(''); }}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             className="admin-input"
             disabled={saving}
+            maxLength={16}
           />
           <button
             onClick={handleAdd}
-            disabled={saving || !newSuffix.trim()}
+            disabled={saving || !newFlairKey.trim()}
             style={{
               background: '#FF2D2D', border: 'none', borderRadius: '8px',
               padding: '0.6rem 1.1rem', color: '#000',
               fontFamily: mono, fontSize: '0.78rem', fontWeight: 700,
-              cursor: saving || !newSuffix.trim() ? 'not-allowed' : 'pointer',
-              opacity: saving || !newSuffix.trim() ? 0.5 : 1,
-              textTransform: 'lowercase', whiteSpace: 'nowrap', transition: 'opacity 0.15s',
+              cursor: saving || !newFlairKey.trim() ? 'not-allowed' : 'pointer',
+              opacity: saving || !newFlairKey.trim() ? 0.5 : 1,
+              textTransform: 'lowercase', whiteSpace: 'nowrap',
+              transition: 'opacity 0.15s',
             }}
           >
             {saving ? '...' : '+ add'}
           </button>
         </div>
-        {error && <p style={{ fontFamily: mono, fontSize: '0.7rem', color: '#ef4444', margin: '0.35rem 0 0', textTransform: 'lowercase' }}>{error}</p>}
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginTop: '0.65rem' }}>
+          {FLAIR_COLORS.map((color) => (
+            <button
+              key={color}
+              onClick={() => setNewFlairColor(color)}
+              title={color}
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                background: color,
+                border: newFlairColor === color ? '2px solid #fff' : '2px solid transparent',
+                cursor: 'pointer',
+                padding: 0,
+                flexShrink: 0,
+                boxShadow: newFlairColor === color ? `0 0 0 1px ${color}` : 'none',
+              }}
+            />
+          ))}
+          {newFlairKey.trim() && (
+            <span style={{
+              marginLeft: '0.5rem',
+              background: newFlairColor,
+              border: `1px solid ${newFlairColor}`,
+              borderRadius: '50px',
+              padding: '0.12rem 0.6rem',
+              fontFamily: mono,
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: '#ffffff',
+              alignSelf: 'center',
+              textTransform: 'lowercase',
+            }}>
+              {newFlairKey.trim()}
+            </span>
+          )}
+        </div>
+        {error && (
+          <p style={{ fontFamily: mono, fontSize: '0.7rem', color: '#ef4444', margin: '0.35rem 0 0', textTransform: 'lowercase' }}>
+            {error}
+          </p>
+        )}
       </div>
 
-      {suffixes.length === 0 ? (
-        <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '1rem 0' }}>no suffixes added</div>
+      {universityFlairs.length === 0 ? (
+        <div style={{ fontFamily: mono, fontSize: '0.78rem', color: '#333', padding: '1rem 0' }}>
+          no university flairs configured
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-          {suffixes.map(suffix => (
+          {universityFlairs.map((flair) => (
             <div
-              key={suffix}
+              key={flair.key}
               className="admin-row"
               style={{
-                background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: '8px',
-                padding: '0.65rem 1rem', display: 'flex', alignItems: 'center',
-                justifyContent: 'space-between', transition: 'background 0.1s',
+                background: '#0a0a0a',
+                border: '1px solid #1a1a1a',
+                borderRadius: '8px',
+                padding: '0.65rem 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.75rem',
+                transition: 'background 0.1s',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
-                <span style={{ fontFamily: mono, fontSize: '0.82rem', color: '#e5e5e5' }}>{suffix}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
+                <span style={{
+                  background: flair.bg,
+                  border: `1px solid ${flair.bg}`,
+                  borderRadius: '50px',
+                  padding: '0.12rem 0.6rem',
+                  fontFamily: mono,
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  color: flair.color || '#ffffff',
+                  textTransform: 'lowercase',
+                  flexShrink: 0,
+                }}>
+                  {flair.label}
+                </span>
+                <span style={{ fontFamily: mono, fontSize: '0.7rem', color: '#555', textTransform: 'lowercase' }}>
+                  stored as {flair.key}
+                </span>
               </div>
               <button
                 style={dangerBtn}
-                onClick={() => handleRemove(suffix)}
+                onClick={() => handleRemove(flair.key)}
                 disabled={saving}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(239,68,68,0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(239,68,68,0.6)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(239,68,68,0.35)';
+                }}
               >
                 remove
               </button>
@@ -1244,7 +1346,7 @@ const TABS = [
   { key: 'events', label: 'events' },
   { key: 'suffixes', label: 'email access' },
   { key: 'verified', label: 'verified students' },
-  { key: 'uniSuffixes', label: 'uni email suffixes' },
+  { key: 'uniFlairs', label: 'university flairs' },
 ];
 
 export default function Admin() {
@@ -1267,7 +1369,7 @@ export default function Admin() {
         .admin-input:focus { border-color: #FF2D2D !important; }
       `}</style>
       <NavBar />
-      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '860px', margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
 
         {/* Page header */}
         <div style={{
@@ -1330,7 +1432,7 @@ export default function Admin() {
         {activeTab === 'events' && <EventsTab />}
         {activeTab === 'suffixes' && <EmailSuffixesTab />}
         {activeTab === 'verified' && <VerifiedStudentsTab />}
-        {activeTab === 'uniSuffixes' && <UniversityEmailSuffixesTab />}
+        {activeTab === 'uniFlairs' && <UniversityFlairsTab />}
       </div>
     </div>
   );
@@ -1357,7 +1459,7 @@ function StatsBar() {
       });
       setStats({ users: uSnap.size, events: eSnap.size, requests: rSnap.size });
     } catch (e) {
-      console.error(e);
+      console.error('failed to sync public admin stats', e?.code);
     } finally {
       setSyncing(false);
     }

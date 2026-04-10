@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  collection, query, where, onSnapshot, doc, getDoc, updateDoc, serverTimestamp,
+  collection, query, where, onSnapshot, doc, getDoc, runTransaction, serverTimestamp, updateDoc,
 } from 'firebase/firestore';
 
 import { db } from '../firebase';
@@ -11,7 +11,7 @@ import StatusBadge from '../components/StatusBadge';
 const FILTERS = ['all', 'questions', 'pending', 'accepted', 'declined'];
 
 function QuestionBlock({ req, onReplySent }) {
-  const [reply, setReply] = useState(req.userReply || '');
+  const [reply, setReply] = useState(req.reply || '');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(req.status === 'replied');
   const textareaRef = useRef(null);
@@ -43,7 +43,7 @@ function QuestionBlock({ req, onReplySent }) {
           color: '#666',
         }}>
           <span style={{ color: '#444', fontSize: '0.7rem' }}>you: </span>
-          {req.userReply}
+          {req.reply}
         </div>
       </div>
     );
@@ -54,14 +54,14 @@ function QuestionBlock({ req, onReplySent }) {
     setSending(true);
     try {
       await updateDoc(doc(db, 'joinRequests', req.id), {
-        userReply: reply.trim(),
+        reply: reply.trim(),
         repliedAt: serverTimestamp(),
         status: 'replied',
       });
       setSent(true);
       onReplySent?.();
     } catch (e) {
-      console.error(e);
+      console.error('failed to send join request reply', e?.code);
     }
     setSending(false);
   };
@@ -154,12 +154,31 @@ function OptOutButton({ req }) {
   const handleWithdraw = async () => {
     setWithdrawing(true);
     try {
-      await updateDoc(doc(db, 'joinRequests', req.id), {
-        status: 'withdrawn',
-        withdrawnAt: serverTimestamp(),
+      await runTransaction(db, async (transaction) => {
+        const requestRef = doc(db, 'joinRequests', req.id);
+        const requestSnap = await transaction.get(requestRef);
+
+        if (!requestSnap.exists()) {
+          throw new Error('missing-request');
+        }
+
+        const currentRequest = requestSnap.data();
+        const eventRef = doc(db, 'events', currentRequest.eventId);
+        const eventSnap = await transaction.get(eventRef);
+
+        transaction.update(requestRef, {
+          status: 'withdrawn',
+          withdrawnAt: serverTimestamp(),
+        });
+
+        if (currentRequest.status === 'accepted' && eventSnap.exists()) {
+          const eventData = eventSnap.data();
+          const attendeeCount = Math.max(0, (eventData.attendeeCount || 0) - 1);
+          transaction.update(eventRef, { attendeeCount });
+        }
       });
     } catch (e) {
-      console.error(e);
+      console.error('failed to withdraw join request', e?.code || e?.message);
     }
     setWithdrawing(false);
   };
@@ -354,7 +373,7 @@ export default function MyFun() {
         @keyframes questionPop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
       <NavBar />
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '680px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
           fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',

@@ -4,6 +4,13 @@
    ─────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
+  .mobile-page-shell {
+    padding: 0.18rem 0.95rem 1rem !important;
+  }
+
+  .mobile-page-loading {
+    padding: 0.5rem 1rem 1rem !important;
+  }
 
   /* Page-level headings */
   .page-title {
@@ -34,9 +41,8 @@
   }
 
   /* ── Feed ── */
-  /* Give the card stack a bit more vertical room on phones */
   .feed-card-stack {
-    height: 520px !important;
+    height: min(48vh, 390px) !important;
   }
   /* Detail modal — reduce padding so content breathes */
   .detail-modal-inner {

@@ -179,16 +179,22 @@ export default function Host() {
   const handleSubmit = async () => {
     if (!form.title.trim()) { setError('event name is required'); return; }
     if (!form.date || !form.time) { setError('date and time are required'); return; }
+    if (form.maxAttendees && Number(form.maxAttendees) > 50) {
+      setError('max attendees cannot exceed 50');
+      return;
+    }
     setError('');
     setSubmitting(true);
     try {
       const datetimeObj = new Date(`${form.date}T${form.time}`);
+      const locationValue = form.eventType === 'offline' ? form.locationName.trim() : '';
       await addDoc(collection(db, 'events'), {
         title: form.title.trim(),
         description: form.description.trim(),
         datetime: Timestamp.fromDate(datetimeObj),
         eventType: form.eventType,
-        locationName: form.eventType === 'offline' ? form.locationName.trim() : '',
+        location: locationValue,
+        locationName: locationValue,
         lat: form.eventType === 'offline' ? (form.lat || null) : null,
         lng: form.eventType === 'offline' ? (form.lng || null) : null,
         eventLink: form.eventType === 'online' ? form.eventLink.trim() : '',
@@ -200,6 +206,7 @@ export default function Host() {
       });
       navigate('/my-events');
     } catch (err) {
+      console.error('failed to create event', err?.code);
       setError((err.message || 'failed to create event').toLowerCase());
       setSubmitting(false);
     }
@@ -240,7 +247,7 @@ export default function Host() {
         .host-textarea:focus { border-color: #FF2D2D !important; }
       `}</style>
       <NavBar />
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <div className="mobile-page-shell" style={{ maxWidth: '560px', margin: '0 auto', padding: '2rem 1rem' }}>
         <h1 className="page-title" style={{
           fontFamily: "grovant, sans-serif",
           fontSize: '2.5rem',
