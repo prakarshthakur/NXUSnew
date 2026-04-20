@@ -67,7 +67,7 @@ export default function InstallPopup() {
       <div style={sheetStyle}>
         <button style={closeBtnStyle} onClick={handleDismiss}>&times;</button>
         <div style={headerStyle}>
-          <img src="/assets/nxus_logo.png" alt="NXUS App Icon" style={iconStyle} />
+          <img src="/assets/nxus_logo_icon.svg" alt="NXUS App Icon" style={iconStyle} />
           <h3 style={titleStyle}>Add NXUS to Home Screen</h3>
           <p style={subtitleStyle}>Get the full app experience</p>
         </div>
