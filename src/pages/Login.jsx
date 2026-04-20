@@ -1,37 +1,25 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signInWithPopup,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../utils/firebase';
 
-export default function Signup() {
+export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = async event => {
+  const handleEmailLogin = async event => {
     event.preventDefault();
     setError('');
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-
-    if (password !== confirm) {
-      setError('Passwords don\u2019t match.');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await signInWithEmailAndPassword(auth, email.trim(), password);
       navigate('/home');
     } catch (err) {
       setError(friendlyError(err.code));
@@ -40,7 +28,7 @@ export default function Signup() {
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleLogin = async () => {
     setError('');
     setLoading(true);
 
@@ -296,11 +284,11 @@ export default function Signup() {
         />
 
         <div>
-          <div className="nxus-auth-eyebrow">Early Access Unlocked</div>
-          <h1 className="nxus-auth-title">Sign Up</h1>
+          <div className="nxus-auth-eyebrow">Welcome Back</div>
+          <h1 className="nxus-auth-title">Log In</h1>
         </div>
 
-        <form className="nxus-auth-form" onSubmit={handleSignup}>
+        <form className="nxus-auth-form" onSubmit={handleEmailLogin}>
           <label className="nxus-auth-field">
             <span className="nxus-auth-label">Email</span>
             <span className="nxus-auth-input-wrap">
@@ -324,23 +312,8 @@ export default function Signup() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Min. 6 characters"
-                autoComplete="new-password"
-                required
-              />
-            </span>
-          </label>
-
-          <label className="nxus-auth-field">
-            <span className="nxus-auth-label">Confirm Password</span>
-            <span className="nxus-auth-input-wrap">
-              <input
-                className="nxus-auth-input"
-                type="password"
-                value={confirm}
-                onChange={e => setConfirm(e.target.value)}
-                placeholder="Repeat password"
-                autoComplete="new-password"
+                placeholder="Your password"
+                autoComplete="current-password"
                 required
               />
             </span>
@@ -349,7 +322,7 @@ export default function Signup() {
           {error && <p className="nxus-auth-error" aria-live="polite">{error}</p>}
 
           <button className="nxus-auth-cta" type="submit" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Account \u2192'}
+            {loading ? 'Signing In...' : 'Sign In \u2192'}
           </button>
         </form>
 
@@ -358,7 +331,7 @@ export default function Signup() {
         <button
           className="nxus-auth-google"
           type="button"
-          onClick={handleGoogleSignup}
+          onClick={handleGoogleLogin}
           disabled={loading}
         >
           <svg viewBox="0 0 24 24">
@@ -371,8 +344,8 @@ export default function Signup() {
         </button>
 
         <div className="nxus-auth-footer">
-          Already have an account?{' '}
-          <Link to="/login">Log in</Link>
+          Don't have an account?{' '}
+          <Link to="/signup">Sign up</Link>
         </div>
       </div>
     </main>
@@ -381,12 +354,14 @@ export default function Signup() {
 
 function friendlyError(code) {
   switch (code) {
-    case 'auth/email-already-in-use':
-      return 'That email is already taken.';
     case 'auth/invalid-email':
       return 'That email doesn\u2019t look right.';
-    case 'auth/weak-password':
-      return 'Password is too weak. Use at least 6 characters.';
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Wrong email or password.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Try again later.';
     default:
       return 'Something went wrong. Please try again.';
   }
