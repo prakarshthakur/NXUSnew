@@ -30,6 +30,9 @@ export default function ComingSoon() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState({ tone: 'idle', message: '' });
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [accessCode, setAccessCode] = useState('');
+  const [accessError, setAccessError] = useState('');
   const hiddenTapTarget = 15;
 
   useEffect(() => {
@@ -107,6 +110,32 @@ export default function ComingSoon() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const openAccessModal = () => {
+    setAccessCode('');
+    setAccessError('');
+    setIsAccessModalOpen(true);
+  };
+
+  const closeAccessModal = () => {
+    setIsAccessModalOpen(false);
+    setAccessCode('');
+    setAccessError('');
+  };
+
+  const handleAccessSubmit = event => {
+    event.preventDefault();
+
+    const configuredAccessCode = import.meta.env.VITE_ACCESS_CODE;
+
+    if (accessCode.trim() === configuredAccessCode) {
+      window.sessionStorage.setItem('earlyAccess', 'true');
+      navigate('/signup');
+      return;
+    }
+
+    setAccessError('Invalid access code');
   };
 
   return (
@@ -453,6 +482,39 @@ export default function ComingSoon() {
           cursor: wait;
         }
 
+        .nxus-access-trigger {
+          width: 100%;
+          min-height: 3.15rem;
+          border: 1px solid rgba(232, 0, 28, 0.48);
+          border-radius: 0;
+          background: #0A0A0A;
+          color: #FFFFFF;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.68rem;
+          font-family: var(--mono-font);
+          font-size: 0.78rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        }
+
+        .nxus-access-trigger:hover,
+        .nxus-access-trigger:focus-visible {
+          background: rgba(232, 0, 28, 0.1);
+          box-shadow: 0 0 26px rgba(232, 0, 28, 0.22);
+          transform: translateY(-1px);
+          outline: none;
+        }
+
+        .nxus-access-lock {
+          color: var(--nxus-red);
+          font-size: 1rem;
+          line-height: 1;
+        }
+
         .nxus-form-note {
           min-height: 1.2rem;
           margin: 0;
@@ -555,6 +617,65 @@ export default function ComingSoon() {
 
         .nxus-mobile-footer {
           display: none;
+        }
+
+        .nxus-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 10;
+          display: grid;
+          place-items: center;
+          padding: 1.25rem;
+          background: rgba(0, 0, 0, 0.74);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+        }
+
+        .nxus-modal {
+          width: min(100%, 430px);
+          border: 1px solid rgba(232, 0, 28, 0.48);
+          background: #111111;
+          box-shadow: 0 34px 90px rgba(0, 0, 0, 0.72);
+          padding: clamp(1.2rem, 4vw, 1.7rem);
+          display: grid;
+          gap: 1rem;
+          animation: nxusFadeUp 220ms ease both;
+        }
+
+        .nxus-modal-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 1rem;
+        }
+
+        .nxus-modal-title {
+          margin: 0;
+          color: #FFFFFF;
+          font-family: var(--display-font);
+          font-size: 2.7rem;
+          line-height: 0.9;
+          letter-spacing: 0.035em;
+          text-transform: uppercase;
+        }
+
+        .nxus-modal-close {
+          width: 2rem;
+          height: 2rem;
+          border: 1px solid rgba(240, 237, 232, 0.12);
+          border-radius: 0;
+          background: #0A0A0A;
+          color: rgba(240, 237, 232, 0.78);
+          font-family: var(--mono-font);
+        }
+
+        .nxus-access-error {
+          min-height: 1.1rem;
+          margin: -0.3rem 0 0;
+          color: #ffb3ad;
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          letter-spacing: 0.04em;
         }
 
         @media (max-width: 920px) {
@@ -804,6 +925,11 @@ export default function ComingSoon() {
               </p>
             </form>
 
+            <button className="nxus-access-trigger" type="button" onClick={openAccessModal}>
+              <span className="nxus-access-lock" aria-hidden="true">{'\u{1F512}'}</span>
+              Early Access
+            </button>
+
             <div className="nxus-rule" aria-hidden="true" />
 
             <div className="nxus-socials" aria-label="NXUS social links">
@@ -843,6 +969,68 @@ export default function ComingSoon() {
           </div>
         </section>
       </div>
+
+      {isAccessModalOpen ? (
+        <div
+          className="nxus-modal-backdrop"
+          role="presentation"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) {
+              closeAccessModal();
+            }
+          }}
+        >
+          <section
+            className="nxus-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nxus-access-title"
+          >
+            <div className="nxus-modal-header">
+              <div>
+                <div className="nxus-eyebrow">Locked Drop</div>
+                <h2 className="nxus-modal-title" id="nxus-access-title">Enter Access Code</h2>
+              </div>
+              <button
+                className="nxus-modal-close"
+                type="button"
+                onClick={closeAccessModal}
+                aria-label="Close access code modal"
+              >
+                x
+              </button>
+            </div>
+
+            <form className="nxus-form" onSubmit={handleAccessSubmit}>
+              <label className="nxus-field">
+                <span className="nxus-field-label">Access Code</span>
+                <span className="nxus-input-wrap">
+                  <input
+                    className="nxus-input"
+                    type="password"
+                    value={accessCode}
+                    onChange={event => {
+                      setAccessCode(event.target.value);
+                      setAccessError('');
+                    }}
+                    placeholder="Enter code"
+                    autoComplete="off"
+                    autoFocus
+                  />
+                </span>
+              </label>
+
+              <p className="nxus-access-error" aria-live="polite">
+                {accessError}
+              </p>
+
+              <button className="nxus-cta" type="submit">
+                Unlock Signup {'\u2192'}
+              </button>
+            </form>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }

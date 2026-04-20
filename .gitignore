@@ -1,4 +1,8 @@
 .DS_Store
 .next/
 
+.env
+.env.*
+!.env.example
+
 node_modules
