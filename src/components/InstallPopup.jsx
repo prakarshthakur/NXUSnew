@@ -10,7 +10,12 @@ export default function InstallPopup() {
     if (typeof window === 'undefined') return;
 
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
-    const dismissed = localStorage.getItem('installDismissed') === 'true';
+    let dismissed = false;
+    try {
+      dismissed = localStorage.getItem('installDismissed') === 'true';
+    } catch (e) {
+      console.warn('localStorage is disabled or restricted');
+    }
 
     if (isStandalone || dismissed) return;
 
@@ -43,7 +48,11 @@ export default function InstallPopup() {
 
   const handleDismiss = () => {
     setShow(false);
-    localStorage.setItem('installDismissed', 'true');
+    try {
+      localStorage.setItem('installDismissed', 'true');
+    } catch (e) {
+      // Ignore storage errors in private mode
+    }
   };
 
   const handleInstall = async () => {
@@ -52,7 +61,11 @@ export default function InstallPopup() {
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         setShow(false);
-        localStorage.setItem('installDismissed', 'true');
+        try {
+          localStorage.setItem('installDismissed', 'true');
+        } catch (e) {
+          // Ignore
+        }
       }
       setDeferredPrompt(null);
     }
