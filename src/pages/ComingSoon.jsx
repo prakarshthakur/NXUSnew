@@ -927,7 +927,7 @@ export default function ComingSoon() {
               </button>
 
               <p className="nxus-form-note" data-tone={submitState.tone}>
-                {submitState.message || 'No app-store scavenger hunt. One button, one list, first access.'}
+                {submitState.message || '140+ people already in. Dubai opens first.'}
               </p>
             </form>
 
