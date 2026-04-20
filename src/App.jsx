@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
+import InstallPopup from './components/InstallPopup';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 
@@ -88,6 +89,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <InstallPopup />
         <Routes>
           <Route path="/" element={<ComingSoon />} />
           <Route path="/signup" element={<ProtectedSignupRoute />} />

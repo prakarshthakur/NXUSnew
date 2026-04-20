@@ -20,7 +20,19 @@
     gtag('js', new Date());
     gtag('config', 'G-34WMBG5TLP');
   </script>
-  <script type="module" crossorigin src="/assets/index-CtIsK0xx.js"></script>
+  <script>
+    window.addEventListener('error', function(event) {
+      if (typeof event.target.src !== 'undefined' && event.target.src.indexOf('assets/') !== -1) {
+        if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for(let reg of regs) { reg.unregister(); }
+            window.location.reload(true);
+          });
+        }
+      }
+    }, true);
+  </script>
+  <script type="module" crossorigin src="/assets/index-BnhtIgHT.js"></script>
 <link rel="manifest" href="/manifest.webmanifest"></head>
 <body>
   <div id="root"></div>
