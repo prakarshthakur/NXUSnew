@@ -27,6 +27,7 @@ export default function Admin() {
   const [events, setEvents] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [editingEventId, setEditingEventId] = useState(null);
   const [editingLinkId, setEditingLinkId] = useState(null);
   const [editingLinkValue, setEditingLinkValue] = useState('');
 
@@ -41,18 +42,36 @@ export default function Admin() {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleAdd = async e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!form.title.trim()) return;
     setSaving(true);
     try {
-      await addDoc(collection(db, 'events'), { ...form, hostUid: user.uid });
+      if (editingEventId) {
+        await updateDoc(doc(db, 'events', editingEventId), { ...form });
+        setEditingEventId(null);
+      } else {
+        await addDoc(collection(db, 'events'), { ...form, hostUid: user.uid });
+      }
       setForm(EMPTY_FORM);
     } catch (err) {
-      console.error('Add event failed:', err);
+      console.error('Save event failed:', err);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleEditClick = event => {
+    setEditingEventId(event.id);
+    setForm({
+      title: event.title || '',
+      shortDescription: event.shortDescription || '',
+      fullDescription: event.fullDescription || '',
+      date: event.date || '',
+      location: event.location || '',
+      formLink: event.formLink || '',
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async id => {
@@ -449,11 +468,32 @@ export default function Admin() {
           background: rgba(240, 237, 232, 0.04);
         }
 
+        .nxus-admin-edit {
+          border: 1px solid rgba(240, 237, 232, 0.32);
+          border-radius: 0;
+          background: rgba(240, 237, 232, 0.06);
+          color: rgba(240, 237, 232, 0.9);
+          padding: 0.42rem 0.8rem;
+          font-family: var(--mono-font);
+          font-size: 0.66rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: background 140ms ease, box-shadow 140ms ease;
+          width: 100%;
+        }
+
+        .nxus-admin-edit:hover {
+          background: rgba(240, 237, 232, 0.14);
+          box-shadow: 0 0 18px rgba(240, 237, 232, 0.1);
+        }
+
         .nxus-admin-event-actions {
           display: flex;
           flex-direction: column;
           gap: 0.4rem;
-          align-items: flex-end;
+          align-items: stretch;
         }
 
         .nxus-admin-delete {
@@ -520,10 +560,26 @@ export default function Admin() {
           <h1 className="nxus-admin-title">Manage Events</h1>
         </header>
 
-        {/* ── ADD EVENT ── */}
+        {/* ── ADD / EDIT FORM ── */}
         <section className="nxus-admin-add-section">
-          <h2 className="nxus-admin-section-title">Add New Event</h2>
-          <form className="nxus-admin-form" onSubmit={handleAdd}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 className="nxus-admin-section-title">
+              {editingEventId ? 'Edit Event' : 'Add New Event'}
+            </h2>
+            {editingEventId && (
+              <button 
+                type="button" 
+                className="nxus-admin-link-cancel"
+                onClick={() => {
+                  setEditingEventId(null);
+                  setForm(EMPTY_FORM);
+                }}
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
+          <form className="nxus-admin-form" onSubmit={handleSubmit}>
             <label className="nxus-admin-field">
               <span className="nxus-admin-label">Title</span>
               <input
@@ -598,7 +654,7 @@ export default function Admin() {
             </label>
 
             <button className="nxus-admin-submit" type="submit" disabled={saving}>
-              {saving ? 'Adding...' : 'Add Event \u2192'}
+              {saving ? 'Saving...' : (editingEventId ? 'Update Event \u2192' : 'Add Event \u2192')}
             </button>
           </form>
         </section>
@@ -680,6 +736,12 @@ export default function Admin() {
                 </div>
 
                 <div className="nxus-admin-event-actions">
+                  <button
+                    className="nxus-admin-edit"
+                    onClick={() => handleEditClick(event)}
+                  >
+                    Edit
+                  </button>
                   <button
                     className="nxus-admin-delete"
                     onClick={() => handleDelete(event.id)}
