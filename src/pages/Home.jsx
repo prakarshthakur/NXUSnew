@@ -220,7 +220,7 @@ export default function Home() {
         .nxus-share-btn {
           background: transparent;
           border: none;
-          color: rgba(240, 237, 232, 0.42);
+          color: var(--nxus-cream);
           cursor: pointer;
           font-family: var(--mono-font);
           font-size: 0.72rem;

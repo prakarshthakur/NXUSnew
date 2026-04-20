@@ -26,14 +26,14 @@ export default function InstallPopup() {
       e.preventDefault();
       setDeferredPrompt(e);
       if (!dismissed && !isStandalone && _isAndroid) {
-        setTimeout(() => setShow(true), 5000);
+        setTimeout(() => setShow(true), 3000);
       }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     if (_isIOS && isSafari && !dismissed && !isStandalone) {
-      setTimeout(() => setShow(true), 5000);
+      setTimeout(() => setShow(true), 3000);
     }
 
     return () => {
@@ -116,15 +116,15 @@ const sheetStyle = {
   bottom: 0,
   left: 0,
   width: '100vw',
-  background: '#000000',
-  borderTop: '1px solid #ff0000',
-  borderRadius: '20px 20px 0 0',
-  padding: '2.5rem 1.5rem',
+  background: '#0a0a0a',
+  borderTop: '1px solid #E8001C',
+  borderRadius: '16px 16px 0 0',
+  padding: '1.5rem 1.2rem',
   display: 'flex',
   flexDirection: 'column',
-  gap: '1.2rem',
+  gap: '0.8rem',
   zIndex: 10001,
-  boxShadow: '0 -5px 30px rgba(255, 0, 0, 0.2)',
+  boxShadow: '0 -5px 30px rgba(232, 0, 28, 0.1)',
   textAlign: 'center',
   boxSizing: 'border-box',
   animation: 'slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1)',
@@ -132,12 +132,12 @@ const sheetStyle = {
 
 const closeBtnStyle = {
   position: 'absolute',
-  top: '1rem',
-  right: '1.2rem',
+  top: '0.8rem',
+  right: '1rem',
   background: 'transparent',
   border: 'none',
-  color: 'rgba(255, 0, 0, 0.5)',
-  fontSize: '2rem',
+  color: 'rgba(232, 0, 28, 0.5)',
+  fontSize: '1.8rem',
   cursor: 'pointer',
   lineHeight: 1,
   padding: 0,
@@ -148,23 +148,23 @@ const headerStyle = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  gap: '0.8rem',
+  gap: '0.6rem',
 };
 
 const iconStyle = {
-  width: '65px',
-  height: '65px',
-  borderRadius: '14px',
+  width: '45px',
+  height: '45px',
+  borderRadius: '10px',
   objectFit: 'contain',
-  border: '1px solid rgba(255, 0, 0, 0.5)',
+  border: '1px solid rgba(232, 0, 28, 0.5)',
   background: '#000000',
-  padding: '6px',
+  padding: '4px',
 };
 
 const titleStyle = {
   fontFamily: "'Bebas Neue', sans-serif",
-  fontSize: '1.6rem',
-  color: '#ff0000',
+  fontSize: '1.4rem',
+  color: '#E8001C',
   margin: 0,
   letterSpacing: '0.05em',
   textTransform: 'uppercase',
@@ -172,20 +172,20 @@ const titleStyle = {
 
 const subtitleStyle = {
   fontFamily: "'DM Sans', sans-serif",
-  fontSize: '0.95rem',
+  fontSize: '0.85rem',
   color: 'rgba(255, 255, 255, 0.6)',
   margin: 0,
 };
 
 const instructionsStyle = {
-  background: 'rgba(255, 0, 0, 0.05)',
-  border: '1px solid rgba(255, 0, 0, 0.3)',
-  padding: '1.2rem',
-  borderRadius: '10px',
+  background: 'rgba(232, 0, 28, 0.05)',
+  border: '1px solid rgba(232, 0, 28, 0.3)',
+  padding: '0.8rem',
+  borderRadius: '8px',
   fontFamily: "'DM Sans', sans-serif",
-  fontSize: '0.95rem',
+  fontSize: '0.85rem',
   color: '#ffffff',
-  lineHeight: 1.6,
+  lineHeight: 1.5,
   textAlign: 'center',
   fontWeight: 400,
 };
@@ -193,22 +193,22 @@ const instructionsStyle = {
 const inlineIconStyle = {
   display: 'inline-block',
   verticalAlign: 'middle',
-  width: '22px',
-  height: '22px',
+  width: '18px',
+  height: '18px',
   margin: '0 4px',
-  stroke: '#ff0000',
+  stroke: '#E8001C',
   strokeWidth: '2px',
 };
 
 const installBtnStyle = {
-  background: '#ff0000',
-  border: '1px solid #ff0000',
+  background: '#E8001C',
+  border: '1px solid #E8001C',
   borderRadius: 0,
   color: '#000000',
   fontFamily: "'Bebas Neue', sans-serif",
-  fontSize: '1.2rem',
+  fontSize: '1.1rem',
   letterSpacing: '0.1em',
-  padding: '1rem',
+  padding: '0.8rem',
   cursor: 'pointer',
   width: '100%',
   textTransform: 'uppercase',
