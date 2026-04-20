@@ -7,6 +7,18 @@ registerSW({ immediate: true });
 
 const style = document.createElement('style');
 style.textContent = `
+  :root {
+    --nxus-red: #E8001C;
+    --nxus-black: #0A0A0A;
+    --nxus-panel: #111111;
+    --nxus-cream: #F0EDE8;
+    --nxus-muted: rgba(240, 237, 232, 0.68);
+    --nxus-dim: rgba(240, 237, 232, 0.42);
+    --nxus-hairline: rgba(232, 0, 28, 0.38);
+    --display-font: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+    --body-font: 'DM Sans', 'Outfit', sans-serif;
+    --mono-font: 'Space Mono', 'IBM Plex Mono', monospace;
+  }
   @font-face {
     font-family: 'grovant';
     src: url('/fonts/grovant.otf') format('opentype');
