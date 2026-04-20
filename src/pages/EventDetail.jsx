@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../utils/firebase';
+import { signOut } from 'firebase/auth';
+import { auth, db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function EventDetail() {
@@ -40,6 +41,11 @@ export default function EventDetail() {
     } else {
       navigate('/');
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    navigate('/login');
   };
 
   if (loading) {
@@ -85,6 +91,84 @@ export default function EventDetail() {
             radial-gradient(circle at 20% 10%, rgba(232, 0, 28, 0.14), transparent 38vw),
             radial-gradient(circle at 80% 85%, rgba(232, 0, 28, 0.08), transparent 28vw);
           z-index: 0;
+        }
+
+        /* ── NAV ── */
+        .nxus-home-nav {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.9rem clamp(1.2rem, 4vw, 3rem);
+          background: rgba(10, 10, 10, 0.82);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(232, 0, 28, 0.18);
+          width: 100%;
+        }
+
+        .nxus-home-nav-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .nxus-home-nav-logo {
+          width: 36px;
+          height: auto;
+        }
+
+        .nxus-home-nav-brand {
+          font-family: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+          font-size: 1.6rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #FFFFFF;
+        }
+
+        .nxus-home-nav-right {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .nxus-home-nav-email {
+          color: rgba(240, 237, 232, 0.52);
+          font-family: 'Space Mono', monospace;
+          font-size: 0.7rem;
+          letter-spacing: 0.04em;
+          max-width: 180px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .nxus-home-nav-signout {
+          border: 1px solid rgba(232, 0, 28, 0.42);
+          border-radius: 0;
+          background: transparent;
+          color: #E8001C;
+          padding: 0.45rem 0.9rem;
+          font-family: 'Space Mono', monospace;
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .nxus-home-nav-signout:hover {
+          background: rgba(232, 0, 28, 0.08);
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 640px) {
+          .nxus-home-nav-email {
+            display: none;
+          }
         }
 
         .nxus-detail-content {
@@ -197,7 +281,22 @@ export default function EventDetail() {
         }
       `}</style>
 
-      <div className="nxus-detail-content">
+      <nav className="nxus-home-nav">
+        <div className="nxus-home-nav-left" style={{ cursor: 'pointer' }} onClick={() => navigate('/home')}>
+          <img className="nxus-home-nav-logo" src="/assets/nxus_logo_icon.svg" alt="NXUS" />
+          <span className="nxus-home-nav-brand">NXUS</span>
+        </div>
+        {user && (
+          <div className="nxus-home-nav-right">
+            <span className="nxus-home-nav-email">{user.email}</span>
+            <button className="nxus-home-nav-signout" onClick={handleSignOut}>
+              Sign Out
+            </button>
+          </div>
+        )}
+      </nav>
+
+      <div className="nxus-detail-content" style={{ marginTop: '2rem' }}>
         <button className="nxus-back-btn" onClick={handleBack}>
           &larr; Back
         </button>

@@ -237,8 +237,8 @@ export default function Home() {
         }
 
         .nxus-share-btn svg {
-          width: 18px;
-          height: 18px;
+          width: 24px;
+          height: 24px;
         }
 
         .nxus-event-short {
@@ -385,29 +385,7 @@ export default function Home() {
                 onClick={() => toggleExpand(event.id)}
               >
                 <div className="nxus-event-body">
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', width: '100%' }}>
-                    <h2 className="nxus-event-title">{event.title}</h2>
-                    <button 
-                      className="nxus-share-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigator.clipboard.writeText(`${window.location.origin}/event/${event.id}`);
-                        setCopiedId(event.id);
-                        setTimeout(() => setCopiedId(null), 2000);
-                      }}
-                      title="Share Event"
-                    >
-                      {copiedId === event.id ? 'Copied!' : (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="18" cy="5" r="3"></circle>
-                          <circle cx="6" cy="12" r="3"></circle>
-                          <circle cx="18" cy="19" r="3"></circle>
-                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                        </svg>
-                      )}
-                    </button>
-                  </div>
+                  <h2 className="nxus-event-title">{event.title}</h2>
                   {expandedId !== event.id && (
                     <p className="nxus-event-short">{event.shortDescription}</p>
                   )}
@@ -423,18 +401,40 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button
-                  className="nxus-event-join"
-                  onClick={e => {
-                    e.stopPropagation();
-                    window.open(event.formLink, '_blank', 'noopener,noreferrer');
-                  }}
-                >
-                  Join Now {'\u2192'}
-                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
+                  <button 
+                    className="nxus-share-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(`${window.location.origin}/event/${event.id}`);
+                      setCopiedId(event.id);
+                      setTimeout(() => setCopiedId(null), 2000);
+                    }}
+                    title="Share Event"
+                  >
+                    {copiedId === event.id ? 'Copied!' : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      </svg>
+                    )}
+                  </button>
+                  <button
+                    className="nxus-event-join"
+                    onClick={e => {
+                      e.stopPropagation();
+                      window.open(event.formLink, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    Join Now {'\u2192'}
+                  </button>
+                </div>
 
                 {expandedId === event.id && (
-                  <div className="nxus-event-expanded">
+                  <div className="nxus-event-expanded" style={{ gridColumn: '1 / -1' }}>
                     <p className="nxus-event-full">{event.fullDescription}</p>
                   </div>
                 )}
