@@ -51,8 +51,8 @@ const FILLER_EVENTS = [
 
 let seeded = false;
 
-export async function seedEventsIfEmpty() {
-  if (seeded) return;
+export async function seedEventsIfEmpty(userId) {
+  if (seeded || !userId) return;
   seeded = true;
 
   try {
@@ -60,7 +60,9 @@ export async function seedEventsIfEmpty() {
     const snapshot = await getDocs(eventsRef);
 
     if (snapshot.empty) {
-      const promises = FILLER_EVENTS.map(event => addDoc(eventsRef, event));
+      const promises = FILLER_EVENTS.map(event =>
+        addDoc(eventsRef, { ...event, hostUid: userId })
+      );
       await Promise.all(promises);
     }
   } catch (error) {

@@ -46,7 +46,7 @@ export default function Admin() {
     if (!form.title.trim()) return;
     setSaving(true);
     try {
-      await addDoc(collection(db, 'events'), { ...form });
+      await addDoc(collection(db, 'events'), { ...form, hostUid: user.uid });
       setForm(EMPTY_FORM);
     } catch (err) {
       console.error('Add event failed:', err);

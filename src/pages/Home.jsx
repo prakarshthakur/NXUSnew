@@ -15,8 +15,10 @@ export default function Home() {
 
   /* seed on first load, then listen */
   useEffect(() => {
-    seedEventsIfEmpty().finally(() => setSeeding(false));
-  }, []);
+    if (user?.uid) {
+      seedEventsIfEmpty(user.uid).finally(() => setSeeding(false));
+    }
+  }, [user]);
 
   useEffect(() => {
     const q = query(collection(db, 'events'));
