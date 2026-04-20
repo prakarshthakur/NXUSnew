@@ -1,3 +1,4 @@
+import { Component } from 'react';
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ComingSoon from './pages/ComingSoon';
@@ -12,6 +13,38 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error) {
+    console.error('[NXUS] ErrorBoundary caught:', error);
+    // Unregister stale service workers then hard-reload
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(r => r.unregister());
+        setTimeout(() => window.location.reload(true), 300);
+      });
+    } else {
+      setTimeout(() => window.location.reload(true), 300);
+    }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0A0A0A', color: '#F0EDE8', fontFamily: 'monospace' }}>
+          Reloading…
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function hasEarlyAccess() {
   if (typeof window === 'undefined') {
@@ -115,43 +148,45 @@ function LoadingScreen() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <InstallPopup />
-        <Routes>
-          <Route path="/" element={<ComingSoon />} />
-          <Route path="/signup" element={<ProtectedSignupRoute />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <Admin />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/event/:eventId"
-            element={
-              <EventRoute>
-                <EventDetail />
-              </EventRoute>
-            }
-          />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <SiteFooter />
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <InstallPopup />
+          <Routes>
+            <Route path="/" element={<ComingSoon />} />
+            <Route path="/signup" element={<ProtectedSignupRoute />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/event/:eventId"
+              element={
+                <EventRoute>
+                  <EventDetail />
+                </EventRoute>
+              }
+            />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <SiteFooter />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
