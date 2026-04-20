@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SOCIAL_LINKS } from '../components/SocialLinks';
+import { useAuth } from '../contexts/AuthContext';
 
 const waitlistEndpoint = 'https://api.freewaitlists.com/waitlists/cmnrq1m75087001pnr40o6xtf';
 
@@ -25,6 +26,7 @@ const statPills = [
 
 export default function ComingSoon() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tapCount, setTapCount] = useState(0);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -113,6 +115,10 @@ export default function ComingSoon() {
   };
 
   const openAccessModal = () => {
+    if (user) {
+      navigate('/home');
+      return;
+    }
     setAccessCode('');
     setAccessError('');
     setIsAccessModalOpen(true);
