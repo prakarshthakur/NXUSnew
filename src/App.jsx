@@ -6,7 +6,10 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import InstallPopup from './components/InstallPopup';
+import SiteFooter from './components/SiteFooter';
 import EventDetail from './pages/EventDetail';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 
@@ -143,8 +146,11 @@ export default function App() {
               </EventRoute>
             }
           />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <SiteFooter />
       </AuthProvider>
     </BrowserRouter>
   );
