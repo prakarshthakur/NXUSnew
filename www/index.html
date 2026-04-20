@@ -423,6 +423,147 @@
                 border-radius: 0;
             }
         }
+        /* ===== Install App Bottom Sheet ===== */
+        .install-sheet-overlay {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .install-sheet-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .install-sheet {
+            background: #000000;
+            border-top: 1px solid #ff0000;
+            border-radius: 20px 20px 0 0;
+            padding: 2.5rem 1.5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
+            position: relative;
+            box-shadow: 0 -5px 30px rgba(255, 0, 0, 0.2);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .install-sheet-overlay.show .install-sheet {
+            transform: translateY(0);
+        }
+
+        .install-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            background: transparent;
+            border: none;
+            color: rgba(255, 0, 0, 0.5);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s ease;
+            padding: 0;
+            font-weight: 300;
+        }
+
+        .install-close-btn:hover {
+            color: #ff0000;
+        }
+
+        .install-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .install-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 14px;
+            object-fit: contain;
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            background: #000000;
+            padding: 6px;
+        }
+
+        .install-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4rem;
+            color: #ff0000;
+            margin: 0;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .install-subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            letter-spacing: 0.05em;
+        }
+
+        .install-instructions {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.95rem;
+            color: #ffffff;
+            line-height: 1.6;
+            display: none;
+            text-align: center;
+            letter-spacing: 0.05em;
+            font-weight: 300;
+        }
+        
+        .inline-icon {
+            display: inline-block;
+            vertical-align: middle;
+            width: 22px;
+            height: 22px;
+            margin: 0 4px;
+            stroke: #ff0000;
+            stroke-width: 2px;
+        }
+
+        .install-btn {
+            background: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 0;
+            color: #000000;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-transform: uppercase;
+            display: none;
+        }
+
+        .install-btn:hover {
+            background: #cc0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+        }
     </style>
     <style>
         body { background: #000000 !important; }
@@ -506,6 +647,26 @@
     <footer class="login-footer">
     </footer>
 
+    <!-- Install App Bottom Sheet -->
+    <div id="installSheetOverlay" class="install-sheet-overlay">
+        <div class="install-sheet">
+            <button id="installCloseBtn" class="install-close-btn">&times;</button>
+            <div class="install-header">
+                <img src="assets/nxus_logo.png" class="install-icon" alt="NXUS App Icon">
+                <h3 class="install-title">Add NXUS to Home Screen</h3>
+                <p class="install-subtitle">Get the full app experience</p>
+            </div>
+            
+            <!-- iOS Instructions -->
+            <div id="iosInstallInstructions" class="install-instructions">
+                Tap the Share button <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> below, then select <br><strong>'Add to Home Screen'</strong> <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            </div>
+            
+            <!-- Android Button -->
+            <button id="androidInstallBtn" class="install-btn">Install App</button>
+        </div>
+    </div>
+
     <!-- Info Modal -->
     <div id="infoModal" class="modal-overlay">
         <div class="modal-glass">
@@ -573,6 +734,67 @@
               }, 2000);
           }
       });
+
+      // PWA Install Prompt Logic
+      (function() {
+          const overlay = document.getElementById('installSheetOverlay');
+          const closeBtn = document.getElementById('installCloseBtn');
+          const androidBtn = document.getElementById('androidInstallBtn');
+          const iosInstructions = document.getElementById('iosInstallInstructions');
+          
+          let deferredPrompt;
+
+          const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
+          const dismissed = localStorage.getItem('installDismissed') === 'true';
+
+          // Detect OS
+          const userAgent = window.navigator.userAgent.toLowerCase();
+          const isIOS = /iphone|ipad|ipod/.test(userAgent);
+          const isSafari = isIOS && /safari/.test(userAgent) && !/crios|fxios/.test(userAgent);
+          const isAndroid = /android/.test(userAgent);
+
+          // Listen for Android beforeinstallprompt
+          window.addEventListener('beforeinstallprompt', (e) => {
+              e.preventDefault();
+              deferredPrompt = e;
+              
+              if (!dismissed && !isStandalone && isAndroid) {
+                  // Wait 5 seconds
+                  setTimeout(() => {
+                      androidBtn.style.display = 'block';
+                      overlay.classList.add('show');
+                  }, 5000);
+              }
+          });
+
+          // Show for iOS Safari
+          if (isIOS && isSafari && !dismissed && !isStandalone) {
+              setTimeout(() => {
+                  iosInstructions.style.display = 'block';
+                  overlay.classList.add('show');
+              }, 5000);
+          }
+
+          // Handle close
+          closeBtn.addEventListener('click', () => {
+              overlay.classList.remove('show');
+              localStorage.setItem('installDismissed', 'true');
+          });
+          
+          // Handle Android Install Click
+          androidBtn.addEventListener('click', async () => {
+              if (deferredPrompt) {
+                  deferredPrompt.prompt();
+                  const { outcome } = await deferredPrompt.userChoice;
+                  if (outcome === 'accepted') {
+                      console.log('User accepted the install prompt');
+                      overlay.classList.remove('show');
+                      localStorage.setItem('installDismissed', 'true');
+                  }
+                  deferredPrompt = null;
+              }
+          });
+      })();
     </script>
 </body>
 </html>
