@@ -22,7 +22,10 @@
   </script>
   <script>
     window.addEventListener('error', function(event) {
-      if (typeof event.target.src !== 'undefined' && event.target.src.indexOf('assets/') !== -1) {
+      const isScriptLoadError = event.target && event.target.src && event.target.src.indexOf('assets/') !== -1;
+      const isSyntaxErrorFallback = event.message && event.message.includes("Unexpected token '<'");
+      
+      if (isScriptLoadError || isSyntaxErrorFallback) {
         if (navigator.serviceWorker) {
           navigator.serviceWorker.getRegistrations().then(function(regs) {
             for(let reg of regs) { reg.unregister(); }
