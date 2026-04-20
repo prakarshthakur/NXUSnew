@@ -2,12 +2,26 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SOCIAL_LINKS } from '../components/SocialLinks';
 
-const mono = "'IBM Plex Mono', monospace";
 const waitlistEndpoint = 'https://api.freewaitlists.com/waitlists/cmnrq1m75087001pnr40o6xtf';
+
 const socialCopy = {
-  discord: 'hop into the server',
-  instagram: 'follow the build',
+  discord: {
+    eyebrow: 'Community',
+    title: 'Join Discord',
+    body: 'Meet the first people planning the first drops.',
+  },
+  instagram: {
+    eyebrow: 'Updates',
+    title: 'Follow Instagram',
+    body: 'Watch the build, the launch, and the Dubai rollout.',
+  },
 };
+
+const statPills = [
+  { icon: '\u{1F3D9}\uFE0F', label: 'Dubai First' },
+  { icon: '\u26A1', label: 'Real-Time Drops' },
+  { icon: '\u{1F3AF}', label: 'No Scroll, Just Show Up' },
+];
 
 export default function ComingSoon() {
   const navigate = useNavigate();
@@ -96,365 +110,739 @@ export default function ComingSoon() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background:
-        'radial-gradient(circle at top, rgba(255, 29, 12, 0.18), transparent 34%), #050505',
-      color: '#ffffff',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
+    <main className="nxus-shell">
       <style>{`
-        @keyframes comingSoonFade {
-          from { opacity: 0; transform: translateY(18px); }
+        :root {
+          --nxus-red: #E8001C;
+          --nxus-black: #0A0A0A;
+          --nxus-panel: #111111;
+          --nxus-cream: #F0EDE8;
+          --nxus-muted: rgba(240, 237, 232, 0.68);
+          --nxus-dim: rgba(240, 237, 232, 0.42);
+          --nxus-hairline: rgba(232, 0, 28, 0.38);
+          --display-font: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+          --body-font: 'DM Sans', 'Outfit', sans-serif;
+          --mono-font: 'Space Mono', 'IBM Plex Mono', monospace;
+        }
+
+        @keyframes nxusFadeUp {
+          from { opacity: 0; transform: translateY(22px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes comingSoonGlow {
-          0%, 100% { transform: scale(1); opacity: 0.28; }
-          50% { transform: scale(1.08); opacity: 0.48; }
+
+        @keyframes nxusLogoBreathe {
+          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(232, 0, 28, 0)); }
+          50% { transform: scale(1.03); filter: drop-shadow(0 0 28px rgba(232, 0, 28, 0.42)); }
+        }
+
+        @keyframes nxusGlowDrift {
+          0%, 100% { transform: translate3d(-3%, 2%, 0) scale(1); opacity: 0.64; }
+          50% { transform: translate3d(4%, -3%, 0) scale(1.1); opacity: 0.9; }
+        }
+
+        @keyframes nxusDividerPulse {
+          0%, 100% { opacity: 0.36; box-shadow: 0 0 0 rgba(232, 0, 28, 0); }
+          50% { opacity: 0.86; box-shadow: 0 0 22px rgba(232, 0, 28, 0.72); }
+        }
+
+        .nxus-shell {
+          min-height: 100vh;
+          background: var(--nxus-black);
+          color: var(--nxus-cream);
+          font-family: var(--body-font);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .nxus-shell::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(circle at 42% 48%, rgba(232, 0, 28, 0.24), transparent 32vw),
+            radial-gradient(circle at 16% 78%, rgba(232, 0, 28, 0.12), transparent 24vw),
+            #0A0A0A;
+          animation: nxusGlowDrift 13s ease-in-out infinite;
+        }
+
+        .nxus-shell::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.13;
+          mix-blend-mode: screen;
+          background-image:
+            radial-gradient(circle at 20% 30%, rgba(232, 0, 28, 0.6) 0 1px, transparent 1px),
+            radial-gradient(circle at 72% 12%, rgba(240, 237, 232, 0.22) 0 1px, transparent 1px),
+            radial-gradient(circle at 46% 84%, rgba(232, 0, 28, 0.42) 0 1px, transparent 1px);
+          background-size: 17px 19px, 29px 31px, 41px 37px;
+        }
+
+        .nxus-layout {
+          position: relative;
+          z-index: 1;
+          min-height: 100vh;
+          display: grid;
+          grid-template-columns: 55% 45%;
+        }
+
+        .nxus-left,
+        .nxus-right {
+          min-height: 100vh;
+          position: relative;
+        }
+
+        .nxus-left {
+          display: grid;
+          place-items: center;
+          padding: clamp(2rem, 5vw, 5rem);
+          overflow: hidden;
+        }
+
+        .nxus-left::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(115deg, rgba(232, 0, 28, 0.12), transparent 28%),
+            repeating-linear-gradient(90deg, rgba(240, 237, 232, 0.025) 0 1px, transparent 1px 86px);
+          opacity: 0.8;
+        }
+
+        .nxus-hero {
+          width: min(100%, 720px);
+          display: grid;
+          justify-items: center;
+          gap: 1.45rem;
+          text-align: center;
+          position: relative;
+          animation: nxusFadeUp 650ms ease both;
+        }
+
+        .nxus-logo-button {
+          width: 160px;
+          border: 0;
+          background: transparent;
+          padding: 0;
+          cursor: default;
+          animation: nxusLogoBreathe 4s ease-in-out infinite;
+        }
+
+        .nxus-logo-button img {
+          display: block;
+          width: 100%;
+          height: auto;
+          user-select: none;
+          pointer-events: none;
+        }
+
+        .nxus-kicker,
+        .nxus-eyebrow,
+        .nxus-field-label,
+        .nxus-proof,
+        .nxus-footer-mark {
+          font-family: var(--mono-font);
+          text-transform: uppercase;
+        }
+
+        .nxus-kicker {
+          color: var(--nxus-red);
+          font-size: 0.78rem;
+          letter-spacing: 0.4em;
+          margin-right: -0.4em;
+        }
+
+        .nxus-title {
+          margin: 0;
+          font-family: var(--display-font);
+          font-size: clamp(4.5rem, 7.2vw, 5rem);
+          line-height: 0.84;
+          letter-spacing: 0.035em;
+          text-transform: uppercase;
+          color: #FFFFFF;
+          text-wrap: balance;
+          text-shadow: 0 18px 60px rgba(0, 0, 0, 0.64);
+        }
+
+        .nxus-title span {
+          display: inline;
+        }
+
+        .nxus-title span + span::before {
+          content: ' ';
+        }
+
+        .nxus-subhead {
+          margin: 0;
+          color: var(--nxus-muted);
+          font-family: 'DM Sans', sans-serif;
+          font-size: clamp(1rem, 1.35vw, 1.16rem);
+          font-weight: 300;
+          letter-spacing: 0.02em;
+        }
+
+        .nxus-stat-row {
+          display: flex;
+          justify-content: center;
+          gap: 0.72rem;
+          flex-wrap: wrap;
+          margin-top: 0.6rem;
+        }
+
+        .nxus-stat {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.48rem;
+          border: 1px solid rgba(240, 237, 232, 0.12);
+          background: rgba(5, 5, 5, 0.54);
+          color: rgba(240, 237, 232, 0.84);
+          padding: 0.74rem 0.86rem;
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          letter-spacing: -0.02em;
+          text-transform: uppercase;
+          box-shadow: inset 0 -1px 0 rgba(232, 0, 28, 0.28);
+        }
+
+        .nxus-footer-mark {
+          position: absolute;
+          left: clamp(1.25rem, 3vw, 3rem);
+          bottom: clamp(1.25rem, 3vw, 2.4rem);
+          color: rgba(240, 237, 232, 0.36);
+          font-size: 0.64rem;
+          letter-spacing: 0.32em;
+        }
+
+        .nxus-divider {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 55%;
+          width: 1px;
+          background: var(--nxus-red);
+          transform: translateX(-0.5px);
+          z-index: 3;
+          animation: nxusDividerPulse 5s ease-in-out infinite;
+        }
+
+        .nxus-right {
+          background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 28%),
+            var(--nxus-panel);
+          border-left: 1px solid rgba(232, 0, 28, 0.08);
+          display: grid;
+          align-items: center;
+          padding: clamp(1.4rem, 4vw, 4.2rem);
+        }
+
+        .nxus-action {
+          width: min(100%, 520px);
+          justify-self: center;
+          display: grid;
+          gap: 1.45rem;
+          animation: nxusFadeUp 650ms 200ms ease both;
+        }
+
+        .nxus-action-header {
+          display: grid;
+          gap: 0.36rem;
+        }
+
+        .nxus-eyebrow {
+          color: var(--nxus-red);
+          font-size: 0.74rem;
+          letter-spacing: 0.26em;
+        }
+
+        .nxus-action-title {
+          margin: 0;
+          color: #FFFFFF;
+          font-family: var(--display-font);
+          font-size: clamp(3rem, 5vw, 4.9rem);
+          font-weight: 800;
+          line-height: 0.9;
+          letter-spacing: 0.035em;
+          text-transform: uppercase;
+        }
+
+        .nxus-form {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .nxus-field {
+          display: grid;
+          gap: 0.48rem;
+        }
+
+        .nxus-field-label {
+          color: rgba(240, 237, 232, 0.58);
+          font-size: 0.68rem;
+          letter-spacing: 0.18em;
+        }
+
+        .nxus-input-wrap {
+          position: relative;
+          background: #0A0A0A;
+        }
+
+        .nxus-input-wrap::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 2px;
+          background: var(--nxus-red);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 180ms ease;
+        }
+
+        .nxus-input-wrap:focus-within::after {
+          transform: scaleX(1);
+        }
+
+        .nxus-input {
+          width: 100%;
+          border: 1px solid rgba(240, 237, 232, 0.1);
+          border-radius: 0;
+          background: transparent;
+          color: #FFFFFF;
+          font: 500 1rem/1.2 var(--body-font);
+          outline: none;
+          padding: 1.08rem 1rem;
+          transition: border-color 180ms ease, background 180ms ease;
+        }
+
+        .nxus-input:focus {
+          border-color: rgba(232, 0, 28, 0.42);
+          background: rgba(232, 0, 28, 0.035);
+        }
+
+        .nxus-input::placeholder {
+          color: rgba(240, 237, 232, 0.28);
+        }
+
+        .nxus-cta {
+          width: 100%;
+          border: 0;
+          border-radius: 0;
+          background: var(--nxus-red);
+          color: #FFFFFF;
+          min-height: 3.5rem;
+          padding: 1rem 1.2rem;
+          font-family: var(--mono-font);
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        }
+
+        .nxus-cta:hover:not(:disabled),
+        .nxus-cta:focus-visible:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 0 34px rgba(232, 0, 28, 0.42);
+        }
+
+        .nxus-cta:disabled {
+          opacity: 0.66;
+          cursor: wait;
+        }
+
+        .nxus-form-note {
+          min-height: 1.2rem;
+          margin: 0;
+          color: rgba(240, 237, 232, 0.52);
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          line-height: 1.7;
+        }
+
+        .nxus-form-note[data-tone='success'] {
+          color: #ff8d84;
+        }
+
+        .nxus-form-note[data-tone='error'] {
+          color: #ffb3ad;
+        }
+
+        .nxus-rule {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, var(--nxus-red), rgba(240, 237, 232, 0.08));
+          opacity: 0.64;
+        }
+
+        .nxus-socials {
+          display: grid;
+          gap: 0.86rem;
+        }
+
+        .nxus-social-card {
+          border: 1px solid rgba(240, 237, 232, 0.08);
+          border-left: 3px solid var(--nxus-red);
+          background: #0B0B0B;
+          color: var(--nxus-cream);
+          display: grid;
+          grid-template-columns: auto 1fr auto;
+          align-items: center;
+          gap: 0.9rem;
+          padding: 1rem;
+          min-height: 5.9rem;
+          text-decoration: none;
+          transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+        }
+
+        .nxus-social-card:hover,
+        .nxus-social-card:focus-visible {
+          background: #151010;
+          border-color: rgba(232, 0, 28, 0.58);
+          transform: translateX(4px);
+          outline: none;
+        }
+
+        .nxus-social-icon {
+          width: 2.35rem;
+          height: 2.35rem;
+          display: grid;
+          place-items: center;
+          color: var(--nxus-red);
+          background: rgba(232, 0, 28, 0.08);
+        }
+
+        .nxus-social-text {
+          display: grid;
+          gap: 0.22rem;
+        }
+
+        .nxus-social-eyebrow {
+          color: var(--nxus-red);
+          font-family: var(--mono-font);
+          font-size: 0.66rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+        }
+
+        .nxus-social-title {
+          font-family: var(--display-font);
+          font-size: 1.55rem;
+          letter-spacing: 0.04em;
+          line-height: 0.95;
+          text-transform: uppercase;
+        }
+
+        .nxus-social-body {
+          color: rgba(240, 237, 232, 0.52);
+          font-size: 0.82rem;
+          line-height: 1.4;
+        }
+
+        .nxus-social-arrow {
+          color: rgba(240, 237, 232, 0.76);
+          font-family: var(--mono-font);
+          font-size: 1.25rem;
+        }
+
+        .nxus-proof {
+          color: rgba(240, 237, 232, 0.46);
+          font-size: 0.72rem;
+          letter-spacing: 0.12em;
+        }
+
+        .nxus-mobile-footer {
+          display: none;
+        }
+
+        @media (max-width: 920px) {
+          .nxus-title {
+            font-size: clamp(4rem, 9vw, 4.7rem);
+          }
+
+          .nxus-right {
+            padding: clamp(1.25rem, 3vw, 2rem);
+          }
+        }
+
+        @media (max-width: 767px) {
+          .nxus-shell {
+            min-height: 100svh;
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+
+          .nxus-shell::before {
+            background:
+              radial-gradient(circle at 50% 0%, rgba(232, 0, 28, 0.28), transparent 58vw),
+              #0A0A0A;
+          }
+
+          .nxus-layout {
+            min-height: 100svh;
+            display: block;
+            padding: 1.15rem;
+          }
+
+          .nxus-left,
+          .nxus-right {
+            min-height: auto;
+          }
+
+          .nxus-left {
+            display: block;
+            padding: 1.2rem 0 0.85rem;
+          }
+
+          .nxus-left::before,
+          .nxus-divider,
+          .nxus-footer-mark {
+            display: none;
+          }
+
+          .nxus-hero {
+            width: 100%;
+            gap: 1rem;
+            text-align: left;
+            justify-items: start;
+          }
+
+          .nxus-logo-button {
+            width: 80px;
+          }
+
+          .nxus-kicker {
+            display: inline-flex;
+            border: 1px solid rgba(232, 0, 28, 0.42);
+            background: rgba(232, 0, 28, 0.08);
+            padding: 0.45rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.66rem;
+            letter-spacing: 0.26em;
+            margin-right: 0;
+          }
+
+          .nxus-title {
+            font-size: clamp(3.25rem, 15vw, 4.2rem);
+            letter-spacing: 0.025em;
+          }
+
+          .nxus-title span {
+            display: block;
+          }
+
+          .nxus-title span + span::before {
+            content: '';
+          }
+
+          .nxus-subhead {
+            font-size: 1rem;
+          }
+
+          .nxus-stat-row {
+            justify-content: flex-start;
+            gap: 0.48rem;
+            margin-top: 0.1rem;
+          }
+
+          .nxus-stat {
+            padding: 0.58rem 0.62rem;
+            font-size: 0.62rem;
+          }
+
+          .nxus-right {
+            margin-top: 0.8rem;
+            background: transparent;
+            border-left: 0;
+            padding: 0;
+            display: block;
+          }
+
+          .nxus-action {
+            width: 100%;
+            gap: 1.15rem;
+          }
+
+          .nxus-action-title {
+            font-size: clamp(2.7rem, 13vw, 3.6rem);
+          }
+
+          .nxus-input {
+            padding: 1rem 0.9rem;
+          }
+
+          .nxus-socials {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.7rem;
+          }
+
+          .nxus-social-card {
+            min-height: 8.2rem;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            gap: 0.65rem;
+            padding: 0.85rem;
+          }
+
+          .nxus-social-icon {
+            width: 2rem;
+            height: 2rem;
+          }
+
+          .nxus-social-text {
+            grid-column: 1 / -1;
+            order: 2;
+          }
+
+          .nxus-social-title {
+            font-size: 1.35rem;
+          }
+
+          .nxus-social-body {
+            display: none;
+          }
+
+          .nxus-proof {
+            text-align: center;
+          }
+
+          .nxus-mobile-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.4rem;
+            color: rgba(240, 237, 232, 0.44);
+            font-family: var(--mono-font);
+            font-size: 0.66rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+          }
         }
       `}</style>
 
-      <div style={{
-        position: 'absolute',
-        width: '340px',
-        height: '340px',
-        borderRadius: '50%',
-        background: 'rgba(255, 45, 45, 0.12)',
-        filter: 'blur(42px)',
-        top: '-100px',
-        right: '-120px',
-        animation: 'comingSoonGlow 9s ease-in-out infinite',
-      }} />
+      <div className="nxus-divider" aria-hidden="true" />
 
-      <div style={{
-        position: 'absolute',
-        width: '280px',
-        height: '280px',
-        borderRadius: '50%',
-        background: 'rgba(255, 45, 45, 0.08)',
-        filter: 'blur(36px)',
-        bottom: '-80px',
-        left: '-100px',
-        animation: 'comingSoonGlow 11s ease-in-out infinite',
-      }} />
-
-      <div style={{
-        position: 'relative',
-        zIndex: 1,
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.25rem',
-      }}>
-        <div style={{
-          width: '100%',
-          maxWidth: '760px',
-          display: 'grid',
-          gap: '1.35rem',
-          animation: 'comingSoonFade 0.45s ease both',
-        }}>
-          <div style={{
-            border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(10, 10, 10, 0.88)',
-            boxShadow: '0 30px 80px rgba(0,0,0,0.45)',
-            borderRadius: '28px',
-            padding: 'clamp(1.4rem, 4vw, 2.4rem)',
-            display: 'grid',
-            gap: '1.35rem',
-            textAlign: 'center',
-          }}>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-              padding: '0.45rem 0.8rem',
-              borderRadius: '999px',
-              border: '1px solid rgba(255, 45, 45, 0.25)',
-              background: 'rgba(255, 45, 45, 0.08)',
-              color: '#ff6a5f',
-              fontFamily: mono,
-              fontSize: '0.72rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.18em',
-            }}>
-              Coming Soon
-            </div>
-
+      <div className="nxus-layout">
+        <section className="nxus-left" aria-labelledby="nxus-coming-soon-title">
+          <div className="nxus-hero">
             <button
               type="button"
               onClick={handleLogoTap}
               aria-label="NXUS logo"
-              style={{
-                border: 'none',
-                background: 'transparent',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'default',
-              }}
+              className="nxus-logo-button"
             >
-              <img
-                src="/assets/nxus_logo_mobile_cropped.png"
-                alt="NXUS"
-                style={{
-                  width: 'min(100%, 520px)',
-                  height: 'auto',
-                  objectFit: 'contain',
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                }}
-              />
+              <img src="/assets/nxus_logo_icon.svg" alt="NXUS bowtie logo" />
             </button>
 
-            <div style={{ display: 'grid', gap: '0.7rem' }}>
-              <h1 style={{
-                margin: 0,
-                fontFamily: 'grovant, sans-serif',
-                fontSize: 'clamp(2.5rem, 9vw, 4.8rem)',
-                lineHeight: 0.95,
-                textTransform: 'lowercase',
-                letterSpacing: '0.02em',
-              }}>
-                <span style={{ display: 'block' }}>tinder for fun</span>
-                <span style={{ color: '#FF2D2D', display: 'block' }}>coming soon</span>
-              </h1>
-              <p style={{
-                margin: '0 auto',
-                maxWidth: '520px',
-                color: '#a1a1a1',
-                fontFamily: mono,
-                fontSize: '0.9rem',
-                lineHeight: 1.7,
-              }}>
-                nxus is getting ready. follow the drop, join the early community,
-                and be first in when we open the doors.
-              </p>
-            </div>
+            <div className="nxus-kicker">Coming Soon</div>
 
-            <form
-              onSubmit={handleWaitlistSubmit}
-              style={{
-                display: 'grid',
-                gap: '0.95rem',
-                padding: '1rem',
-                borderRadius: '22px',
-                border: '1px solid rgba(255, 45, 45, 0.16)',
-                background:
-                  'linear-gradient(180deg, rgba(255,45,45,0.12), rgba(255,45,45,0.03))',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '0.75rem',
-                flexWrap: 'wrap',
-              }}>
-                <div style={{ display: 'grid', gap: '0.2rem' }}>
-                  <span style={{
-                    color: '#ff6a5f',
-                    fontFamily: mono,
-                    fontSize: '0.72rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.16em',
-                  }}>
-                    Early Access
-                  </span>
-                  <span style={{
-                    color: '#ffffff',
-                    fontFamily: 'grovant, sans-serif',
-                    fontSize: '1.35rem',
-                    textTransform: 'lowercase',
-                  }}>
-                    claim your spot
-                  </span>
+            <h1 className="nxus-title" id="nxus-coming-soon-title">
+              <span>Tinder</span>
+              <span>For Fun</span>
+            </h1>
+
+            <p className="nxus-subhead">Find your people. Show up. Repeat.</p>
+
+            <div className="nxus-stat-row" aria-label="Launch details">
+              {statPills.map(stat => (
+                <div className="nxus-stat" key={stat.label}>
+                  <span aria-hidden="true">{stat.icon}</span>
+                  <span>{stat.label}</span>
                 </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  style={{
-                    border: '1px solid rgba(255, 45, 45, 0.4)',
-                    background: isSubmitting ? 'rgba(255, 45, 45, 0.12)' : '#FF2D2D',
-                    color: isSubmitting ? '#ffb3ad' : '#050505',
-                    borderRadius: '999px',
-                    padding: '0.8rem 1.15rem',
-                    fontFamily: mono,
-                    fontSize: '0.76rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.12em',
-                    fontWeight: 700,
-                    minWidth: '190px',
-                    transition: 'transform 0.18s ease, opacity 0.18s ease',
-                    opacity: isSubmitting ? 0.8 : 1,
-                  }}
-                >
-                  {isSubmitting ? 'Saving your spot...' : 'Join the waitlist'}
-                </button>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              <div style={{
-                display: 'grid',
-                gap: '0.75rem',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              }}>
-                <label style={{ display: 'grid', gap: '0.4rem' }}>
-                  <span style={{
-                    color: '#b0b0b0',
-                    fontFamily: mono,
-                    fontSize: '0.7rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                  }}>
-                    Name
-                  </span>
+          <div className="nxus-footer-mark">NXUS, from us, to you</div>
+        </section>
+
+        <section className="nxus-right" aria-label="Early access waitlist">
+          <div className="nxus-action">
+            <header className="nxus-action-header">
+              <div className="nxus-eyebrow">Early Access</div>
+              <h2 className="nxus-action-title">Claim Your Spot</h2>
+            </header>
+
+            <form className="nxus-form" onSubmit={handleWaitlistSubmit}>
+              <label className="nxus-field">
+                <span className="nxus-field-label">Name</span>
+                <span className="nxus-input-wrap">
                   <input
+                    className="nxus-input"
                     type="text"
                     value={name}
                     onChange={event => setName(event.target.value)}
-                    placeholder="John Doe"
+                    placeholder="Your name"
                     autoComplete="name"
-                    style={{
-                      width: '100%',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      background: 'rgba(8, 8, 8, 0.78)',
-                      color: '#ffffff',
-                      padding: '0.95rem 1rem',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                    }}
                   />
-                </label>
+                </span>
+              </label>
 
-                <label style={{ display: 'grid', gap: '0.4rem' }}>
-                  <span style={{
-                    color: '#b0b0b0',
-                    fontFamily: mono,
-                    fontSize: '0.7rem',
-                    letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                  }}>
-                    Email
-                  </span>
+              <label className="nxus-field">
+                <span className="nxus-field-label">Email</span>
+                <span className="nxus-input-wrap">
                   <input
+                    className="nxus-input"
                     type="email"
                     value={email}
                     onChange={event => setEmail(event.target.value)}
                     placeholder="you@example.com"
                     autoComplete="email"
                     required
-                    style={{
-                      width: '100%',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      background: 'rgba(8, 8, 8, 0.78)',
-                      color: '#ffffff',
-                      padding: '0.95rem 1rem',
-                      fontSize: '0.95rem',
-                      outline: 'none',
-                    }}
                   />
-                </label>
-              </div>
+                </span>
+              </label>
 
-              <div style={{
-                minHeight: '1.2rem',
-                color:
-                  submitState.tone === 'success'
-                    ? '#ff8d84'
-                    : submitState.tone === 'error'
-                      ? '#ffb3ad'
-                      : '#6f6f6f',
-                fontFamily: mono,
-                fontSize: '0.72rem',
-                letterSpacing: '0.06em',
-              }}>
+              <button className="nxus-cta" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving Your Spot...' : 'Join The Waitlist \u2192'}
+              </button>
+
+              <p className="nxus-form-note" data-tone={submitState.tone}>
                 {submitState.message || 'No app-store scavenger hunt. One button, one list, first access.'}
-              </div>
+              </p>
             </form>
 
-            <div style={{
-              display: 'grid',
-              gap: '0.85rem',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              textAlign: 'left',
-            }}>
-              {SOCIAL_LINKS.map(link => (
-                <a
-                  key={link.key}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    borderRadius: '20px',
-                    border: '1px solid rgba(255, 45, 45, 0.18)',
-                    background: 'linear-gradient(180deg, rgba(255,45,45,0.12), rgba(255,45,45,0.04))',
-                    padding: '1rem 1rem 0.95rem',
-                    display: 'grid',
-                    gap: '0.4rem',
-                    transition: 'transform 0.18s ease, border-color 0.18s ease, background 0.18s ease',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 45, 45, 0.35)';
-                    e.currentTarget.style.background =
-                      'linear-gradient(180deg, rgba(255,45,45,0.18), rgba(255,45,45,0.08))';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'rgba(255, 45, 45, 0.18)';
-                    e.currentTarget.style.background =
-                      'linear-gradient(180deg, rgba(255,45,45,0.12), rgba(255,45,45,0.04))';
-                  }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '0.75rem',
-                    color: '#FF2D2D',
-                    fontFamily: mono,
-                    fontSize: '0.78rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.12em',
-                  }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.55rem' }}>
+            <div className="nxus-rule" aria-hidden="true" />
+
+            <div className="nxus-socials" aria-label="NXUS social links">
+              {SOCIAL_LINKS.map(link => {
+                const copy = socialCopy[link.key];
+
+                return (
+                  <a
+                    className="nxus-social-card"
+                    key={link.key}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="nxus-social-icon" aria-hidden="true">
                       {link.icon}
-                      {link.label}
                     </span>
-                    <span aria-hidden="true">↗</span>
-                  </div>
-                  <div style={{
-                    color: '#ffffff',
-                    fontFamily: 'grovant, sans-serif',
-                    fontSize: '1.1rem',
-                    textTransform: 'lowercase',
-                  }}>
-                    {socialCopy[link.key]}
-                  </div>
-                </a>
-              ))}
+                    <span className="nxus-social-text">
+                      <span className="nxus-social-eyebrow">{copy.eyebrow}</span>
+                      <span className="nxus-social-title">{copy.title}</span>
+                      <span className="nxus-social-body">{copy.body}</span>
+                    </span>
+                    <span className="nxus-social-arrow" aria-hidden="true">
+                      {'\u2192'}
+                    </span>
+                  </a>
+                );
+              })}
             </div>
 
-            <p style={{
-              margin: 0,
-              color: '#4a4a4a',
-              fontFamily: mono,
-              fontSize: '0.68rem',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              minHeight: '1em',
-            }}>
-              nxus, from us, to you
-            </p>
+            <div className="nxus-proof">142 people already in. Dubai opens first.</div>
+
+            <footer className="nxus-mobile-footer">
+              <span>More friends. More fun.</span>
+              <span>nxus.fun</span>
+            </footer>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

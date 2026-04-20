@@ -14,11 +14,11 @@ style.textContent = `
     font-style: normal;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #000000; color: #ffffff; font-family: 'IBM Plex Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+  body { background: #0A0A0A; color: #ffffff; font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }
   button { cursor: pointer; font-family: inherit; }
   input, textarea, select { font-family: inherit; }
-  ::placeholder { color: #444444; }
+  ::placeholder { color: rgba(240,237,232,0.32); }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: #000; }
   ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
