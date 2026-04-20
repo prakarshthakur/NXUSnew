@@ -966,7 +966,6 @@ export default function ComingSoon() {
               })}
             </div>
 
-            <div className="nxus-proof">140+ people already in. Dubai opens first.</div>
 
             <footer className="nxus-mobile-footer">
               <span>More friends. More fun.</span>
