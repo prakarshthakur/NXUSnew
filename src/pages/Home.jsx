@@ -12,6 +12,7 @@ export default function Home() {
   const [events, setEvents] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [seeding, setSeeding] = useState(true);
+  const [copiedId, setCopiedId] = useState(null);
 
   /* seed on first load, then listen */
   useEffect(() => {
@@ -216,6 +217,30 @@ export default function Home() {
           line-height: 1;
         }
 
+        .nxus-share-btn {
+          background: transparent;
+          border: none;
+          color: rgba(240, 237, 232, 0.42);
+          cursor: pointer;
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          transition: color 150ms;
+          padding: 0.2rem;
+        }
+
+        .nxus-share-btn:hover {
+          color: var(--nxus-red);
+        }
+
+        .nxus-share-btn svg {
+          width: 18px;
+          height: 18px;
+        }
+
         .nxus-event-short {
           margin: 0.35rem 0 0;
           color: rgba(240, 237, 232, 0.62);
@@ -360,7 +385,29 @@ export default function Home() {
                 onClick={() => toggleExpand(event.id)}
               >
                 <div className="nxus-event-body">
-                  <h2 className="nxus-event-title">{event.title}</h2>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', width: '100%' }}>
+                    <h2 className="nxus-event-title">{event.title}</h2>
+                    <button 
+                      className="nxus-share-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(`${window.location.origin}/event/${event.id}`);
+                        setCopiedId(event.id);
+                        setTimeout(() => setCopiedId(null), 2000);
+                      }}
+                      title="Share Event"
+                    >
+                      {copiedId === event.id ? 'Copied!' : (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="18" cy="5" r="3"></circle>
+                          <circle cx="6" cy="12" r="3"></circle>
+                          <circle cx="18" cy="19" r="3"></circle>
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                   {expandedId !== event.id && (
                     <p className="nxus-event-short">{event.shortDescription}</p>
                   )}

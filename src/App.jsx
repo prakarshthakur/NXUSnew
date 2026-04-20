@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import InstallPopup from './components/InstallPopup';
+import EventDetail from './pages/EventDetail';
 
 const ADMIN_EMAIL = 'prakarshthakur1@gmail.com';
 
@@ -20,6 +21,10 @@ function hasEarlyAccess() {
 function ProtectedSignupRoute() {
   if (!hasEarlyAccess()) {
     return <Navigate to="/" replace />;
+  }
+
+  if (window.sessionStorage.getItem('redirectAfterLogin')) {
+    return <Navigate to="/login" replace />;
   }
 
   return <Signup />;
@@ -55,6 +60,26 @@ function AdminRoute({ children }) {
   }
 
   return children;
+}
+
+function EventRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (user) {
+    return children;
+  }
+
+  window.sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+
+  if (hasEarlyAccess()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Navigate to="/" replace />;
 }
 
 function LoadingScreen() {
@@ -108,6 +133,14 @@ export default function App() {
               <AdminRoute>
                 <Admin />
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/event/:eventId"
+            element={
+              <EventRoute>
+                <EventDetail />
+              </EventRoute>
             }
           />
           <Route path="*" element={<Navigate to="/" replace />} />

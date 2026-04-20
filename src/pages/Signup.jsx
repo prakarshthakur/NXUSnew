@@ -32,7 +32,9 @@ export default function Signup() {
 
     try {
       await createUserWithEmailAndPassword(auth, email.trim(), password);
-      navigate('/home');
+      const dest = window.sessionStorage.getItem('redirectAfterLogin') || '/home';
+      window.sessionStorage.removeItem('redirectAfterLogin');
+      navigate(dest);
     } catch (err) {
       setError(friendlyError(err.code));
     } finally {
@@ -46,7 +48,9 @@ export default function Signup() {
 
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate('/home');
+      const dest = window.sessionStorage.getItem('redirectAfterLogin') || '/home';
+      window.sessionStorage.removeItem('redirectAfterLogin');
+      navigate(dest);
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         setError(friendlyError(err.code));
