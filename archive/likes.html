@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
+    <script src="analytics.js" defer></script>
+    <title>NXUS | My Parties</title>
+    <link rel="icon" type="image/png" href="assets/nxus_logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: #000000; overflow-x: hidden; }
+
+        .river-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(255, 0, 0, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(255, 0, 0, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(255, 0, 0, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(255, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(255, 0, 0, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #000000 0%, #000000 30%, #000000 60%, #000000 100%);
+        }
+
+        .river-bg::before, .river-bg::after { display: none; }
+        .old-river-bg-before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(255, 0, 0, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        .river-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+        }
+
+        /* Nav */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .feed-nav * { pointer-events: auto; }
+
+        .nav-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.6rem;
+            color: #ff0000;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+
+        .nav-btn {
+            background: rgba(255, 0, 0, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 0, 0, 0.7);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff0000;
+        }
+
+        /* Page layout */
+        .likes-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            gap: 1rem;
+        }
+
+        .likes-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .likes-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            color: #ff0000;
+            letter-spacing: 0.1em;
+        }
+
+        .likes-subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255, 0, 0, 0.3);
+            letter-spacing: 0.05em;
+            margin-top: 0.3rem;
+        }
+
+        /* Tab bar */
+        .status-tabs {
+            display: flex;
+            background: rgba(255, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .status-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: rgba(255, 0, 0, 0.4);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            padding: 0.55rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .status-tab.active {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Party list */
+        .party-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+        }
+
+        .liked-card {
+            position: relative;
+            background: rgba(255, 0, 0, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 18px;
+            padding: 1.4rem 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .liked-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.25), transparent);
+            pointer-events: none;
+        }
+
+        .liked-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 18px;
+            background: linear-gradient(to bottom, rgba(255,0,0,0.04) 0%, transparent 15%);
+            pointer-events: none;
+        }
+
+        .liked-card:hover {
+            border-color: rgba(255,0,0,0.18);
+            transform: translateY(-1px);
+        }
+
+        .liked-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .liked-card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            color: #ff0000;
+            line-height: 1.2;
+        }
+
+        .status-badge {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            padding: 0.3rem 0.7rem;
+            border-radius: 50px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-left: 0.8rem;
+        }
+
+        .badge-pending {
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            color: #fbbf24;
+        }
+
+        .badge-accepted {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            color: #ff0000;
+        }
+
+        .badge-declined {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ff0000;
+        }
+
+        .liked-card-time {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+
+        .liked-card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem;
+        }
+
+        .liked-card-host {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem;
+            color: rgba(255,0,0,0.25);
+            margin-top: 0.6rem;
+        }
+        .liked-card-host span { color: #ff0000; }
+
+        /* Status message */
+        .status-msg {
+            position: relative;
+            margin-top: 0.6rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem;
+            line-height: 1.5;
+        }
+
+        .msg-pending {
+            background: rgba(250, 204, 21, 0.06);
+            border: 1px solid rgba(250, 204, 21, 0.1);
+            color: rgba(250, 204, 21, 0.7);
+        }
+
+        .msg-accepted {
+            background: rgba(74, 222, 128, 0.06);
+            border: 1px solid rgba(74, 222, 128, 0.1);
+            color: rgba(74, 222, 128, 0.7);
+        }
+
+        .msg-declined {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+            color: rgba(239, 68, 68, 0.6);
+        }
+
+        /* Empty state */
+        .empty-likes {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-likes p:first-child {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .empty-likes h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            color: #ff0000;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-likes p:last-child {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255,0,0,0.3);
+        }
+
+        .explore-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            background: rgba(255, 0, 0, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 0, 0.12);
+            border-radius: 50px;
+            color: rgba(255, 0, 0, 0.8);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.85rem;
+            padding: 0.7rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+
+        .explore-btn:hover {
+            background: rgba(255, 0, 0, 0.14);
+            color: #ff0000;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .feed-nav { padding: 1rem; }
+            .likes-page { max-width: 94%; }
+            .liked-card { padding: 1.2rem; }
+            .liked-card-title { font-size: 1.15rem; }
+            .status-tab { font-size: 0.72rem; }
+        }
+    </style>
+    <style>
+        body { background: #000000 !important; }
+        .river-bg, .river-bg::before, .river-bg::after, .old-river-bg-before { display: none !important; }
+        .party-card, .detail-card, .glass-form, .liquid-glass, .hosted-card, .modal-glass, .empty-state, .glass-panel, .login-panel {
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(40px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="river-bg"></div>
+
+    <div class="feed-nav">
+        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;cursor:pointer;" onclick="window.location.href='feed.html'">
+        <button class="nav-btn" onclick="window.location.href='feed.html'">← feed</button>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="likes-page">
+            <div class="likes-header">
+                <h1 class="likes-title">my fun</h1>
+                <p class="likes-subtitle">fun you've liked</p>
+            </div>
+
+            <div class="status-tabs" id="statusTabs">
+                <button class="status-tab active" data-filter="all">all</button>
+                <button class="status-tab" data-filter="pending">pending</button>
+                <button class="status-tab" data-filter="accepted">accepted ✓</button>
+                <button class="status-tab" data-filter="declined">declined</button>
+            </div>
+
+            <div class="party-list" id="partyList">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statusMessages = {
+            pending: "waiting for the host to review your request...",
+            accepted: "you're in! 🎉 check the location and show up on time",
+            declined: "host couldn't fit more people this time. maybe next one!"
+        };
+
+        const allowedStatuses = new Set(['pending', 'accepted', 'declined']);
+        function normalizeStatus(status) {
+            return allowedStatuses.has(status) ? status : 'pending';
+        }
+
+        const statusEmoji = {
+            pending: '⏳',
+            accepted: '🫣',
+            declined: '😮‍💨'
+        };
+
+        function getLikedParties() {
+            return JSON.parse(localStorage.getItem('nxus_liked') || '[]');
+        }
+
+        function renderParties(filter = 'all') {
+            const list = document.getElementById('partyList');
+            const parties = getLikedParties();
+
+            const safeFilter = filter === 'all' ? 'all' : normalizeStatus(filter);
+            const filtered = safeFilter === 'all'
+                ? parties
+                : parties.filter(p => normalizeStatus(p.status) === safeFilter);
+
+            if (filtered.length === 0) {
+                list.textContent = '';
+
+                const empty = document.createElement('div');
+                empty.className = 'empty-likes';
+
+                const pEmoji = document.createElement('p');
+                pEmoji.textContent = safeFilter === 'all' ? '💤' : statusEmoji[safeFilter];
+
+                const h = document.createElement('h3');
+                h.textContent = safeFilter === 'all' ? 'no liked fun yet' : 'nothing here';
+
+                const pMsg = document.createElement('p');
+                pMsg.textContent = safeFilter === 'all'
+                    ? 'head to the feed and swipe left on something fire'
+                    : 'no fun with this status right now';
+
+                empty.appendChild(pEmoji);
+                empty.appendChild(h);
+                empty.appendChild(pMsg);
+
+                if (safeFilter === 'all') {
+                    const a = document.createElement('a');
+                    a.href = 'feed.html';
+                    a.className = 'explore-btn';
+                    a.textContent = 'explore fun →';
+                    empty.appendChild(a);
+                }
+
+                list.appendChild(empty);
+                return;
+            }
+
+            list.textContent = '';
+
+            filtered.forEach((party) => {
+                const status = normalizeStatus(party.status);
+
+                const card = document.createElement('div');
+                card.className = 'liked-card';
+
+                const top = document.createElement('div');
+                top.className = 'liked-card-top';
+
+                const title = document.createElement('span');
+                title.className = 'liked-card-title';
+                title.textContent = party.title || '';
+
+                const badge = document.createElement('span');
+                badge.className = `status-badge badge-${status}`;
+                badge.textContent = status;
+
+                top.appendChild(title);
+                top.appendChild(badge);
+
+                const time = document.createElement('div');
+                time.className = 'liked-card-time';
+                time.textContent = party.time || '';
+
+                const meta = document.createElement('div');
+                meta.className = 'liked-card-meta';
+
+                const location = document.createElement('span');
+                location.style.color = 'rgba(255,0,0,0.4)';
+                location.textContent = `📍 ${party.location || ''}`;
+
+                const people = document.createElement('span');
+                people.style.color = '#ff0000';
+                people.textContent = `👥 ${party.people || ''}`;
+
+                meta.appendChild(location);
+                meta.appendChild(people);
+
+                const hosted = document.createElement('div');
+                hosted.className = 'liked-card-host';
+                hosted.appendChild(document.createTextNode('hosted by '));
+
+                const hostName = document.createElement('span');
+                hostName.textContent = party.host || '';
+                hosted.appendChild(hostName);
+
+                const statusMsg = document.createElement('div');
+                statusMsg.className = `status-msg msg-${status}`;
+                statusMsg.textContent = statusMessages[status];
+
+                card.appendChild(top);
+                card.appendChild(time);
+                card.appendChild(meta);
+                card.appendChild(hosted);
+                card.appendChild(statusMsg);
+
+                list.appendChild(card);
+            });
+        }
+
+        // Tab switching
+        document.getElementById('statusTabs').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('status-tab')) return;
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            renderParties(e.target.dataset.filter);
+        });
+
+        // Initial render
+        renderParties();
+    </script>
+</body>
+</html>

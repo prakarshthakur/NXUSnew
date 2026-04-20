@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="nxus-ga-measurement-id" content="G-30KZZMNYKN">
+    <script src="analytics.js" defer></script>
+    <title>NXUS | Feed</title>
+    <link rel="icon" type="image/png" href="assets/nxus_logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: #000000; overflow-x: hidden; }
+
+        .river-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 80%, rgba(255, 0, 0, 0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 75% 20%, rgba(255, 0, 0, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse 90% 60% at 50% 50%, rgba(255, 0, 0, 0.8) 0%, transparent 80%),
+                radial-gradient(ellipse 40% 80% at 10% 30%, rgba(255, 0, 0, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 70% at 90% 70%, rgba(255, 0, 0, 0.25) 0%, transparent 55%),
+                linear-gradient(160deg, #000000 0%, #000000 30%, #000000 60%, #000000 100%);
+        }
+
+        .river-bg::before, .river-bg::after { display: none; }
+        .old-river-bg-before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 120% 15% at 30% 85%, rgba(255, 0, 0, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 100% 12% at 70% 15%, rgba(255, 0, 0, 0.2) 0%, transparent 60%);
+            filter: blur(30px);
+        }
+
+        .river-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+        }
+
+        /* Nav */
+        .feed-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .feed-nav * { pointer-events: auto; }
+
+        .nav-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.6rem;
+            color: #ff0000;
+            letter-spacing: 0.1em;
+            cursor: default;
+        }
+
+        .nav-btn {
+            background: rgba(255, 0, 0, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 50px;
+            color: rgba(255, 0, 0, 0.7);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff0000;
+        }
+
+        /* Feed layout */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-top: 4rem;
+        }
+
+        .feed-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4rem;
+            color: rgba(255, 0, 0, 0.35);
+            letter-spacing: 0.15em;
+        }
+
+        .feed-subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255, 0, 0, 0.25);
+            letter-spacing: 0.08em;
+            margin-top: 0.4rem;
+        }
+
+        /* Swipe cards — liquid glass */
+        .swipe-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 600px;
+            margin: 2rem auto;
+            perspective: 1000px;
+        }
+
+        .party-card {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem 2rem;
+            cursor: grab;
+            touch-action: none;
+            transform-origin: 50% 100%;
+            user-select: none;
+            -webkit-user-select: none;
+            background: rgba(255, 0, 0, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 0, 0, 0.12);
+            box-shadow:
+                0 0 0 0.5px rgba(255, 0, 0, 0.08) inset,
+                0 8px 32px rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
+            text-align: left;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        /* Card refraction edge */
+        .party-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.35), transparent);
+            pointer-events: none;
+        }
+
+        .party-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 0;
+            border-radius: 24px;
+            background:
+                linear-gradient(to bottom, rgba(255,0,0,0.06) 0%, transparent 12%),
+                linear-gradient(to top, rgba(255,0,0,0.04) 0%, transparent 12%);
+            pointer-events: none;
+        }
+
+        .party-card:active { cursor: grabbing; }
+
+        .card-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            color: #ff0000;
+            margin-bottom: 0.3rem;
+            line-height: 1.1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-time {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-time::before, .card-time::after { content: none; }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-meta span {
+            font-size: 0.78rem;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .card-desc {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 0, 0, 0.7);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-host {
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            color: rgba(255,0,0,0.3);
+            letter-spacing: 0.05em;
+            font-family: 'Oswald', sans-serif;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-host span { color: #ff0000; }
+
+        .hint {
+            position: absolute;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            letter-spacing: 0.2em;
+        }
+
+        .hint-like {
+            top: 2rem; right: 1.5rem;
+            color: #ff0000;
+            border: 3px solid #ff0000;
+            transform: rotate(12deg);
+        }
+
+        .hint-dislike {
+            top: 2rem; left: 1.5rem;
+            color: #ff0000;
+            border: 3px solid #ff0000;
+            transform: rotate(-12deg);
+        }
+
+        /* Empty state */
+        .empty-state {
+            background: rgba(255, 0, 0, 0.04);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Detail overlay */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .detail-card {
+            position: relative;
+            background: rgba(255, 0, 0, 0.05);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 0, 0, 0.12);
+            border-radius: 24px;
+            padding: 0;
+            max-width: 440px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: modalSlideUp 0.35s ease;
+        }
+
+        .detail-card::-webkit-scrollbar { width: 0; }
+
+        .detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 8%; right: 8%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.35), transparent);
+            z-index: 2;
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .detail-header {
+            padding: 2rem 2rem 1.5rem;
+        }
+
+        .detail-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            background: rgba(255,0,0,0.08);
+            border: 1px solid rgba(255,0,0,0.1);
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            color: rgba(255,0,0,0.6);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        .detail-close:hover {
+            background: rgba(255,0,0,0.15);
+            color: #ff0000;
+        }
+
+        .detail-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            color: #ff0000;
+            line-height: 1.1;
+            margin-bottom: 0.4rem;
+        }
+
+        .detail-time {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.78rem;
+        }
+
+        .detail-body {
+            padding: 0 2rem;
+        }
+
+        .detail-desc {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(255,0,0,0.7);
+            margin-bottom: 1.2rem;
+        }
+
+        .detail-host {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255,0,0,0.3);
+            margin-bottom: 1.5rem;
+        }
+        .detail-host span { color: #ff0000; }
+
+        /* Map */
+        .detail-map {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            filter: invert(0.92) hue-rotate(180deg) brightness(0.9) contrast(1.1);
+        }
+
+        /* Action buttons */
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.9rem;
+            border-radius: 14px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.2), transparent);
+        }
+
+        .btn-like {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.25);
+            color: #ff0000;
+        }
+        .btn-like:hover {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: rgba(74, 222, 128, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.1);
+        }
+
+        .btn-dislike {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ff0000;
+        }
+        .btn-dislike:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
+        }
+
+        .action-btn:active { transform: translateY(1px); }
+
+        /* Tap hint on cards */
+        .tap-hint {
+            position: absolute;
+            bottom: 1.2rem; right: 1.5rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255,0,0,0.2);
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .feed-nav { padding: 1rem; }
+            .feed-container { padding-top: 2rem; }
+            .swipe-container { max-width: 90vw; height: 480px; margin: 1.5rem auto; }
+            .party-card { padding: 2rem 1.5rem; }
+            .card-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+            .card-time { font-size: 0.75rem; }
+            .card-desc { font-size: 0.9rem; }
+            .hint { font-size: 1.4rem; padding: 0.4rem 1rem; }
+            .detail-header { padding: 1.5rem 1.5rem 1rem; }
+            .detail-body { padding: 0 1.5rem; }
+            .detail-actions { padding: 1.2rem 1.5rem 1.5rem; }
+            .detail-map { height: 170px; }
+        }
+
+        @media (max-width: 400px) {
+            .swipe-container { height: 420px; }
+            .party-card { padding: 1.5rem 1.2rem; border-radius: 20px; }
+            .detail-card { border-radius: 20px; }
+        }
+    </style>
+    <style>
+        body { background: #000000 !important; }
+        .river-bg, .river-bg::before, .river-bg::after, .old-river-bg-before { display: none !important; }
+        .party-card, .detail-card, .glass-form, .liquid-glass, .hosted-card, .modal-glass, .empty-state, .glass-panel, .login-panel {
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(40px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="river-bg"></div>
+    
+    <div class="feed-nav">
+        <img src="assets/nxus_logo.png" alt="NXUS" style="height:24px;width:auto;mix-blend-mode:screen;" onclick="window.location.href='feed.html'" style="cursor:pointer;">
+        <div style="display: flex; gap: 0.6rem;">
+            <button class="nav-btn" onclick="window.location.href='likes.html'">❤ my fun</button>
+            <button class="nav-btn" onclick="window.location.href='settings.html'">⚙</button>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="feed-container">
+            <span class="feed-title">radar</span>
+            <p class="feed-subtitle">swipe left to like · right to dismiss</p>
+            
+            <div class="swipe-container" id="swipeContainer">
+                <!-- Cards injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="detail-overlay" id="detailOverlay">
+        <div class="detail-card" id="detailCard">
+            <button class="detail-close" id="detailClose">✕</button>
+            <div class="detail-header">
+                <div class="detail-title" id="detailTitle"></div>
+                <div class="detail-time" id="detailTime"></div>
+                <div class="detail-meta">
+                    <span style="color: rgba(255,0,0,0.5);" id="detailLocation"></span>
+                    <span style="color: #ff0000;" id="detailPeople"></span>
+                </div>
+            </div>
+            <div class="detail-body">
+                <p class="detail-desc" id="detailDesc"></p>
+                <p class="detail-host">hosted by <span id="detailHost"></span></p>
+                <div class="detail-map" id="detailMap"></div>
+            </div>
+            <div class="detail-actions">
+                <button class="action-btn btn-like" id="detailLike">👍 like</button>
+                <button class="action-btn btn-dislike" id="detailDislike">👎 pass</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Swiping Logic
+        const container = document.getElementById('swipeContainer');
+        const cardsData = [
+            { 
+                title: "Freshers Bash", 
+                time: "fri mar 28 @ 9pm", 
+                host: "Delta Kappa",
+                location: "South Campus Block C Terrace",
+                people: "127 going",
+                desc: "The official welcome party for the new batch. Free entry for first-years, DJ Arjun spinning Bollywood x EDM all night. BYOB after 11.",
+                lat: 28.5648, lng: 77.2100
+            },
+            { 
+                title: "Sunburn Pregame", 
+                time: "sat mar 29 @ 7pm",
+                host: "Rahul & Sneha",
+                location: "Rahul's Flat, Hauz Khas",
+                people: "43 going",
+                desc: "Chill pregame before everyone heads to Sunburn afterparty at Kitty Su. Drinks sorted, just bring good vibes. Uber pool from here at 11.",
+                lat: 28.5494, lng: 77.2001
+            },
+            { 
+                title: "Acoustic Night", 
+                time: "thu mar 27 @ 8pm",
+                host: "Music Society",
+                location: "Open Air Theatre",
+                people: "89 going",
+                desc: "Unplugged performances by campus bands, chai and maggi stalls, fairy lights on the lawn. Chill one before end-sems hit.",
+                lat: 28.5459, lng: 77.1926
+            },
+            { 
+                title: "Holi Rave", 
+                time: "sat apr 5 @ 11am",
+                host: "Cultural Committee",
+                location: "Sports Ground",
+                people: "312 going",
+                desc: "Organic colours, rain dance, live dhol, and thandai bar. Wear whites. After-party at someone's farmhouse TBD.",
+                lat: 28.5421, lng: 77.1843
+            },
+            { 
+                title: "Rooftop Kickback", 
+                time: "tonight @ 10pm",
+                host: "Aman's Circle",
+                location: "PG Rooftop, Vijay Nagar",
+                people: "18 going",
+                desc: "Small gathering, good music, cold ones on the roof. Keep it lowkey — no stories. DM for address.",
+                lat: 28.7041, lng: 77.1025
+            },
+            { 
+                title: "FIFA Tournament", 
+                time: "sun mar 30 @ 3pm",
+                host: "Gaming Club",
+                location: "Common Room, Hostel 4",
+                people: "32 going",
+                desc: "₹100 entry, winner takes the pool. PS5 on the projector, snacks provided. Losing team buys chai for everyone.",
+                lat: 28.5460, lng: 77.1930
+            }
+        ];
+
+        // Store original order for detail lookup
+        const originalCardsData = [...cardsData];
+
+        cardsData.reverse().forEach((data, index) => {
+            const card = document.createElement('div');
+            card.className = 'party-card';
+            card.dataset.partyIndex = originalCardsData.indexOf(data);
+            card.innerHTML = `
+                <span class="hint hint-like">LIKE</span>
+                <span class="hint hint-dislike">NOPE</span>
+                <div class="card-title">${data.title}</div>
+                <div class="card-time">${data.time}</div>
+                <div class="card-meta">
+                    <span style="color: rgba(255,0,0,0.5);">📍 ${data.location}</span>
+                    <span style="color: #ff0000;">👥 ${data.people}</span>
+                </div>
+                <p class="card-desc">${data.desc}</p>
+                <p class="card-host">hosted by <span>${data.host}</span></p>
+                <span class="tap-hint">tap for details</span>
+            `;
+            container.appendChild(card);
+        });
+
+        let cards = Array.from(document.querySelectorAll('.party-card'));
+
+        function initTopCard() {
+            if (cards.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p style="font-size: 2rem;">🫠</p>
+                        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.6rem; color: #ff0000; margin-top: 0.5rem;">that's all for now</h2>
+                        <p style="color: rgba(255,0,0,0.4); font-family: 'Oswald', sans-serif; font-size: 0.85rem; margin-top: 0.8rem;">check back later for more 🔥</p>
+                    </div>`;
+                return;
+            }
+
+            cards.forEach((card, i) => {
+                const isTopCard = (i === cards.length - 1);
+                const depth = cards.length - 1 - i;
+                
+                card.style.zIndex = i;
+                if (isTopCard) {
+                    card.style.transform = `scale(1) translateY(0px)`;
+                    card.style.opacity = 1;
+                    setupDrag(card);
+                } else {
+                    card.style.transform = `scale(${1 - depth * 0.04}) translateY(${depth * 15}px)`;
+                    card.style.opacity = depth > 3 ? 0 : 1 - depth * 0.15;
+                    card.style.pointerEvents = 'none';
+                }
+            });
+        }
+
+        // Detail modal logic
+        const overlay = document.getElementById('detailOverlay');
+        let activeDetailIndex = null;
+
+        function openDetail(dataIndex) {
+            const data = originalCardsData[dataIndex];
+            if (!data) return;
+            activeDetailIndex = dataIndex;
+            document.getElementById('detailTitle').textContent = data.title;
+            document.getElementById('detailTime').textContent = data.time;
+            document.getElementById('detailLocation').textContent = '📍 ' + data.location;
+            document.getElementById('detailPeople').textContent = '👥 ' + data.people;
+            document.getElementById('detailDesc').textContent = data.desc;
+            document.getElementById('detailHost').textContent = data.host;
+            document.getElementById('detailMap').innerHTML = `<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${data.lng-0.008}%2C${data.lat-0.005}%2C${data.lng+0.008}%2C${data.lat+0.005}&layer=mapnik&marker=${data.lat}%2C${data.lng}" loading="lazy"></iframe>`;
+            overlay.style.display = 'flex';
+        }
+
+        function closeDetail() {
+            overlay.style.display = 'none';
+            activeDetailIndex = null;
+        }
+
+        document.getElementById('detailClose').addEventListener('click', closeDetail);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeDetail(); });
+
+        document.getElementById('detailLike').addEventListener('click', () => {
+            closeDetail();
+            const topCard = cards[cards.length - 1];
+            if (topCard) {
+                saveLike(parseInt(topCard.dataset.partyIndex));
+                flyOut(topCard, -window.innerWidth - 200, 0, -30);
+            }
+        });
+
+        document.getElementById('detailDislike').addEventListener('click', () => {
+            closeDetail();
+            const topCard = cards[cards.length - 1];
+            if (topCard) flyOut(topCard, window.innerWidth + 200, 0, 30);
+        });
+
+        function setupDrag(card) {
+            let startX = 0, startY = 0;
+            let currentX = 0, currentY = 0;
+            let isDragging = false;
+            let hasMoved = false;
+            
+            card.style.pointerEvents = 'auto';
+
+            card.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                hasMoved = false;
+                startX = e.clientX;
+                startY = e.clientY;
+                card.style.transition = 'none';
+                card.setPointerCapture(e.pointerId);
+            });
+            
+            card.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX - startX;
+                currentY = e.clientY - startY;
+
+                if (Math.abs(currentX) > 8 || Math.abs(currentY) > 8) hasMoved = true;
+
+                const rotate = currentX * 0.04;
+                card.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+                
+                const likeHint = card.querySelector('.hint-like');
+                const dislikeHint = card.querySelector('.hint-dislike');
+                
+                if (currentX < 0) {
+                    likeHint.style.opacity = Math.min(Math.abs(currentX) / 80, 1);
+                    dislikeHint.style.opacity = 0;
+                } else {
+                    dislikeHint.style.opacity = Math.min(currentX / 80, 1);
+                    likeHint.style.opacity = 0;
+                }
+            });
+            
+            const resetCard = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                // Tap detection — if barely moved, it's a click
+                if (!hasMoved) {
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'scale(1) translateY(0px)';
+                    currentX = 0; currentY = 0;
+                    const idx = parseInt(card.dataset.partyIndex);
+                    openDetail(idx);
+                    return;
+                }
+                
+                const throwOutThreshold = window.innerWidth * 0.20;
+                
+                if (currentX < -throwOutThreshold) {
+                    flyOut(card, -window.innerWidth - 200, currentY, -30);
+                } else if (currentX > throwOutThreshold) {
+                    flyOut(card, window.innerWidth + 200, currentY, 30);
+                } else {
+                    card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'scale(1) translateY(0px)';
+                    card.querySelector('.hint-like').style.opacity = 0;
+                    card.querySelector('.hint-dislike').style.opacity = 0;
+                    currentX = 0; currentY = 0;
+                }
+            };
+
+            card.addEventListener('pointerup', resetCard);
+            card.addEventListener('pointercancel', resetCard);
+        }
+
+        function saveLike(dataIndex) {
+            const data = originalCardsData[dataIndex];
+            if (!data) return;
+            const liked = JSON.parse(localStorage.getItem('nxus_liked') || '[]');
+            // Don't add duplicates
+            if (liked.some(p => p.title === data.title)) return;
+            // Simulate host acceptance (random for demo)
+            const statuses = ['pending', 'pending', 'pending', 'accepted', 'declined'];
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
+            liked.push({
+                title: data.title,
+                time: data.time,
+                host: data.host,
+                location: data.location,
+                people: data.people,
+                status: status
+            });
+            localStorage.setItem('nxus_liked', JSON.stringify(liked));
+        }
+
+        function flyOut(card, destX, destY, destRot) {
+            // If swiped left (like), save it
+            if (destX < 0) {
+                const idx = parseInt(card.dataset.partyIndex);
+                saveLike(idx);
+            }
+
+            card.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease';
+            card.style.transform = `translate(${destX}px, ${destY}px) rotate(${destRot}deg)`;
+            card.style.opacity = 0;
+            
+            setTimeout(() => {
+                card.remove();
+                cards.pop();
+                initTopCard();
+            }, 300);
+        }
+
+        window.addEventListener('load', initTopCard);
+    </script>
+</body>
+</html>
