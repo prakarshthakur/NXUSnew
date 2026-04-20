@@ -5,7 +5,6 @@ import { SOCIAL_LINKS } from '../components/SocialLinks';
 const mono = "'IBM Plex Mono', monospace";
 const waitlistEndpoint = 'https://api.freewaitlists.com/waitlists/cmnrq1m75087001pnr40o6xtf';
 const socialCopy = {
-  whatsapp: 'join the circle',
   discord: 'hop into the server',
   instagram: 'follow the build',
 };

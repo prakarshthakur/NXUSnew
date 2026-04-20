@@ -35,7 +35,7 @@ export function VerificationProvider({ children }) {
     }
 
     loadVerification(user.uid);
-  }, [user?.uid]);
+  }, [user]);
 
   return (
     <VerificationContext.Provider
