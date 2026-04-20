@@ -739,8 +739,8 @@ export default function ComingSoon() {
             <div className="nxus-kicker">Coming Soon</div>
 
             <h1 className="nxus-title" id="nxus-coming-soon-title">
-              <span>Tinder</span>
-              <span>For Fun</span>
+              <span>Kill your</span>
+              <span>Boredom</span>
             </h1>
 
             <p className="nxus-subhead">Find your people. Show up. Repeat.</p>

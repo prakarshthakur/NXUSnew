@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'NXUS',
         short_name: 'NXUS',
-        description: 'Eliminate your Boredom',
+        description: 'Kill your Boredom',
         start_url: '/',
         display: 'standalone',
         background_color: '#000000',
