@@ -13,6 +13,7 @@ export default function Home() {
   const [expandedId, setExpandedId] = useState(null);
   const [seeding, setSeeding] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
+  const [showBuildPopup, setShowBuildPopup] = useState(false);
 
   /* seed on first load, then listen */
   useEffect(() => {
@@ -27,6 +28,15 @@ export default function Home() {
       setEvents(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     });
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if (window.sessionStorage.getItem('showBuildPopup') === 'true') {
+      setShowBuildPopup(true);
+      window.sessionStorage.removeItem('showBuildPopup');
+    }
   }, []);
 
   const handleSignOut = async () => {
@@ -140,6 +150,67 @@ export default function Home() {
           padding: clamp(1.4rem, 4vw, 3rem);
         }
 
+        .nxus-home-popup-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 20;
+          display: grid;
+          place-items: center;
+          padding: 1.25rem;
+          background: rgba(5, 5, 5, 0.72);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .nxus-home-popup {
+          position: relative;
+          width: min(100%, 440px);
+          border: 1px solid rgba(232, 0, 28, 0.34);
+          background:
+            radial-gradient(circle at top, rgba(232, 0, 28, 0.12), transparent 60%),
+            #111111;
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+          padding: 1.5rem 1.35rem 1.3rem;
+          animation: nxusHomePopupIn 220ms ease both;
+        }
+
+        .nxus-home-popup-close {
+          position: absolute;
+          top: 0.55rem;
+          right: 0.7rem;
+          border: 0;
+          background: transparent;
+          color: rgba(240, 237, 232, 0.58);
+          font-size: 1.35rem;
+          line-height: 1;
+          cursor: pointer;
+          padding: 0.2rem;
+          transition: color 160ms ease, transform 160ms ease;
+        }
+
+        .nxus-home-popup-close:hover {
+          color: #FFFFFF;
+          transform: scale(1.05);
+        }
+
+        .nxus-home-popup-eyebrow {
+          color: var(--nxus-red);
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+        }
+
+        .nxus-home-popup-copy {
+          margin: 0.7rem 0 0;
+          color: #FFFFFF;
+          font-family: var(--display-font);
+          font-size: clamp(1.8rem, 6vw, 2.4rem);
+          line-height: 0.98;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+        }
+
         .nxus-home-header {
           display: grid;
           gap: 0.4rem;
@@ -150,6 +221,11 @@ export default function Home() {
         @keyframes nxusHomeIn {
           from { opacity: 0; transform: translateY(18px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes nxusHomePopupIn {
+          from { opacity: 0; transform: translateY(12px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .nxus-home-eyebrow {
@@ -350,6 +426,30 @@ export default function Home() {
           }
         }
       `}</style>
+
+      {showBuildPopup ? (
+        <div className="nxus-home-popup-backdrop" role="presentation">
+          <section
+            className="nxus-home-popup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nxus-build-popup-title"
+          >
+            <button
+              className="nxus-home-popup-close"
+              type="button"
+              aria-label="Close popup"
+              onClick={() => setShowBuildPopup(false)}
+            >
+              ×
+            </button>
+            <div className="nxus-home-popup-eyebrow">Heads Up</div>
+            <p className="nxus-home-popup-copy" id="nxus-build-popup-title">
+              NXUS is currently being built, thanks for showing your support!
+            </p>
+          </section>
+        </div>
+      ) : null}
 
       <nav className="nxus-home-nav">
         <div className="nxus-home-nav-left">

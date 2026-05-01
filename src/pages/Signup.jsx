@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   signInWithPopup,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../utils/firebase';
@@ -32,6 +33,7 @@ export default function Signup() {
 
     try {
       await createUserWithEmailAndPassword(auth, email.trim(), password);
+      window.sessionStorage.setItem('showBuildPopup', 'true');
       const dest = window.sessionStorage.getItem('redirectAfterLogin') || '/home';
       window.sessionStorage.removeItem('redirectAfterLogin');
       navigate(dest);
@@ -47,7 +49,10 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      if (getAdditionalUserInfo(result)?.isNewUser) {
+        window.sessionStorage.setItem('showBuildPopup', 'true');
+      }
       const dest = window.sessionStorage.getItem('redirectAfterLogin') || '/home';
       window.sessionStorage.removeItem('redirectAfterLogin');
       navigate(dest);
