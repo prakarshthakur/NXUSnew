@@ -33,6 +33,7 @@ export default function ComingSoon() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState({ tone: 'idle', message: '' });
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [accessCode, setAccessCode] = useState('');
   const [accessError, setAccessError] = useState('');
   const hiddenTapTarget = 15;
@@ -46,6 +47,22 @@ export default function ComingSoon() {
 
     return () => window.clearTimeout(timer);
   }, [hiddenTapTarget, tapCount]);
+
+  useEffect(() => {
+    if (!isAccessModalOpen && !isAboutModalOpen) return undefined;
+
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
+        setIsAccessModalOpen(false);
+        setIsAboutModalOpen(false);
+        setAccessCode('');
+        setAccessError('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAccessModalOpen, isAboutModalOpen]);
 
   const handleLogoTap = () => {
     setTapCount(current => {
@@ -128,6 +145,14 @@ export default function ComingSoon() {
     setIsAccessModalOpen(false);
     setAccessCode('');
     setAccessError('');
+  };
+
+  const openAboutModal = () => {
+    setIsAboutModalOpen(true);
+  };
+
+  const closeAboutModal = () => {
+    setIsAboutModalOpen(false);
   };
 
   const handleAccessSubmit = event => {
@@ -339,6 +364,33 @@ export default function ComingSoon() {
           letter-spacing: -0.02em;
           text-transform: uppercase;
           box-shadow: inset 0 -1px 0 rgba(232, 0, 28, 0.28);
+        }
+
+        .nxus-about-trigger {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          align-self: center;
+          min-height: 3.15rem;
+          padding: 0.74rem 1.1rem;
+          border: 1px solid rgba(232, 0, 28, 0.7);
+          border-radius: 0;
+          background: transparent;
+          color: var(--nxus-red);
+          font-family: var(--mono-font);
+          font-size: 0.74rem;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        }
+
+        .nxus-about-trigger:hover,
+        .nxus-about-trigger:focus-visible {
+          background: rgba(232, 0, 28, 0.08);
+          box-shadow: 0 0 26px rgba(232, 0, 28, 0.18);
+          transform: translateY(-1px);
+          outline: none;
         }
 
         .nxus-footer-mark {
@@ -648,6 +700,14 @@ export default function ComingSoon() {
           animation: nxusFadeUp 220ms ease both;
         }
 
+        .nxus-modal--about {
+          width: min(100%, 560px);
+          gap: 1.1rem;
+          background:
+            linear-gradient(180deg, rgba(232, 0, 28, 0.04), transparent 30%),
+            #0D0D0D;
+        }
+
         .nxus-modal-header {
           display: flex;
           align-items: flex-start;
@@ -673,6 +733,19 @@ export default function ComingSoon() {
           background: #0A0A0A;
           color: rgba(240, 237, 232, 0.78);
           font-family: var(--mono-font);
+          font-size: 0.78rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+        }
+
+        .nxus-modal-close:hover,
+        .nxus-modal-close:focus-visible {
+          border-color: rgba(232, 0, 28, 0.48);
+          background: rgba(232, 0, 28, 0.08);
+          color: #FFFFFF;
+          outline: none;
         }
 
         .nxus-access-error {
@@ -682,6 +755,66 @@ export default function ComingSoon() {
           font-family: var(--mono-font);
           font-size: 0.72rem;
           letter-spacing: 0.04em;
+        }
+
+        .nxus-modal-notice {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          border: 1px solid rgba(232, 0, 28, 0.28);
+          border-left: 3px solid var(--nxus-red);
+          background: rgba(232, 0, 28, 0.07);
+          padding: 0.85rem 1rem;
+          border-radius: 0;
+        }
+
+        .nxus-modal-notice-icon {
+          flex-shrink: 0;
+          font-size: 1rem;
+          line-height: 1.4;
+        }
+
+        .nxus-modal-notice-text {
+          display: grid;
+          gap: 0.22rem;
+        }
+
+        .nxus-modal-notice-title {
+          color: var(--nxus-cream);
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
+
+        .nxus-modal-notice-body {
+          color: rgba(240, 237, 232, 0.62);
+          font-family: var(--body-font);
+          font-size: 0.82rem;
+          line-height: 1.5;
+        }
+
+        .nxus-modal-notice-body strong {
+          color: var(--nxus-cream);
+          font-weight: 600;
+        }
+
+        .nxus-modal-copy {
+          margin: 0;
+          color: rgba(240, 237, 232, 0.72);
+          font-size: 1rem;
+          line-height: 1.7;
+        }
+
+        .nxus-modal-tagline {
+          margin: 0;
+          color: var(--nxus-red);
+          font-family: var(--mono-font);
+          font-size: 0.84rem;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
         }
 
         @media (max-width: 920px) {
@@ -777,6 +910,11 @@ export default function ComingSoon() {
           .nxus-stat {
             padding: 0.58rem 0.62rem;
             font-size: 0.62rem;
+          }
+
+          .nxus-about-trigger {
+            align-self: flex-start;
+            font-size: 0.68rem;
           }
 
           .nxus-right {
@@ -880,6 +1018,15 @@ export default function ComingSoon() {
                 </div>
               ))}
             </div>
+
+            <button
+              className="nxus-about-trigger"
+              type="button"
+              onClick={openAboutModal}
+              aria-haspopup="dialog"
+            >
+              What Is Nxus
+            </button>
           </div>
 
           <div className="nxus-footer-mark">NXUS, from us, to you</div>
@@ -1006,6 +1153,16 @@ export default function ComingSoon() {
               </button>
             </div>
 
+            <div className="nxus-modal-notice" role="note">
+              <span className="nxus-modal-notice-icon" aria-hidden="true">{'\u{1F511}'}</span>
+              <div className="nxus-modal-notice-text">
+                <span className="nxus-modal-notice-title">New here?</span>
+                <p className="nxus-modal-notice-body">
+                  Early access codes are invite-only. If you don&rsquo;t have one, <strong>join the waitlist below</strong> — we&rsquo;ll send your code when your spot opens up.
+                </p>
+              </div>
+            </div>
+
             <form className="nxus-form" onSubmit={handleAccessSubmit}>
               <label className="nxus-field">
                 <span className="nxus-field-label">Access Code</span>
@@ -1033,6 +1190,46 @@ export default function ComingSoon() {
                 Unlock Signup {'\u2192'}
               </button>
             </form>
+          </section>
+        </div>
+      ) : null}
+
+      {isAboutModalOpen ? (
+        <div
+          className="nxus-modal-backdrop"
+          role="presentation"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) {
+              closeAboutModal();
+            }
+          }}
+        >
+          <section
+            className="nxus-modal nxus-modal--about"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nxus-about-title"
+            aria-describedby="nxus-about-description"
+          >
+            <div className="nxus-modal-header">
+              <h2 className="nxus-modal-title" id="nxus-about-title">What Is Nxus</h2>
+              <button
+                className="nxus-modal-close"
+                type="button"
+                onClick={closeAboutModal}
+                aria-label="Close WHAT IS NXUS modal"
+              >
+                X
+              </button>
+            </div>
+
+            <p className="nxus-modal-copy" id="nxus-about-description">
+              A social app where you post what you want to do and instantly find people who are down to join you. No endless group chats. No plans that fall apart. Just real people doing real things together, spontaneously.
+            </p>
+
+            <p className="nxus-modal-tagline">
+              Post what you want to do. Find who&apos;s down.
+            </p>
           </section>
         </div>
       ) : null}
