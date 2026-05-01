@@ -117,7 +117,7 @@ export default function ComingSoon() {
 
       setSubmitState({
         tone: 'success',
-        message: "You're on the list. We'll reach out when NXUS opens up.",
+        message: "You're on the waitlist. We'll send your early access code to your email.",
       });
       setName('');
       setEmail('');
@@ -1074,7 +1074,7 @@ export default function ComingSoon() {
               </button>
 
               <p className="nxus-form-note" data-tone={submitState.tone}>
-                {submitState.message || '140+ people already in. Dubai opens first.'}
+                {submitState.message || '500+ people already in. Dubai opens first.'}
               </p>
             </form>
 
@@ -1158,7 +1158,7 @@ export default function ComingSoon() {
               <div className="nxus-modal-notice-text">
                 <span className="nxus-modal-notice-title">New here?</span>
                 <p className="nxus-modal-notice-body">
-                  Early access codes are invite-only. If you don&rsquo;t have one, <strong>join the waitlist below</strong> — we&rsquo;ll send your code when your spot opens up.
+                  Early access codes are invite-only. If you don&rsquo;t have one, <strong>join the waitlist below</strong> and we&rsquo;ll send your code to your email once you&rsquo;re on the list.
                 </p>
               </div>
             </div>
