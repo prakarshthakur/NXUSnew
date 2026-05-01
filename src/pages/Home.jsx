@@ -218,6 +218,14 @@ export default function Home() {
           animation: nxusHomeIn 500ms ease both;
         }
 
+        .nxus-home-header-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
         @keyframes nxusHomeIn {
           from { opacity: 0; transform: translateY(18px); }
           to { opacity: 1; transform: translateY(0); }
@@ -251,6 +259,31 @@ export default function Home() {
           color: rgba(240, 237, 232, 0.52);
           font-size: 0.95rem;
           line-height: 1.5;
+        }
+
+        .nxus-home-host-link {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 2.85rem;
+          padding: 0.8rem 1.1rem;
+          border: 1px solid rgba(232, 0, 28, 0.42);
+          background: rgba(232, 0, 28, 0.08);
+          color: #FFFFFF;
+          text-decoration: none;
+          font-family: var(--mono-font);
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .nxus-home-host-link:hover {
+          background: rgba(232, 0, 28, 0.16);
+          transform: translateY(-1px);
+          box-shadow: 0 0 24px rgba(232, 0, 28, 0.22);
         }
 
         /* ── EVENT CARDS ── */
@@ -424,6 +457,10 @@ export default function Home() {
           .nxus-home-nav-email {
             display: none;
           }
+
+          .nxus-home-host-link {
+            width: 100%;
+          }
         }
       `}</style>
 
@@ -466,8 +503,20 @@ export default function Home() {
 
       <div className="nxus-home-content">
         <header className="nxus-home-header">
-          <div className="nxus-home-eyebrow">Live Drops</div>
-          <h1 className="nxus-home-title">Upcoming Events</h1>
+          <div className="nxus-home-header-top">
+            <div>
+              <div className="nxus-home-eyebrow">Live Drops</div>
+              <h1 className="nxus-home-title">Upcoming Events</h1>
+            </div>
+            <a
+              className="nxus-home-host-link"
+              href="https://forms.gle/ig65b5MBH8jaKcxd6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Want To Host? {'\u2192'}
+            </a>
+          </div>
           <p className="nxus-home-subtitle">Tap a card to see more. Hit Join Now to sign up.</p>
         </header>
 
